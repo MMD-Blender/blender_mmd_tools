@@ -7,7 +7,7 @@ import bpy
 from .. import utils
 from ..core.bone import FnBone
 from ..core.material import FnMaterial
-from ..core.model import FnModel, Model
+from ..core.model import FnModel, MMDModel
 from ..core.morph import FnMorph
 
 
@@ -62,7 +62,7 @@ def _morph_base_set_name(prop: "_MorphBase", value: str):
                 item.name = value
                 break
 
-        obj = Model(prop.id_data).morph_slider.placeholder()
+        obj = MMDModel(prop.id_data).morph_slider.placeholder()
         if obj and value not in obj.data.shape_keys.key_blocks:
             kb = obj.data.shape_keys.key_blocks.get(prop_name, None)
             if kb:

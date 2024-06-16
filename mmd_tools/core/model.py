@@ -564,13 +564,15 @@ class MigrationFnModel:
             root_object["mmd_tools_version"] = "2.8.0"
 
 
-class Model:
-    def __init__(self, root_obj):
-        if root_obj is None:
+class MMDModel:
+    """
+    MMD Model class
+    """
+
+    def __init__(self, root_object):
+        if root_object is None or root_object.mmd_type != "ROOT":
             raise ValueError("must be MMD ROOT type object")
-        if root_obj.mmd_type != "ROOT":
-            raise ValueError("must be MMD ROOT type object")
-        self.__root: bpy.types.Object = getattr(root_obj, "original", root_obj)
+        self.__root: bpy.types.Object = getattr(root_object, "original", root_object)
         self.__arm: Optional[bpy.types.Object] = None
         self.__rigid_grp: Optional[bpy.types.Object] = None
         self.__joint_grp: Optional[bpy.types.Object] = None
@@ -634,7 +636,7 @@ class Model:
             bone_collection.assign(data_bone)
 
         FnContext.set_active_and_select_single_object(context, root)
-        return Model(root)
+        return MMDModel(root)
 
     @staticmethod
     def findRoot(obj: bpy.types.Object) -> Optional[bpy.types.Object]:

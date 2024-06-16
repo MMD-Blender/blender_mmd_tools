@@ -10,7 +10,7 @@ import bmesh
 import bpy
 
 from ..bpyutils import FnContext
-from ..core.model import FnModel, Model
+from ..core.model import FnModel, MMDModel
 
 
 class MessageException(Exception):
@@ -155,7 +155,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         deform_bones: Dict[str, bpy.types.EditBone] = {b.name: b for b in target_armature_object.data.edit_bones if b.use_deform}
 
         mmd_root_object: bpy.types.Object = FnModel.find_root_object(context.active_object)
-        mmd_model = Model(mmd_root_object)
+        mmd_model = MMDModel(mmd_root_object)
         mmd_model_mesh_objects: List[bpy.types.Object] = list(mmd_model.meshes())
 
         mmd_model_mesh_objects = list(self.select_weighted_vertices(mmd_model_mesh_objects, separate_bones, deform_bones, weight_threshold).keys())
@@ -205,7 +205,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
 
             model2separate_mesh_objects = dict(zip(mmd_model_mesh_objects, separate_mesh_objects))
 
-        separate_model: Model = Model.create(mmd_root_object.mmd_root.name, mmd_root_object.mmd_root.name_e, mmd_scale, add_root_bone=False)
+        separate_model: MMDModel = MMDModel.create(mmd_root_object.mmd_root.name, mmd_root_object.mmd_root.name_e, mmd_scale, add_root_bone=False)
 
         separate_model.initialDisplayFrames()
         separate_root_object = separate_model.rootObject()

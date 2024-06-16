@@ -12,7 +12,7 @@ import bpy
 from bpy.types import Operator, OperatorFileListElement
 from bpy_extras.io_utils import ExportHelper, ImportHelper
 
-from ..core.model import Model, FnModel
+from ..core.model import MMDModel, FnModel
 from ..core.pmd import importer as pmd_importer
 from ..core.pmx import exporter as pmx_exporter
 from ..core.pmx import importer as pmx_importer
@@ -315,7 +315,7 @@ class ImportVmd(Operator, ImportHelper):
         for i in frozenset(selected_objects):
             root = FnModel.find_root_object(i)
             if root == i:
-                rig = Model(root)
+                rig = MMDModel(root)
                 selected_objects.add(rig.armature())
                 selected_objects.add(rig.morph_slider.placeholder())
                 selected_objects |= set(rig.meshes())
@@ -422,7 +422,7 @@ class ImportVpd(Operator, ImportHelper):
         for i in frozenset(selected_objects):
             root = FnModel.find_root_object(i)
             if root == i:
-                rig = Model(root)
+                rig = MMDModel(root)
                 selected_objects.add(rig.armature())
                 selected_objects.add(rig.morph_slider.placeholder())
                 selected_objects |= set(rig.meshes())
@@ -642,7 +642,7 @@ class ExportVmd(Operator, ExportHelper):
 
         obj = context.active_object
         if obj.mmd_type == "ROOT":
-            rig = Model(obj)
+            rig = MMDModel(obj)
             params["mesh"] = rig.morph_slider.placeholder(binded=True) or rig.firstMesh()
             params["armature"] = rig.armature()
             params["model_name"] = obj.mmd_root.name or obj.name
@@ -733,7 +733,7 @@ class ExportVpd(Operator, ExportHelper):
 
         obj = context.active_object
         if obj.mmd_type == "ROOT":
-            rig = Model(obj)
+            rig = MMDModel(obj)
             params["mesh"] = rig.morph_slider.placeholder(binded=True) or rig.firstMesh()
             params["armature"] = rig.armature()
             params["model_name"] = obj.mmd_root.name or obj.name

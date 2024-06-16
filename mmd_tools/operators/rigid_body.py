@@ -11,7 +11,7 @@ from mathutils import Euler, Vector
 from .. import utils
 from ..bpyutils import FnContext, Props
 from ..core import rigid_body
-from ..core.model import FnModel, Model
+from ..core.model import FnModel, MMDModel
 from ..core.rigid_body import FnRigidBody
 
 
@@ -569,7 +569,7 @@ class UpdateRigidBodyWorld(bpy.types.Operator):
                 if not root_object.mmd_root.is_built:
                     continue
                 with FnContext.temp_override_active_layer_collection(context, root_object):
-                    Model(root_object).build()
+                    MMDModel(root_object).build()
                     # After rebuild. First play. Will be crash!
                     # But saved it before. Reload after crash. The play can be work.
 

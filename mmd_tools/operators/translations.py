@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, cast
 
 import bpy
 
-from ..core.model import FnModel, Model
+from ..core.model import FnModel, MMDModel
 from ..core.translations import MMD_DATA_TYPE_TO_HANDLERS, FnTranslations
 from ..translations import DictionaryEnum
 
@@ -89,7 +89,7 @@ class TranslateMMDModel(bpy.types.Operator):
 
         obj = context.active_object
         root = FnModel.find_root_object(obj)
-        rig = Model(root)
+        rig = MMDModel(root)
 
         if "MMD" in self.modes:
             for i in self.types:
@@ -111,7 +111,7 @@ class TranslateMMDModel(bpy.types.Operator):
             name_e = None
         return self.__translator.translate(name_j, name_e)
 
-    def translate_blender_names(self, rig: Model):
+    def translate_blender_names(self, rig: MMDModel):
         if "BONE" in self.types:
             for b in rig.armature().pose.bones:
                 rig.renameBone(b.name, self.translate(b.name, b.name))

@@ -12,11 +12,11 @@ from .. import bpyutils, utils
 from ..bpyutils import FnContext, FnObject, TransformConstraintOp
 
 if TYPE_CHECKING:
-    from .model import Model
+    from .model import MMDModel
 
 
 class FnMorph:
-    def __init__(self, morph, model: "Model"):
+    def __init__(self, morph, model: "MMDModel"):
         self.__morph = morph
         self.__rig = model
 
@@ -319,7 +319,7 @@ class FnMorph:
 
 
 class _MorphSlider:
-    def __init__(self, model: "Model"):
+    def __init__(self, model: "MMDModel"):
         self.__rig = model
 
     def placeholder(self, create=False, binded=False):

@@ -6,7 +6,7 @@ import bpy
 
 from ..bpyutils import FnContext
 from ..core.bone import FnBone, MigrationFnBone
-from ..core.model import FnModel, Model
+from ..core.model import FnModel, MMDModel
 
 
 class MorphSliderSetup(bpy.types.Operator):
@@ -32,7 +32,7 @@ class MorphSliderSetup(bpy.types.Operator):
         assert root_object is not None
 
         with FnContext.temp_override_active_layer_collection(context, root_object):
-            rig = Model(root_object)
+            rig = MMDModel(root_object)
             if self.type == "BIND":
                 rig.morph_slider.bind()
             elif self.type == "UNBIND":
@@ -54,7 +54,7 @@ class CleanRiggingObjects(bpy.types.Operator):
         root_object = FnModel.find_root_object(context.active_object)
         assert root_object is not None
 
-        rig = Model(root_object)
+        rig = MMDModel(root_object)
         rig.clean()
         FnContext.set_active_object(context, root_object)
         return {"FINISHED"}
@@ -87,7 +87,7 @@ class BuildRig(bpy.types.Operator):
         root_object = FnModel.find_root_object(context.active_object)
 
         with FnContext.temp_override_active_layer_collection(context, root_object):
-            rig = Model(root_object)
+            rig = MMDModel(root_object)
             rig.build(self.non_collision_distance_scale, self.collision_margin)
             FnContext.set_active_object(context, root_object)
 
@@ -244,7 +244,7 @@ class CreateMMDModelRoot(bpy.types.Operator):
     )
 
     def execute(self, context):
-        rig = Model.create(self.name_j, self.name_e, self.scale, add_root_bone=True)
+        rig = MMDModel.create(self.name_j, self.name_e, self.scale, add_root_bone=True)
         rig.initialDisplayFrames()
         return {"FINISHED"}
 
@@ -318,10 +318,10 @@ class ConvertToMMDModel(bpy.types.Operator):
 
         root_object = FnModel.find_root_object(armature_object)
         if root_object is None or root_object != armature_object.parent:
-            Model.create(model_name, model_name, scale, armature_object=armature_object)
+            MMDModel.create(model_name, model_name, scale, armature_object=armature_object)
 
         self.__attach_meshes_to(armature_object, FnContext.get_scene_objects(context))
-        self.__configure_rig(context, Model(armature_object.parent))
+        self.__configure_rig(context, MMDModel(armature_object.parent))
         return {"FINISHED"}
 
     def __attach_meshes_to(self, armature_object: bpy.types.Object, objects: bpy.types.SceneObjects):
@@ -349,7 +349,7 @@ class ConvertToMMDModel(bpy.types.Operator):
                 x_root.parent = armature_object
                 x_root.matrix_world = m
 
-    def __configure_rig(self, context: bpy.types.Context, mmd_model: Model):
+    def __configure_rig(self, context: bpy.types.Context, mmd_model: MMDModel):
         root_object = mmd_model.rootObject()
         armature_object = mmd_model.armature()
         mesh_objects = tuple(mmd_model.meshes())
@@ -443,7 +443,7 @@ class AssembleAll(bpy.types.Operator):
         assert root_object is not None
 
         with FnContext.temp_override_active_layer_collection(context, root_object) as context:
-            rig = Model(root_object)
+            rig = MMDModel(root_object)
             MigrationFnBone.fix_mmd_ik_limit_override(rig.armature())
             FnBone.apply_additional_transformation(rig.armature())
             rig.build()
@@ -473,7 +473,7 @@ class DisassembleAll(bpy.types.Operator):
             with context.temp_override(selected_objects=[active_object]):
                 bpy.ops.mmd_tools.sdef_unbind()
 
-            rig = Model(root_object)
+            rig = MMDModel(root_object)
             rig.morph_slider.unbind()
             rig.clean()
             FnBone.clean_additional_transformation(rig.armature())

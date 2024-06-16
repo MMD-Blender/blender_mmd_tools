@@ -9,7 +9,7 @@ import bpy
 from .. import utils
 from ..bpyutils import FnContext, FnObject
 from ..core.bone import FnBone
-from ..core.model import FnModel, Model
+from ..core.model import FnModel, MMDModel
 from ..core.morph import FnMorph
 
 
@@ -82,7 +82,7 @@ class MoveObject(bpy.types.Operator, utils.ItemMoveOp):
         objects = []
         root = FnModel.find_root_object(obj)
         if root:
-            rig = Model(root)
+            rig = MMDModel(root)
             if obj.mmd_type == "NONE" and obj.type == "MESH":
                 objects = rig.meshes()
             elif obj.mmd_type == "RIGID_BODY":
@@ -160,7 +160,7 @@ class SeparateByMaterials(bpy.types.Operator):
             bpy.ops.mmd_tools.clear_uv_morph_view()
 
             # Store the current material names
-            rig = Model(root)
+            rig = MMDModel(root)
             mat_names = [getattr(mat, "name", None) for mat in rig.materials()]
             self.__separate_by_materials(obj)
             for mesh in rig.meshes():
@@ -199,7 +199,7 @@ class JoinMeshes(bpy.types.Operator):
         bpy.ops.mmd_tools.clear_uv_morph_view()
 
         # Find all the meshes in mmd_root
-        rig = Model(root)
+        rig = MMDModel(root)
         meshes_list = sorted(rig.meshes(), key=lambda x: x.name)
         if not meshes_list:
             self.report({"ERROR"}, "The model does not have any meshes")

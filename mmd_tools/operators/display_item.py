@@ -5,7 +5,7 @@
 import bpy
 from bpy.types import Operator
 
-from ..core.model import Model, FnModel
+from ..core.model import MMDModel, FnModel
 from ..core.bone import FnBone
 from ..utils import ItemMoveOp, ItemOp, selectSingleBone
 
@@ -264,7 +264,7 @@ class DisplayItemQuickSetup(Operator):
     def execute(self, context):
         obj = context.active_object
         root = FnModel.find_root_object(obj)
-        rig = Model(root)
+        rig = MMDModel(root)
         if self.type == "RESET":
             rig.initialDisplayFrames()
         elif self.type == "FACIAL":

@@ -16,7 +16,7 @@ from ...bpyutils import FnContext
 from .. import pmx
 from ..bone import FnBone
 from ..material import FnMaterial
-from ..model import FnModel, Model
+from ..model import FnModel, MMDModel
 from ..morph import FnMorph
 from ..rigid_body import FnRigidBody
 from ..vmd.importer import BoneConverter
@@ -83,7 +83,7 @@ class PMXImporter:
         """Create main objects and link them to scene."""
         pmxModel = self.__model
         obj_name = self.__safe_name(bpy.path.display_name(pmxModel.filepath), max_length=54)
-        self.__rig = Model.create(pmxModel.name, pmxModel.name_e, self.__scale, obj_name)
+        self.__rig = MMDModel.create(pmxModel.name, pmxModel.name_e, self.__scale, obj_name)
         root = self.__rig.rootObject()
         mmd_root: MMDRoot = root.mmd_root
         self.__root = root

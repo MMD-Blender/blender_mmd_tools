@@ -4,7 +4,7 @@
 
 import bpy
 
-from ...core.model import FnModel, Model
+from ...core.model import FnModel, MMDModel
 from . import FnDraw, PT_ProductionPanelBase
 from ...properties.morph import MaterialMorph
 from ...utils import ItemOp
@@ -24,7 +24,7 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
             self.layout.label(text="Select a MMD Model")
             return
 
-        rig = Model(root)
+        rig = MMDModel(root)
         mmd_root = root.mmd_root
         col = self.layout.column()
         row = col.row()

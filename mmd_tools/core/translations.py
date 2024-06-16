@@ -12,7 +12,7 @@ import bpy
 
 from ..translations import DictionaryEnum
 from ..utils import convertLRToName, convertNameToLR
-from .model import FnModel, Model
+from .model import FnModel, MMDModel
 
 if TYPE_CHECKING:
     from ..properties.morph import _MorphBase
@@ -453,7 +453,7 @@ class MMDPhysicsHandler(MMDDataHandlerABC):
     @classmethod
     def collect_data(cls, mmd_translation: "MMDTranslation"):
         root_object: bpy.types.Object = mmd_translation.id_data
-        model = Model(root_object)
+        model = MMDModel(root_object)
 
         obj: bpy.types.Object
         for obj in model.rigidBodies():
