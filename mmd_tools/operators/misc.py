@@ -8,6 +8,7 @@ import bpy
 
 from .. import utils
 from ..bpyutils import FnContext, FnObject
+from ..core import FnCore
 from ..core.bone import FnBone
 from ..core.model import FnModel, MMDModel
 from ..core.morph import FnMorph
@@ -80,7 +81,7 @@ class MoveObject(bpy.types.Operator, utils.ItemMoveOp):
                 self.insert(index_new, item)
 
         objects = []
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         if root:
             rig = MMDModel(root)
             if obj.mmd_type == "NONE" and obj.type == "MESH":
@@ -152,7 +153,7 @@ class SeparateByMaterials(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         if root is None:
             self.__separate_by_materials(obj)
         else:
@@ -190,7 +191,7 @@ class JoinMeshes(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         if root is None:
             self.report({"ERROR"}, "Select a MMD model")
             return {"CANCELLED"}
@@ -236,12 +237,12 @@ class AttachMeshesToMMD(bpy.types.Operator):
     add_armature_modifier: bpy.props.BoolProperty(default=True)
 
     def execute(self, context: bpy.types.Context):
-        root = FnModel.find_root_object(context.active_object)
+        root = FnCore.find_root_object(context.active_object)
         if root is None:
             self.report({"ERROR"}, "Select a MMD model")
             return {"CANCELLED"}
 
-        armObj = FnModel.find_armature_object(root)
+        armObj = FnCore.find_armature_object(root)
         if armObj is None:
             self.report({"ERROR"}, "Model Armature not found")
             return {"CANCELLED"}
@@ -266,16 +267,16 @@ class ChangeMMDIKLoopFactor(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return FnModel.find_root_object(context.active_object) is not None
+        return FnCore.find_root_object(context.active_object) is not None
 
     def invoke(self, context, event):
-        root_object = FnModel.find_root_object(context.active_object)
+        root_object = FnCore.find_root_object(context.active_object)
         self.mmd_ik_loop_factor = root_object.mmd_root.ik_loop_factor
         vm = context.window_manager
         return vm.invoke_props_dialog(self)
 
     def execute(self, context):
-        root_object = FnModel.find_root_object(context.active_object)
+        root_object = FnCore.find_root_object(context.active_object)
         FnModel.change_mmd_ik_loop_factor(root_object, self.mmd_ik_loop_factor)
         return {"FINISHED"}
 

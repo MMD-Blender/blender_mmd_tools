@@ -6,21 +6,21 @@ import collections
 import logging
 import os
 import time
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Optional, cast
 
 import bpy
 from mathutils import Matrix, Vector
 
 from ... import bpyutils, utils
 from ...bpyutils import FnContext
-from .. import pmx
+from ...operators.misc import MoveObject
+from .. import FnCore, pmx
 from ..bone import FnBone
 from ..material import FnMaterial
 from ..model import FnModel, MMDModel
 from ..morph import FnMorph
 from ..rigid_body import FnRigidBody
 from ..vmd.importer import BoneConverter
-from ...operators.misc import MoveObject
 
 if TYPE_CHECKING:
     from ...properties.pose_bone import MMDBone
@@ -322,7 +322,7 @@ class PMXImporter:
                 new_min_angle[i], new_max_angle[i] = new_max_angle[i], new_min_angle[i]
         return new_min_angle, new_max_angle
 
-    def __applyIk(self, index, pmx_bone, pose_bones):
+    def __applyIk(self, index: int, pmx_bone: pmx.Bone, pose_bones):
         """create a IK bone constraint
         If the IK bone and the target bone is separated, a dummy IK target bone is created as a child of the IK bone.
         @param index the bone index
@@ -341,13 +341,13 @@ class PMXImporter:
         # so ik constraint will be on link1, chain_count=1
         # the IK target isn't affected by IK bone
 
-        ik_bone = pose_bones[index]
-        ik_target = pose_bones[pmx_bone.target]
-        ik_constraint_bone = ik_target.parent
+        ik_bone: bpy.types.PoseBone = pose_bones[index]
+        ik_target_bone: bpy.types.PoseBone = pose_bones[pmx_bone.target]
+        ik_constraint_bone = ik_target_bone.parent
         is_valid_ik = False
         if len(pmx_bone.ik_links) > 0:
             ik_constraint_bone_real = pose_bones[pmx_bone.ik_links[0].target]
-            if ik_constraint_bone_real == ik_target:
+            if ik_constraint_bone_real == ik_target_bone:
                 if len(pmx_bone.ik_links) > 1:
                     ik_constraint_bone_real = pose_bones[pmx_bone.ik_links[1].target]
                 del pmx_bone.ik_links[0]
@@ -355,7 +355,7 @@ class PMXImporter:
             is_valid_ik = ik_constraint_bone == ik_constraint_bone_real
             if not is_valid_ik:
                 ik_constraint_bone = ik_constraint_bone_real
-                logging.warning(" * IK bone (%s) warning: IK target (%s) is not a child of IK link 0 (%s)", ik_bone.name, ik_target.name, ik_constraint_bone.name)
+                logging.warning(" * IK bone (%s) warning: IK target (%s) is not a child of IK link 0 (%s)", ik_bone.name, ik_target_bone.name, ik_constraint_bone.name)
             elif any(pose_bones[i.target].parent != pose_bones[j.target] for i, j in zip(pmx_bone.ik_links, pmx_bone.ik_links[1:])):
                 logging.warning(" * Invalid IK bone (%s): IK chain does not follow parent-child relationship", ik_bone.name)
                 return
@@ -363,41 +363,43 @@ class PMXImporter:
             logging.warning(" * Invalid IK bone (%s)", ik_bone.name)
             return
 
-        c = ik_target.constraints.new(type="DAMPED_TRACK")
-        c.name = "mmd_ik_target_override"
-        c.mute = True
-        c.influence = 0
-        c.target = self.__armObj
-        c.subtarget = ik_constraint_bone.name
+        track_constraint = cast(bpy.types.DampedTrackConstraint, ik_target_bone.constraints.new(type="DAMPED_TRACK"))
+        track_constraint.name = "mmd_ik_target_override"
+        track_constraint.mute = True
+        track_constraint.influence = 0
+        track_constraint.target = self.__armObj
+        track_constraint.subtarget = ik_constraint_bone.name
         if not is_valid_ik or next((c for c in ik_constraint_bone.constraints if c.type == "IK" and c.is_valid), None):
-            c.name = "mmd_ik_target_custom"
-            c.subtarget = ik_bone.name  # point to IK control bone
+            track_constraint.name = "mmd_ik_target_custom"
+            track_constraint.subtarget = ik_bone.name  # point to IK control bone
             ik_bone.mmd_bone.ik_rotation_constraint = pmx_bone.rotationConstraint
             use_custom_ik = True
         else:
             ik_constraint_bone.mmd_bone.ik_rotation_constraint = pmx_bone.rotationConstraint
             use_custom_ik = False
 
-        ikConst = self.__rig.create_ik_constraint(ik_constraint_bone, ik_bone)
-        ikConst.iterations = pmx_bone.loopCount
-        ikConst.chain_count = len(pmx_bone.ik_links)
+        ik_constraint = cast(bpy.types.KinematicConstraint, ik_constraint_bone.constraints.new("IK"))
+        ik_constraint.target = ik_bone.id_data
+        ik_constraint.subtarget = ik_bone.name
+        ik_constraint.iterations = pmx_bone.loopCount
+        ik_constraint.chain_count = len(pmx_bone.ik_links)
         if not is_valid_ik:
-            ikConst.pole_target = self.__armObj  # make it an incomplete/invalid setting
+            ik_constraint.pole_target = self.__armObj  # make it an incomplete/invalid setting
         for idx, i in enumerate(pmx_bone.ik_links):
             if use_custom_ik or i.target in self.__blender_ik_links:
-                c = ik_bone.constraints.new(type="LIMIT_ROTATION")
-                c.mute = True
-                c.influence = 0
-                c.name = "mmd_ik_limit_custom%d" % idx
-                use_limits = c.use_limit_x = c.use_limit_y = c.use_limit_z = i.maximumAngle is not None
+                limit_rotation_constraint = cast(bpy.types.LimitRotationConstraint, ik_bone.constraints.new(type="LIMIT_ROTATION"))
+                limit_rotation_constraint.mute = True
+                limit_rotation_constraint.influence = 0
+                limit_rotation_constraint.name = "mmd_ik_limit_custom%d" % idx
+                use_limits = limit_rotation_constraint.use_limit_x = limit_rotation_constraint.use_limit_y = limit_rotation_constraint.use_limit_z = i.maximumAngle is not None
                 if use_limits:
                     minimum, maximum = self.convertIKLimitAngles(i.minimumAngle, i.maximumAngle, pose_bones[i.target].bone.matrix_local)
-                    c.max_x, c.max_y, c.max_z = maximum
-                    c.min_x, c.min_y, c.min_z = minimum
+                    limit_rotation_constraint.max_x, limit_rotation_constraint.max_y, limit_rotation_constraint.max_z = maximum
+                    limit_rotation_constraint.min_x, limit_rotation_constraint.min_y, limit_rotation_constraint.min_z = minimum
                 continue
             self.__blender_ik_links.add(i.target)
             if i.maximumAngle is not None:
-                bone = pose_bones[i.target]
+                bone: bpy.types.PoseBone = pose_bones[i.target]
                 minimum, maximum = self.convertIKLimitAngles(i.minimumAngle, i.maximumAngle, bone.bone.matrix_local)
 
                 bone.use_ik_limit_x = True
@@ -406,15 +408,15 @@ class PMXImporter:
                 bone.ik_max_x, bone.ik_max_y, bone.ik_max_z = maximum
                 bone.ik_min_x, bone.ik_min_y, bone.ik_min_z = minimum
 
-                c = bone.constraints.new(type="LIMIT_ROTATION")
-                c.mute = not is_valid_ik
-                c.name = "mmd_ik_limit_override"
-                c.owner_space = "LOCAL"
-                c.max_x, c.max_y, c.max_z = maximum
-                c.min_x, c.min_y, c.min_z = minimum
-                c.use_limit_x = bone.ik_max_x != c.max_x or bone.ik_min_x != c.min_x
-                c.use_limit_y = bone.ik_max_y != c.max_y or bone.ik_min_y != c.min_y
-                c.use_limit_z = bone.ik_max_z != c.max_z or bone.ik_min_z != c.min_z
+                limit_rotation_constraint = cast(bpy.types.LimitRotationConstraint, bone.constraints.new(type="LIMIT_ROTATION"))
+                limit_rotation_constraint.mute = not is_valid_ik
+                limit_rotation_constraint.name = "mmd_ik_limit_override"
+                limit_rotation_constraint.owner_space = "LOCAL"
+                limit_rotation_constraint.max_x, limit_rotation_constraint.max_y, limit_rotation_constraint.max_z = maximum
+                limit_rotation_constraint.min_x, limit_rotation_constraint.min_y, limit_rotation_constraint.min_z = minimum
+                limit_rotation_constraint.use_limit_x = bone.ik_max_x != limit_rotation_constraint.max_x or bone.ik_min_x != limit_rotation_constraint.min_x
+                limit_rotation_constraint.use_limit_y = bone.ik_max_y != limit_rotation_constraint.max_y or bone.ik_min_y != limit_rotation_constraint.min_y
+                limit_rotation_constraint.use_limit_z = bone.ik_max_z != limit_rotation_constraint.max_z or bone.ik_min_z != limit_rotation_constraint.min_z
 
     def __importBones(self):
         pmxModel = self.__model
@@ -474,7 +476,7 @@ class PMXImporter:
         start_time = time.time()
         self.__rigidTable = {}
         context = FnContext.ensure_context()
-        rigid_pool = FnRigidBody.new_rigid_body_objects(context, FnModel.ensure_rigid_group_object(context, self.__rig.rootObject()), len(self.__model.rigids))
+        rigid_pool = FnRigidBody.new_rigid_body_objects(context, FnCore.ensure_rigid_group_object(context, self.__rig.rootObject()), len(self.__model.rigids))
         for i, (rigid, rigid_obj) in enumerate(zip(self.__model.rigids, rigid_pool)):
             loc = Vector(rigid.location).xzy * self.__scale
             rot = Vector(rigid.rotation).xzy * -1
@@ -507,7 +509,7 @@ class PMXImporter:
     def __importJoints(self):
         start_time = time.time()
         context = FnContext.ensure_context()
-        joint_pool = FnRigidBody.new_joint_objects(context, FnModel.ensure_joint_group_object(context, self.__rig.rootObject()), len(self.__model.joints), FnModel.get_empty_display_size(self.__rig.rootObject()))
+        joint_pool = FnRigidBody.new_joint_objects(context, FnCore.ensure_joint_group_object(context, self.__rig.rootObject()), len(self.__model.joints), FnModel.get_empty_display_size(self.__rig.rootObject()))
         for i, (joint, joint_obj) in enumerate(zip(self.__model.joints, joint_pool)):
             loc = Vector(joint.location).xzy * self.__scale
             rot = Vector(joint.rotation).xzy * -1
@@ -779,7 +781,7 @@ class PMXImporter:
                 else:
                     raise Exception("Unknown display item type.")
 
-        FnBone.sync_bone_collections_from_display_item_frames(self.__armObj)
+        FnModel.sync_to_bone_collections(root)
 
     def __addArmatureModifier(self, meshObj, armObj):
         # TODO: move to model.py
@@ -882,7 +884,7 @@ class PMXImporter:
         if "DISPLAY" in types:
             self.__importDisplayFrames()
         else:
-            self.__rig.initialDisplayFrames()
+            FnModel.initalize_display_item_frames(self.__root)
 
         if "MORPHS" in types:
             self.__importGroupMorphs()

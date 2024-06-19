@@ -5,8 +5,8 @@
 import bpy
 from bpy.types import Operator
 
-from ..core.model import MMDModel, FnModel
-from ..core.bone import FnBone
+from ..core import FnCore
+from ..core.model import FnModel
 from ..utils import ItemMoveOp, ItemOp, selectSingleBone
 
 
@@ -18,7 +18,7 @@ class AddDisplayItemFrame(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         mmd_root = root.mmd_root
 
         frames = mmd_root.display_item_frames
@@ -36,7 +36,7 @@ class RemoveDisplayItemFrame(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         mmd_root = root.mmd_root
 
         index = mmd_root.active_display_item_frame
@@ -59,7 +59,7 @@ class MoveDisplayItemFrame(Operator, ItemMoveOp):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         mmd_root = root.mmd_root
 
         index = mmd_root.active_display_item_frame
@@ -80,7 +80,7 @@ class AddDisplayItem(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         mmd_root = root.mmd_root
         frame = ItemOp.get_by_index(mmd_root.display_item_frames, mmd_root.active_display_item_frame)
         if frame is None:
@@ -131,7 +131,7 @@ class RemoveDisplayItem(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         mmd_root = root.mmd_root
         frame = ItemOp.get_by_index(mmd_root.display_item_frames, mmd_root.active_display_item_frame)
         if frame is None:
@@ -153,7 +153,7 @@ class MoveDisplayItem(Operator, ItemMoveOp):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         mmd_root = root.mmd_root
         frame = ItemOp.get_by_index(mmd_root.display_item_frames, mmd_root.active_display_item_frame)
         if frame is None:
@@ -180,7 +180,7 @@ class FindDisplayItem(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         mmd_root = root.mmd_root
         if self.type == "MORPH":
             morph_type = mmd_root.active_morph_type
@@ -223,7 +223,7 @@ class SelectCurrentDisplayItem(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         mmd_root = root.mmd_root
         frame = ItemOp.get_by_index(mmd_root.display_item_frames, mmd_root.active_display_item_frame)
         if frame is None:
@@ -239,7 +239,7 @@ class SelectCurrentDisplayItem(Operator):
                 mmd_root.active_morph_type = item.morph_type
                 mmd_root.active_morph = index
         else:
-            selectSingleBone(context, FnModel.find_armature_object(root), item.name)
+            selectSingleBone(context, FnCore.find_armature_object(root), item.name)
         return {"FINISHED"}
 
 
@@ -263,18 +263,18 @@ class DisplayItemQuickSetup(Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
-        rig = MMDModel(root)
+        root = FnCore.find_root_object(obj)
+        assert root is not None
         if self.type == "RESET":
-            rig.initialDisplayFrames()
+            FnModel.initalize_display_item_frames(root)
         elif self.type == "FACIAL":
-            rig.initialDisplayFrames(reset=False)  # ensure default frames
+            FnModel.initalize_display_item_frames(root, reset=False)  # ensure default frames
             self.load_facial_items(root.mmd_root)
         elif self.type == "GROUP_LOAD":
-            FnBone.sync_display_item_frames_from_bone_collections(rig.armature())
-            rig.initialDisplayFrames(reset=False)  # ensure default frames
+            FnModel.sync_from_bone_collections(root)
+            FnModel.initalize_display_item_frames(root, reset=False)  # ensure default frames
         elif self.type == "GROUP_APPLY":
-            FnBone.sync_bone_collections_from_display_item_frames(rig.armature())
+            FnModel.sync_to_bone_collections(root)
         return {"FINISHED"}
 
     @staticmethod

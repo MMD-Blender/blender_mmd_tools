@@ -7,7 +7,7 @@ from typing import Set
 import bpy
 from bpy.types import Operator
 
-from ..core.model import FnModel
+from ..core import FnCore
 from ..core.sdef import FnSDEF
 
 
@@ -19,7 +19,7 @@ def _get_target_objects(context):
             selected_objects.add(i)
             continue
 
-        root_object = FnModel.find_root_object(i)
+        root_object = FnCore.find_root_object(i)
         if root_object is None:
             continue
         if root_object in root_objects:
@@ -27,7 +27,7 @@ def _get_target_objects(context):
 
         root_objects.add(root_object)
 
-        selected_objects |= set(FnModel.iterate_mesh_objects(root_object))
+        selected_objects |= set(FnCore.iterate_mesh_objects(root_object))
     return selected_objects, root_objects
 
 

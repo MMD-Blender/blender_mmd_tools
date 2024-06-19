@@ -5,6 +5,7 @@
 import bpy
 
 from ..bpyutils import FnContext
+from ..core import FnCore
 from ..core.bone import FnBone, MigrationFnBone
 from ..core.model import FnModel, MMDModel
 
@@ -28,7 +29,7 @@ class MorphSliderSetup(bpy.types.Operator):
 
     def execute(self, context: bpy.types.Context):
         active_object = context.active_object
-        root_object = FnModel.find_root_object(active_object)
+        root_object = FnCore.find_root_object(active_object)
         assert root_object is not None
 
         with FnContext.temp_override_active_layer_collection(context, root_object):
@@ -51,7 +52,7 @@ class CleanRiggingObjects(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO", "INTERNAL"}
 
     def execute(self, context):
-        root_object = FnModel.find_root_object(context.active_object)
+        root_object = FnCore.find_root_object(context.active_object)
         assert root_object is not None
 
         rig = MMDModel(root_object)
@@ -84,7 +85,7 @@ class BuildRig(bpy.types.Operator):
     )
 
     def execute(self, context):
-        root_object = FnModel.find_root_object(context.active_object)
+        root_object = FnCore.find_root_object(context.active_object)
 
         with FnContext.temp_override_active_layer_collection(context, root_object):
             rig = MMDModel(root_object)
@@ -102,9 +103,9 @@ class CleanAdditionalTransformConstraints(bpy.types.Operator):
 
     def execute(self, context):
         active_object = context.active_object
-        root_object = FnModel.find_root_object(active_object)
+        root_object = FnCore.find_root_object(active_object)
         assert root_object is not None
-        FnBone.clean_additional_transformation(FnModel.find_armature_object(root_object))
+        FnBone.clean_additional_transformation(FnCore.find_armature_object(root_object))
         FnContext.set_active_object(context, active_object)
         return {"FINISHED"}
 
@@ -117,10 +118,10 @@ class ApplyAdditionalTransformConstraints(bpy.types.Operator):
 
     def execute(self, context):
         active_object = context.active_object
-        root_object = FnModel.find_root_object(active_object)
+        root_object = FnCore.find_root_object(active_object)
         assert root_object is not None
 
-        armature_object = FnModel.find_armature_object(root_object)
+        armature_object = FnCore.find_armature_object(root_object)
         assert armature_object is not None
 
         MigrationFnBone.fix_mmd_ik_limit_override(armature_object)
@@ -205,14 +206,14 @@ class AddMissingVertexGroupsFromBones(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context: bpy.types.Context):
-        return FnModel.find_root_object(context.active_object) is not None
+        return FnCore.find_root_object(context.active_object) is not None
 
     def execute(self, context: bpy.types.Context):
         active_object: bpy.types.Object = context.active_object
-        root_object = FnModel.find_root_object(active_object)
+        root_object = FnCore.find_root_object(active_object)
         assert root_object is not None
 
-        bone_order_mesh_object = FnModel.find_bone_order_mesh_object(root_object)
+        bone_order_mesh_object = FnCore.find_bone_order_mesh_object(root_object)
         if bone_order_mesh_object is None:
             return {"CANCELLED"}
 
@@ -245,7 +246,7 @@ class CreateMMDModelRoot(bpy.types.Operator):
 
     def execute(self, context):
         rig = MMDModel.create(self.name_j, self.name_e, self.scale, add_root_bone=True)
-        rig.initialDisplayFrames()
+        FnModel.initalize_display_item_frames(rig.rootObject())
         return {"FINISHED"}
 
     def invoke(self, context, event):
@@ -316,7 +317,7 @@ class ConvertToMMDModel(bpy.types.Operator):
         scale = self.scale
         model_name = "New MMD Model"
 
-        root_object = FnModel.find_root_object(armature_object)
+        root_object = FnCore.find_root_object(armature_object)
         if root_object is None or root_object != armature_object.parent:
             MMDModel.create(model_name, model_name, scale, armature_object=armature_object)
 
@@ -385,8 +386,8 @@ class ConvertToMMDModel(bpy.types.Operator):
             FnMaterial.set_nodes_are_readonly(False)
         from .display_item import DisplayItemQuickSetup
 
-        FnBone.sync_display_item_frames_from_bone_collections(armature_object)
-        mmd_model.initialDisplayFrames(reset=False)  # ensure default frames
+        FnModel.sync_from_bone_collections(root_object)
+        FnModel.initalize_display_item_frames(root_object, reset=False)  # ensure default frames
         DisplayItemQuickSetup.load_facial_items(root_object.mmd_root)
         root_object.mmd_root.active_display_item_frame = 0
 
@@ -399,25 +400,25 @@ class ResetObjectVisibility(bpy.types.Operator):
     @classmethod
     def poll(cls, context: bpy.types.Context):
         active_object: bpy.types.Object = context.active_object
-        return FnModel.find_root_object(active_object) is not None
+        return FnCore.find_root_object(active_object) is not None
 
     def execute(self, context: bpy.types.Context):
         active_object: bpy.types.Object = context.active_object
-        mmd_root_object = FnModel.find_root_object(active_object)
+        mmd_root_object = FnCore.find_root_object(active_object)
         assert mmd_root_object is not None
         mmd_root = mmd_root_object.mmd_root
 
         mmd_root_object.hide_set(False)
 
-        rigid_group_object = FnModel.find_rigid_group_object(mmd_root_object)
+        rigid_group_object = FnCore.find_rigid_group_object(mmd_root_object)
         if rigid_group_object:
             rigid_group_object.hide_set(True)
 
-        joint_group_object = FnModel.find_joint_group_object(mmd_root_object)
+        joint_group_object = FnCore.find_joint_group_object(mmd_root_object)
         if joint_group_object:
             joint_group_object.hide_set(True)
 
-        temporary_group_object = FnModel.find_temporary_group_object(mmd_root_object)
+        temporary_group_object = FnCore.find_temporary_group_object(mmd_root_object)
         if temporary_group_object:
             temporary_group_object.hide_set(True)
 
@@ -439,7 +440,7 @@ class AssembleAll(bpy.types.Operator):
 
     def execute(self, context):
         active_object = context.active_object
-        root_object = FnModel.find_root_object(active_object)
+        root_object = FnCore.find_root_object(active_object)
         assert root_object is not None
 
         with FnContext.temp_override_active_layer_collection(context, root_object) as context:
@@ -465,7 +466,7 @@ class DisassembleAll(bpy.types.Operator):
 
     def execute(self, context):
         active_object = context.active_object
-        root_object = FnModel.find_root_object(active_object)
+        root_object = FnCore.find_root_object(active_object)
         assert root_object is not None
 
         with FnContext.temp_override_active_layer_collection(context, root_object) as context:

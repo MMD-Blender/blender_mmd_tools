@@ -12,7 +12,8 @@ import bpy
 
 from ..translations import DictionaryEnum
 from ..utils import convertLRToName, convertNameToLR
-from .model import FnModel, MMDModel
+from . import FnCore
+from .model import MMDModel
 
 if TYPE_CHECKING:
     from ..properties.morph import _MorphBase
@@ -116,7 +117,7 @@ class MMDBoneHandler(MMDDataHandlerABC):
 
     @classmethod
     def collect_data(cls, mmd_translation: "MMDTranslation"):
-        armature_object: bpy.types.Object = FnModel.find_armature_object(mmd_translation.id_data)
+        armature_object: bpy.types.Object = FnCore.find_armature_object(mmd_translation.id_data)
         pose_bone: bpy.types.PoseBone
         for index, pose_bone in enumerate(armature_object.pose.bones):
             if not any(c.is_visible for c in pose_bone.bone.collections):
@@ -279,7 +280,7 @@ class MMDMaterialHandler(MMDDataHandlerABC):
     def collect_data(cls, mmd_translation: "MMDTranslation"):
         checked_materials: Set[bpy.types.Material] = set()
         mesh_object: bpy.types.Object
-        for mesh_object in FnModel.iterate_mesh_objects(mmd_translation.id_data):
+        for mesh_object in FnCore.iterate_mesh_objects(mmd_translation.id_data):
             material: bpy.types.Material
             for index, material in enumerate(mesh_object.data.materials):
                 if material in checked_materials:
@@ -369,7 +370,7 @@ class MMDDisplayHandler(MMDDataHandlerABC):
 
     @classmethod
     def collect_data(cls, mmd_translation: "MMDTranslation"):
-        armature_object: bpy.types.Object = FnModel.find_armature_object(mmd_translation.id_data)
+        armature_object: bpy.types.Object = FnCore.find_armature_object(mmd_translation.id_data)
         bone_collection: bpy.types.BoneCollection
         for index, bone_collection in enumerate(armature_object.data.collections):
             mmd_translation_element: "MMDTranslationElement" = mmd_translation.translation_elements.add()
@@ -434,10 +435,10 @@ class MMDPhysicsHandler(MMDDataHandlerABC):
     def draw_item(cls, layout: bpy.types.UILayout, mmd_translation_element: "MMDTranslationElement", index: int):
         obj: bpy.types.Object = mmd_translation_element.object
 
-        if FnModel.is_rigid_body_object(obj):
+        if FnCore.is_rigid_body_object(obj):
             icon = "MESH_ICOSPHERE"
             mmd_object = obj.mmd_rigid
-        elif FnModel.is_joint_object(obj):
+        elif FnCore.is_joint_object(obj):
             icon = "CONSTRAINT"
             mmd_object = obj.mmd_joint
 
@@ -490,9 +491,9 @@ class MMDPhysicsHandler(MMDDataHandlerABC):
             if cls.check_data_visible(filter_selected, filter_visible, obj.select_get(), obj.hide_get()):
                 continue
 
-            if FnModel.is_rigid_body_object(obj):
+            if FnCore.is_rigid_body_object(obj):
                 mmd_object = obj.mmd_rigid
-            elif FnModel.is_joint_object(obj):
+            elif FnCore.is_joint_object(obj):
                 mmd_object = obj.mmd_joint
 
             if check_blank_name(mmd_object.name_j, mmd_object.name_e):
@@ -508,9 +509,9 @@ class MMDPhysicsHandler(MMDDataHandlerABC):
     def set_names(cls, mmd_translation_element: "MMDTranslationElement", name: Optional[str], name_j: Optional[str], name_e: Optional[str]):
         obj: bpy.types.Object = mmd_translation_element.object
 
-        if FnModel.is_rigid_body_object(obj):
+        if FnCore.is_rigid_body_object(obj):
             mmd_object = obj.mmd_rigid
-        elif FnModel.is_joint_object(obj):
+        elif FnCore.is_joint_object(obj):
             mmd_object = obj.mmd_joint
 
         if name is not None:
@@ -524,9 +525,9 @@ class MMDPhysicsHandler(MMDDataHandlerABC):
     def get_names(cls, mmd_translation_element: "MMDTranslationElement") -> Tuple[str, str, str]:
         obj: bpy.types.Object = mmd_translation_element.object
 
-        if FnModel.is_rigid_body_object(obj):
+        if FnCore.is_rigid_body_object(obj):
             mmd_object = obj.mmd_rigid
-        elif FnModel.is_joint_object(obj):
+        elif FnCore.is_joint_object(obj):
             mmd_object = obj.mmd_joint
 
         return (obj.name, mmd_object.name_j, mmd_object.name_e)
@@ -560,11 +561,11 @@ class MMDInfoHandler(MMDDataHandlerABC):
     def collect_data(cls, mmd_translation: "MMDTranslation"):
         root_object: bpy.types.Object = mmd_translation.id_data
         info_objects = [root_object]
-        armature_object = FnModel.find_armature_object(root_object)
+        armature_object = FnCore.find_armature_object(root_object)
         if armature_object is not None:
             info_objects.append(armature_object)
 
-        for info_object in itertools.chain(info_objects, FnModel.iterate_mesh_objects(root_object)):
+        for info_object in itertools.chain(info_objects, FnCore.iterate_mesh_objects(root_object)):
             mmd_translation_element: "MMDTranslationElement" = mmd_translation.translation_elements.add()
             mmd_translation_element.type = MMDTranslationElementType.INFO.name
             mmd_translation_element.object = info_object

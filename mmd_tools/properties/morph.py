@@ -30,7 +30,7 @@ def _morph_base_set_name(prop: "_MorphBase", value: str):
     if prop_name is not None:
         if morph_type == "vertex_morphs":
             kb_list = {}
-            for mesh in FnModel.iterate_mesh_objects(prop.id_data):
+            for mesh in FnCore.iterate_mesh_objects(prop.id_data):
                 for kb in getattr(mesh.data.shape_keys, "key_blocks", ()):
                     kb_list.setdefault(kb.name, []).append(kb)
 
@@ -41,7 +41,7 @@ def _morph_base_set_name(prop: "_MorphBase", value: str):
 
         elif morph_type == "uv_morphs":
             vg_list = {}
-            for mesh in FnModel.iterate_mesh_objects(prop.id_data):
+            for mesh in FnCore.iterate_mesh_objects(prop.id_data):
                 for vg, n, x in FnMorph.get_uv_morph_vertex_groups(mesh):
                     vg_list.setdefault(n, []).append(vg)
 
@@ -102,7 +102,7 @@ def _bone_morph_data_get_bone(prop: "BoneMorphData") -> str:
     if bone_id < 0:
         return ""
     root_object = prop.id_data
-    armature_object = FnModel.find_armature_object(root_object)
+    armature_object = FnCore.find_armature_object(root_object)
     if armature_object is None:
         return ""
     pose_bone = FnBone.find_pose_bone_by_bone_id(armature_object, bone_id)
@@ -113,7 +113,7 @@ def _bone_morph_data_get_bone(prop: "BoneMorphData") -> str:
 
 def _bone_morph_data_set_bone(prop: "BoneMorphData", value: str):
     root = prop.id_data
-    arm = FnModel.find_armature_object(root)
+    arm = FnCore.find_armature_object(root)
 
     # Load the library_override file. This function is triggered when loading, but the arm obj cannot be found.
     # The arm obj is exist, but the relative relationship has not yet been established.
@@ -204,7 +204,7 @@ def _material_morph_data_set_material(prop: "MaterialMorphData", value: str):
 
 
 def _material_morph_data_set_related_mesh(prop: "MaterialMorphData", value: str):
-    mesh = FnModel.find_mesh_object_by_name(prop.id_data, value)
+    mesh = FnCore.find_mesh_object_by_name(prop.id_data, value)
     if mesh is not None:
         prop["related_mesh_data"] = mesh.data
     else:

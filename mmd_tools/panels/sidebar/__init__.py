@@ -7,7 +7,7 @@ from typing import Optional
 import bpy
 
 from ...bpyutils import FnContext
-from ...core.model import FnModel
+from ...core import FnCore
 
 
 class FnDraw:
@@ -80,9 +80,9 @@ class UL_ObjectsMixIn:
         flt_neworder = list(range(len(objects)))
 
         if self.model_filter == "ACTIVE":
-            active_root = FnModel.find_root_object(context.active_object)
+            active_root = FnCore.find_root_object(context.active_object)
             for i, obj in enumerate(objects):
-                if obj.mmd_type == self.mmd_type and FnModel.find_root_object(obj) == active_root:
+                if obj.mmd_type == self.mmd_type and FnCore.find_root_object(obj) == active_root:
                     flt_flags[i] = self.bitflag_filter_item
         else:
             for i, obj in enumerate(objects):

@@ -4,7 +4,7 @@
 
 import bpy
 
-from ...core.model import FnModel
+from ...core import FnCore
 from . import PT_ProductionPanelBase
 
 
@@ -17,17 +17,17 @@ class MMDBoneOrder(PT_ProductionPanelBase, bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         active_obj = context.active_object
-        root = FnModel.find_root_object(active_obj)
+        root = FnCore.find_root_object(active_obj)
         if root is None:
             layout.label(text="Select a MMD Model")
             return
 
-        armature = FnModel.find_armature_object(root)
+        armature = FnCore.find_armature_object(root)
         if armature is None:
             layout.label(text="The armature object of active MMD model can't be found", icon="ERROR")
             return
 
-        bone_order_mesh_object = FnModel.find_bone_order_mesh_object(root)
+        bone_order_mesh_object = FnCore.find_bone_order_mesh_object(root)
         bone_count = MMD_TOOLS_UL_ModelBones.update_bone_tables(armature, bone_order_mesh_object)
 
         col = layout.column(align=True)
