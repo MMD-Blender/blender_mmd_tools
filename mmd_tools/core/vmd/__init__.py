@@ -13,10 +13,14 @@ class InvalidFileError(Exception):
 
 ## vmd仕様の文字列をstringに変換
 def _toShiftJisString(byteString):
+    name = byteString.split(b"\x00")[0]
     try:
-        name = byteString.split(b"\x00")[0].decode("shift_jis")
-    except UnicodeDecodeError:
-        name = byteString.split(b"\x00")[0].decode("utf-8")
+        name = name.decode("shift_jis")
+    except UnicodeDecodeError as error:
+        if error.args[0].endswith("incomplete multibyte sequence"):
+            name = name.decode("shift_jis", errors="replace")
+        else:
+            name = byteString.split(b"\x00")[0].decode("utf-8", errors="replace")
     return name
 
 
