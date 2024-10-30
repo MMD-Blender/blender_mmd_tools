@@ -113,13 +113,7 @@ class VPDImporter:
         if obj is None:
             return
         if obj.type == "ARMATURE":
-            with FnContext.temp_override_objects(
-                FnContext.ensure_context(),
-                active_object=obj,
-                selected_objects=[obj],
-            ):
-                bpy.ops.object.mode_set(mode="POSE")
-                self.__assignToArmature(obj)
+            self.__assignToArmature(obj)
         elif obj.type == "MESH":
             self.__assignToMesh(obj)
         else:
