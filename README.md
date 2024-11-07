@@ -1,3 +1,7 @@
+# このフォークについて
+Blender4.1からの機能を利用して、ドラッグアンドドロップでpmx等を読み込めるように機能追加したバージョンです。
+
+
 # MMD Tools
 MMD Tools is a blender addon for importing MMD (MikuMikuDance) model data (.pmd, .pmx), motion data (.vmd) and pose data (.vpd). Exporting model data (.pmx), motion data (.vmd) and pose data (.vpd) are supported as well.
 

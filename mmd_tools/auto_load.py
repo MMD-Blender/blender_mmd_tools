@@ -136,6 +136,7 @@ def get_register_base_types():
         "Node", "NodeSocket", "NodeTree",
         "UIList", "RenderEngine",
         "Gizmo", "GizmoGroup",
+        "FileHandler",
     ])
 
 
