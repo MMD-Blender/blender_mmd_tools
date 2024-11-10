@@ -9,7 +9,7 @@ from typing import Callable, Optional, Set
 
 import bpy
 
-from mmd_tools.bpyutils import FnContext
+from .bpyutils import FnContext
 
 
 ## 指定したオブジェクトのみを選択状態かつアクティブにする

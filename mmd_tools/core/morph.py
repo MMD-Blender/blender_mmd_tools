@@ -8,16 +8,15 @@ from typing import TYPE_CHECKING, Tuple, cast
 
 import bpy
 
-import mmd_tools
-from mmd_tools import bpyutils
-from mmd_tools.bpyutils import FnContext, FnObject, TransformConstraintOp
+from .. import bpyutils
+from ..bpyutils import FnContext, FnObject, TransformConstraintOp
 
 if TYPE_CHECKING:
-    import mmd_tools.core.model
+    from .model import Model
 
 
 class FnMorph:
-    def __init__(self, morph, model: "mmd_tools.core.model.Model"):
+    def __init__(self, morph, model: "Model"):
         self.__morph = morph
         self.__rig = model
 
@@ -309,7 +308,7 @@ class FnMorph:
 
 
 class _MorphSlider:
-    def __init__(self, model: "mmd_tools.core.model.Model"):
+    def __init__(self, model: "Model"):
         self.__rig = model
 
     def placeholder(self, create=False, binded=False):
@@ -342,7 +341,7 @@ class _MorphSlider:
             arm.parent = obj
             FnContext.link_object(FnContext.ensure_context(), arm)
 
-            from mmd_tools.core.bone import FnBone
+            from .bone import FnBone
 
             FnBone.setup_special_bone_collections(arm)
         return arm
@@ -435,7 +434,7 @@ class _MorphSlider:
                 if m.name.startswith("mmd_bind") and m.name not in names_in_use:
                     mesh_object.modifiers.remove(m)
 
-        from mmd_tools.core.shader import _MaterialMorph
+        from .shader import _MaterialMorph
 
         for m in rig.materials():
             if m and m.node_tree:
@@ -544,7 +543,7 @@ class _MorphSlider:
 
         bone_offset_map = {}
         with bpyutils.edit_object(arm) as data:
-            from mmd_tools.core.bone import FnBone
+            from .bone import FnBone
 
             edit_bones = data.edit_bones
 
@@ -675,7 +674,7 @@ class _MorphSlider:
             driver.expression = f"({__config_groups(variables, var.name, groups)})*{fvar.name}"
 
         # material morphs
-        from mmd_tools.core.shader import _MaterialMorph
+        from .shader import _MaterialMorph
 
         group_dict = material_offset_map.get("group_dict", {})
 
@@ -708,7 +707,7 @@ class _MorphSlider:
 class MigrationFnMorph:
     @staticmethod
     def update_mmd_morph():
-        from mmd_tools.core.material import FnMaterial
+        from .material import FnMaterial
 
         for root in bpy.data.objects:
             if root.mmd_type != "ROOT":

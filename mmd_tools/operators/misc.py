@@ -6,11 +6,11 @@ import re
 
 import bpy
 
-import mmd_tools.utils
-from mmd_tools.bpyutils import FnContext, FnObject
-from mmd_tools.core.bone import FnBone
-from mmd_tools.core.model import FnModel, Model
-from mmd_tools.core.morph import FnMorph
+from .. import utils
+from ..bpyutils import FnContext, FnObject
+from ..core.bone import FnBone
+from ..core.model import FnModel, Model
+from ..core.morph import FnMorph
 
 
 class SelectObject(bpy.types.Operator):
@@ -27,11 +27,11 @@ class SelectObject(bpy.types.Operator):
     )
 
     def execute(self, context):
-        mmd_tools.utils.selectAObject(context.scene.objects[self.name])
+        utils.selectAObject(context.scene.objects[self.name])
         return {"FINISHED"}
 
 
-class MoveObject(bpy.types.Operator, mmd_tools.utils.ItemMoveOp):
+class MoveObject(bpy.types.Operator, utils.ItemMoveOp):
     bl_idname = "mmd_tools.object_move"
     bl_label = "Move Object"
     bl_description = "Move active object up/down in the list"
@@ -43,7 +43,7 @@ class MoveObject(bpy.types.Operator, mmd_tools.utils.ItemMoveOp):
     def set_index(cls, obj, index):
         m = cls.__PREFIX_REGEXP.match(obj.name)
         name = m.group("name") if m else obj.name
-        obj.name = "%s_%s" % (mmd_tools.utils.int2base(index, 36, 3), name)
+        obj.name = "%s_%s" % (utils.int2base(index, 36, 3), name)
 
     @classmethod
     def get_name(cls, obj, prefix=None):
@@ -146,7 +146,7 @@ class SeparateByMaterials(bpy.types.Operator):
         return obj and obj.type == "MESH"
 
     def __separate_by_materials(self, obj):
-        mmd_tools.utils.separateByMaterials(obj)
+        utils.separateByMaterials(obj)
         if self.clean_shape_keys:
             bpy.ops.mmd_tools.clean_shape_keys()
 
@@ -172,7 +172,7 @@ class SeparateByMaterials(bpy.types.Operator):
 
             for morph in root.mmd_root.material_morphs:
                 FnMorph(morph, rig).update_mat_related_mesh()
-        mmd_tools.utils.clearUnusedMeshes()
+        utils.clearUnusedMeshes()
         return {"FINISHED"}
 
 
@@ -223,7 +223,7 @@ class JoinMeshes(bpy.types.Operator):
             active_mesh.active_shape_key_index = 0
         for morph in root.mmd_root.material_morphs:
             FnMorph(morph, rig).update_mat_related_mesh(active_mesh)
-        mmd_tools.utils.clearUnusedMeshes()
+        utils.clearUnusedMeshes()
         return {"FINISHED"}
 
 

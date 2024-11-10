@@ -11,20 +11,20 @@ from typing import TYPE_CHECKING, List, Optional
 import bpy
 from mathutils import Matrix, Vector
 
-from mmd_tools import bpyutils, utils
-from mmd_tools.bpyutils import FnContext
-from mmd_tools.core import pmx
-from mmd_tools.core.bone import FnBone
-from mmd_tools.core.material import FnMaterial
-from mmd_tools.core.model import FnModel, Model
-from mmd_tools.core.morph import FnMorph
-from mmd_tools.core.rigid_body import FnRigidBody
-from mmd_tools.core.vmd.importer import BoneConverter
-from mmd_tools.operators.misc import MoveObject
+from ... import bpyutils, utils
+from ...bpyutils import FnContext
+from .. import pmx
+from ..bone import FnBone
+from ..material import FnMaterial
+from ..model import FnModel, Model
+from ..morph import FnMorph
+from ..rigid_body import FnRigidBody
+from ..vmd.importer import BoneConverter
+from ...operators.misc import MoveObject
 
 if TYPE_CHECKING:
-    from mmd_tools.properties.pose_bone import MMDBone
-    from mmd_tools.properties.root import MMDRoot
+    from ...properties.pose_bone import MMDBone
+    from ...properties.root import MMDRoot
 
 
 class PMXImporter:
@@ -473,7 +473,7 @@ class PMXImporter:
     def __importRigids(self):
         start_time = time.time()
         self.__rigidTable = {}
-        context = bpyutils.FnContext.ensure_context()
+        context = FnContext.ensure_context()
         rigid_pool = FnRigidBody.new_rigid_body_objects(context, FnModel.ensure_rigid_group_object(context, self.__rig.rootObject()), len(self.__model.rigids))
         for i, (rigid, rigid_obj) in enumerate(zip(self.__model.rigids, rigid_pool)):
             loc = Vector(rigid.location).xzy * self.__scale
@@ -506,7 +506,7 @@ class PMXImporter:
 
     def __importJoints(self):
         start_time = time.time()
-        context = bpyutils.FnContext.ensure_context()
+        context = FnContext.ensure_context()
         joint_pool = FnRigidBody.new_joint_objects(context, FnModel.ensure_joint_group_object(context, self.__rig.rootObject()), len(self.__model.joints), FnModel.get_empty_display_size(self.__rig.rootObject()))
         for i, (joint, joint_obj) in enumerate(zip(self.__model.joints, joint_pool)):
             loc = Vector(joint.location).xzy * self.__scale

@@ -9,8 +9,8 @@ from typing import Dict, List, Optional, Set
 import bmesh
 import bpy
 
-from mmd_tools.bpyutils import FnContext
-from mmd_tools.core.model import FnModel, Model
+from ..bpyutils import FnContext
+from ..core.model import FnModel, Model
 
 
 class MessageException(Exception):

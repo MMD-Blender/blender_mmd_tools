@@ -6,14 +6,14 @@
 
 import bpy
 
-from mmd_tools import bpyutils
-from mmd_tools.core import rigid_body
-from mmd_tools.core.rigid_body import RigidBodyMaterial, FnRigidBody
-from mmd_tools.core.model import FnModel
-from mmd_tools.properties import patch_library_overridable
+from .. import bpyutils
+from ..core import rigid_body
+from ..core.rigid_body import RigidBodyMaterial, FnRigidBody
+from ..core.model import FnModel
+from . import patch_library_overridable
 
 
-def _updateCollisionGroup(prop, context):
+def _updateCollisionGroup(prop, _context):
     obj = prop.id_data
     materials = obj.data.materials
     if len(materials) == 0:
@@ -22,14 +22,14 @@ def _updateCollisionGroup(prop, context):
         obj.material_slots[0].material = RigidBodyMaterial.getMaterial(prop.collision_group_number)
 
 
-def _updateType(prop, context):
+def _updateType(prop, _context):
     obj = prop.id_data
     rb = obj.rigid_body
     if rb:
         rb.kinematic = int(prop.type) == rigid_body.MODE_STATIC
 
 
-def _updateShape(prop, context):
+def _updateShape(prop, _context):
     obj = prop.id_data
 
     if len(obj.data.vertices) > 0:

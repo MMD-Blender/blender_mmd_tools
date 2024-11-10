@@ -8,7 +8,7 @@ import time
 
 import bpy
 
-from mmd_tools.bpyutils import FnContext
+from .bpyutils import FnContext
 
 jp_half_to_full_tuples = (
     ("ｳﾞ", "ヴ"),

@@ -4,8 +4,8 @@
 
 import bpy
 
-from mmd_tools.core.model import FnModel
-from mmd_tools.panels.sidebar import PT_ProductionPanelBase, UL_ObjectsMixIn
+from ...core.model import FnModel
+from . import PT_ProductionPanelBase, UL_ObjectsMixIn
 
 
 class MMDJointSelectorPanel(PT_ProductionPanelBase, bpy.types.Panel):

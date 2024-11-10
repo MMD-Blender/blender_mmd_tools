@@ -2,16 +2,11 @@
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
-from typing import TYPE_CHECKING, cast
-
 import bpy
 
-from mmd_tools.bpyutils import FnContext
-from mmd_tools.core.bone import FnBone, MigrationFnBone
-from mmd_tools.core.model import FnModel, Model
-
-if TYPE_CHECKING:
-    from mmd_tools.properties.root import MMDRoot
+from ..bpyutils import FnContext
+from ..core.bone import FnBone, MigrationFnBone
+from ..core.model import FnModel, Model
 
 
 class MorphSliderSetup(bpy.types.Operator):
@@ -370,7 +365,7 @@ class ConvertToMMDModel(bpy.types.Operator):
                     continue
                 pose_bone.lock_location = (True, True, True)
 
-        from mmd_tools.core.material import FnMaterial
+        from ..core.material import FnMaterial
 
         FnMaterial.set_nodes_are_readonly(not self.convert_material_nodes)
         try:
@@ -388,7 +383,7 @@ class ConvertToMMDModel(bpy.types.Operator):
                     mmd_material.edge_color = line_color[:3] + [max(line_color[3], self.edge_alpha_min)]
         finally:
             FnMaterial.set_nodes_are_readonly(False)
-        from mmd_tools.operators.display_item import DisplayItemQuickSetup
+        from .display_item import DisplayItemQuickSetup
 
         FnBone.sync_display_item_frames_from_bone_collections(armature_object)
         mmd_model.initialDisplayFrames(reset=False)  # ensure default frames

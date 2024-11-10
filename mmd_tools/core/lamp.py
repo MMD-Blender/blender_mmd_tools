@@ -4,7 +4,7 @@
 
 import bpy
 
-from mmd_tools.bpyutils import FnContext, Props
+from ..bpyutils import FnContext, Props
 
 
 class MMDLamp:

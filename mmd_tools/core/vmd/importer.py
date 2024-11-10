@@ -10,15 +10,15 @@ from typing import Union
 import bpy
 from mathutils import Quaternion, Vector
 
-from mmd_tools import utils
-from mmd_tools.core import vmd
-from mmd_tools.core.camera import MMDCamera
-from mmd_tools.core.lamp import MMDLamp
+from ... import utils
+from .. import vmd
+from ..camera import MMDCamera
+from ..lamp import MMDLamp
 
 
 class _MirrorMapper:
     def __init__(self, data_map=None):
-        from mmd_tools.operators.view import FlipPose
+        from ...operators.view import FlipPose
 
         self.__data_map = data_map
         self.__flip_name = FlipPose.flip_name

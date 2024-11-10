@@ -10,9 +10,9 @@ from math import radians
 
 import mathutils
 
-import mmd_tools.core.pmd as pmd
-import mmd_tools.core.pmx as pmx
-import mmd_tools.core.pmx.importer as import_pmx
+from .. import pmd
+from .. import pmx
+from ..pmx import importer as import_pmx
 
 
 class PMDImporter:

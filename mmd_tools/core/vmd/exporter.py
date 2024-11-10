@@ -10,10 +10,10 @@ from typing import List, Optional, Set
 import bpy
 import mathutils
 
-from mmd_tools.core import vmd
-from mmd_tools.core.camera import MMDCamera
-from mmd_tools.core.lamp import MMDLamp
-from mmd_tools.core.vmd.importer import _FnBezier
+from .. import vmd
+from ..camera import MMDCamera
+from ..lamp import MMDLamp
+from ..vmd.importer import _FnBezier
 
 
 class _FCurve:

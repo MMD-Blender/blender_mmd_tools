@@ -5,8 +5,8 @@
 from bpy.props import BoolProperty, EnumProperty, FloatProperty
 from bpy.types import Operator
 
-from mmd_tools.bpyutils import FnContext
-from mmd_tools.core.camera import MMDCamera
+from ..bpyutils import FnContext
+from ..core.camera import MMDCamera
 
 
 class ConvertToMMDCamera(Operator):

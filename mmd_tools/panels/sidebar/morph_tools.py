@@ -4,11 +4,11 @@
 
 import bpy
 
-import mmd_tools.operators.morph
-from mmd_tools.core.model import FnModel, Model
-from mmd_tools.panels.sidebar import FnDraw, PT_ProductionPanelBase
-from mmd_tools.properties.morph import MaterialMorph
-from mmd_tools.utils import ItemOp
+from ...core.model import FnModel, Model
+from . import FnDraw, PT_ProductionPanelBase
+from ...properties.morph import MaterialMorph
+from ...utils import ItemOp
+from ...operators import morph as operators_morph
 
 
 class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
@@ -124,14 +124,14 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
             if base_mat_name == "":
                 row.label(text="This offset affects all materials", icon="INFO")
             else:
-                row.operator(mmd_tools.operators.morph.CreateWorkMaterial.bl_idname)
-                row.operator(mmd_tools.operators.morph.ClearTempMaterials.bl_idname, text="Clear")
+                row.operator(operators_morph.CreateWorkMaterial.bl_idname)
+                row.operator(operators_morph.ClearTempMaterials.bl_idname, text="Clear")
 
             row = c.row()
             row.prop(data, "offset_type", expand=True)
             r1 = row.row(align=True)
-            r1.operator(mmd_tools.operators.morph.InitMaterialOffset.bl_idname, text="", icon="TRIA_LEFT").target_value = 0
-            r1.operator(mmd_tools.operators.morph.InitMaterialOffset.bl_idname, text="", icon="TRIA_RIGHT").target_value = 1
+            r1.operator(operators_morph.InitMaterialOffset.bl_idname, text="", icon="TRIA_LEFT").target_value = 0
+            r1.operator(operators_morph.InitMaterialOffset.bl_idname, text="", icon="TRIA_RIGHT").target_value = 1
             row = c.row()
             row.column(align=True).prop(data, "diffuse_color", expand=True, slider=True)
             c1 = row.column(align=True)
@@ -150,8 +150,8 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
             c_mat.enabled = False
             c = col.column()
             row = c.row(align=True)
-            row.operator(mmd_tools.operators.morph.ApplyMaterialOffset.bl_idname, text="Apply")
-            row.operator(mmd_tools.operators.morph.ClearTempMaterials.bl_idname, text="Clear")
+            row.operator(operators_morph.ApplyMaterialOffset.bl_idname, text="Apply")
+            row.operator(operators_morph.ClearTempMaterials.bl_idname, text="Clear")
 
             row = c.row()
             row.prop(data, "offset_type")
@@ -179,9 +179,9 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
             return
 
         row = col.row(align=True)
-        row.operator(mmd_tools.operators.morph.ViewBoneMorph.bl_idname, text="View")
-        row.operator(mmd_tools.operators.morph.ApplyBoneMorph.bl_idname, text="Apply")
-        row.operator(mmd_tools.operators.morph.ClearBoneMorphView.bl_idname, text="Clear")
+        row.operator(operators_morph.ViewBoneMorph.bl_idname, text="View")
+        row.operator(operators_morph.ApplyBoneMorph.bl_idname, text="Apply")
+        row.operator(operators_morph.ClearBoneMorphView.bl_idname, text="Clear")
 
         col.label(text=bpy.app.translations.pgettext_iface("Bone Offsets (%d)") % len(morph.data))
         data = self._template_morph_offset_list(col, morph, "MMD_TOOLS_UL_BoneMorphOffsets")
@@ -192,9 +192,9 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
         row.prop_search(data, "bone", armature.pose, "bones")
         if data.bone:
             row = col.row(align=True)
-            row.operator(mmd_tools.operators.morph.SelectRelatedBone.bl_idname, text="Select")
-            row.operator(mmd_tools.operators.morph.EditBoneOffset.bl_idname, text="Edit")
-            row.operator(mmd_tools.operators.morph.ApplyBoneOffset.bl_idname, text="Update")
+            row.operator(operators_morph.SelectRelatedBone.bl_idname, text="Select")
+            row.operator(operators_morph.EditBoneOffset.bl_idname, text="Edit")
+            row.operator(operators_morph.ApplyBoneOffset.bl_idname, text="Update")
 
         row = col.row()
         row.column(align=True).prop(data, "location")
@@ -203,11 +203,11 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
     def _draw_uv_data(self, context, rig, col, morph):
         c = col.column(align=True)
         row = c.row(align=True)
-        row.operator(mmd_tools.operators.morph.ViewUVMorph.bl_idname, text="View")
-        row.operator(mmd_tools.operators.morph.ClearUVMorphView.bl_idname, text="Clear")
+        row.operator(operators_morph.ViewUVMorph.bl_idname, text="View")
+        row.operator(operators_morph.ClearUVMorphView.bl_idname, text="Clear")
         row = c.row(align=True)
-        row.operator(mmd_tools.operators.morph.EditUVMorph.bl_idname, text="Edit")
-        row.operator(mmd_tools.operators.morph.ApplyUVMorph.bl_idname, text="Apply")
+        row.operator(operators_morph.EditUVMorph.bl_idname, text="Edit")
+        row.operator(operators_morph.ApplyUVMorph.bl_idname, text="Apply")
 
         c = col.column()
         if len(morph.data):

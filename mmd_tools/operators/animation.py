@@ -4,7 +4,7 @@
 
 from bpy.types import Operator
 
-from mmd_tools import auto_scene_setup
+from .. import auto_scene_setup
 
 
 class SetFrameRange(Operator):

@@ -6,14 +6,14 @@
 
 import bpy
 
-from mmd_tools import utils
-from mmd_tools.bpyutils import FnContext
-from mmd_tools.core.material import FnMaterial
-from mmd_tools.core.model import FnModel
-from mmd_tools.core.sdef import FnSDEF
-from mmd_tools.properties import patch_library_overridable
-from mmd_tools.properties.morph import BoneMorph, GroupMorph, MaterialMorph, UVMorph, VertexMorph
-from mmd_tools.properties.translations import MMDTranslation
+from .. import utils
+from ..bpyutils import FnContext
+from ..core.material import FnMaterial
+from ..core.model import FnModel
+from ..core.sdef import FnSDEF
+from . import patch_library_overridable
+from .morph import BoneMorph, GroupMorph, MaterialMorph, UVMorph, VertexMorph
+from .translations import MMDTranslation
 
 
 def __driver_variables(constraint: bpy.types.Constraint, path: str, index=-1):

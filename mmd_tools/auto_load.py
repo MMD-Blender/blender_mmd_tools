@@ -18,11 +18,11 @@ blender_version = bpy.app.version
 modules = None
 ordered_classes = None
 
-def init():
+def init(package_name):
     global modules
     global ordered_classes
 
-    modules = get_all_submodules(Path(__file__).parent)
+    modules = get_all_submodules(Path(__file__).parent, package_name)
     ordered_classes = get_ordered_classes_to_register(modules)
 
 def register():
@@ -49,8 +49,8 @@ def unregister():
 # Import modules
 #################################################
 
-def get_all_submodules(directory):
-    return list(iter_submodules(directory, directory.name))
+def get_all_submodules(directory, package_name):
+    return list(iter_submodules(directory, package_name))
 
 def iter_submodules(path, package_name):
     for name in sorted(iter_submodule_names(path)):

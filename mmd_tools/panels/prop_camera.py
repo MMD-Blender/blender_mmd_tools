@@ -4,7 +4,7 @@
 
 from bpy.types import Panel
 
-from mmd_tools.core.camera import MMDCamera
+from ..core.camera import MMDCamera
 
 
 class MMDCameraPanel(Panel):

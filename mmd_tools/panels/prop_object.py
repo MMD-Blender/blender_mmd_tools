@@ -4,7 +4,7 @@
 
 import bpy
 
-from mmd_tools.core.model import FnModel
+from ..core.model import FnModel
 
 
 class MMDModelObjectPanel(bpy.types.Panel):

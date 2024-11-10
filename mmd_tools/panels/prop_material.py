@@ -4,7 +4,7 @@
 
 from bpy.types import Panel
 
-from mmd_tools.core.material import FnMaterial
+from ..core.material import FnMaterial
 
 
 class MMDMaterialPanel(Panel):

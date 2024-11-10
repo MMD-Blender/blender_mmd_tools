@@ -6,7 +6,7 @@ import math
 
 import bpy
 
-from mmd_tools.properties import patch_library_overridable
+from . import patch_library_overridable
 
 
 class MMDCamera(bpy.types.PropertyGroup):

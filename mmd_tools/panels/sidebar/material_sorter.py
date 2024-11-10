@@ -4,7 +4,7 @@
 
 import bpy
 
-from mmd_tools.panels.sidebar import PT_ProductionPanelBase
+from . import PT_ProductionPanelBase
 
 
 class MMDMaterialSorter(PT_ProductionPanelBase, bpy.types.Panel):

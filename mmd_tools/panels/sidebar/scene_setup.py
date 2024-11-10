@@ -4,7 +4,7 @@
 
 import bpy
 
-from mmd_tools.panels.sidebar import PT_PanelBase
+from . import PT_PanelBase
 
 
 class MMDToolsSceneSetupPanel(PT_PanelBase, bpy.types.Panel):

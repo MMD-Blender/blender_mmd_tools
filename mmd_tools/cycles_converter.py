@@ -6,7 +6,7 @@ from typing import Iterable, Optional
 
 import bpy
 
-from mmd_tools.core.shader import _NodeGroupUtils
+from .core.shader import _NodeGroupUtils
 
 
 def __switchToCyclesRenderEngine():

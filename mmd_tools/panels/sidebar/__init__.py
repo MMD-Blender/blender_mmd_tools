@@ -6,8 +6,8 @@ from typing import Optional
 
 import bpy
 
-from mmd_tools.bpyutils import FnContext
-from mmd_tools.core.model import FnModel
+from ...bpyutils import FnContext
+from ...core.model import FnModel
 
 
 class FnDraw:

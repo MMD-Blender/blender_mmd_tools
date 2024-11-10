@@ -10,14 +10,14 @@ from typing import TYPE_CHECKING, Callable, Dict, Optional, Set, Tuple
 
 import bpy
 
-from mmd_tools.core.model import FnModel, Model
-from mmd_tools.translations import DictionaryEnum
-from mmd_tools.utils import convertLRToName, convertNameToLR
+from ..translations import DictionaryEnum
+from ..utils import convertLRToName, convertNameToLR
+from .model import FnModel, Model
 
 if TYPE_CHECKING:
-    from mmd_tools.properties.morph import _MorphBase
-    from mmd_tools.properties.root import MMDRoot
-    from mmd_tools.properties.translations import MMDTranslation, MMDTranslationElement, MMDTranslationElementIndex
+    from ..properties.morph import _MorphBase
+    from ..properties.root import MMDRoot
+    from ..properties.translations import MMDTranslation, MMDTranslationElement, MMDTranslationElementIndex
 
 
 class MMDTranslationElementType(Enum):

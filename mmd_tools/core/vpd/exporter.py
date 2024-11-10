@@ -8,19 +8,19 @@ import os
 import bpy
 from mathutils import Matrix
 
-import mmd_tools.core.vmd.importer
-import mmd_tools.core.vpd
-from mmd_tools.bpyutils import FnContext
+from ..vmd import importer
+from .. import vpd
+from ...bpyutils import FnContext
 
 
 class VPDExporter:
     def __init__(self):
         self.__osm_name = None
         self.__scale = 1
-        self.__bone_util_cls = mmd_tools.core.vmd.importer.BoneConverter
+        self.__bone_util_cls = importer.BoneConverter
 
     def __exportVPDFile(self, filepath, bones=None, morphs=None):
-        vpd_file = mmd_tools.core.vpd.File()
+        vpd_file = vpd.File()
         vpd_file.osm_name = self.__osm_name
         if bones:
             vpd_file.bones = bones
@@ -55,7 +55,7 @@ class VPDExporter:
             location = converter.convert_location(b.location)
             w, x, y, z = b.matrix_basis.to_quaternion()
             w, x, y, z = converter.convert_rotation([x, y, z, w])
-            vpd_bones.append(mmd_tools.core.vpd.VpdBone(bone_name, location, [x, y, z, w]))
+            vpd_bones.append(vpd.VpdBone(bone_name, location, [x, y, z, w]))
         return vpd_bones
 
     def __exportPoseLib(self, armObj: bpy.types.Object, pose_type, filepath, use_pose_mode=False):
@@ -109,7 +109,7 @@ class VPDExporter:
         for i in key_blocks.values():
             if i.value == 0:
                 continue
-            vpd_morphs.append(mmd_tools.core.vpd.VpdMorph(i.name, i.value))
+            vpd_morphs.append(vpd.VpdMorph(i.name, i.value))
         return vpd_morphs
 
     def export(self, **args):
@@ -127,7 +127,7 @@ class VPDExporter:
         elif pose_type in {"ACTIVE", "ALL"}:
             use_pose_mode = args.get("use_pose_mode", False)
             if use_pose_mode:
-                self.__bone_util_cls = mmd_tools.core.vmd.importer.BoneConverterPoseMode
+                self.__bone_util_cls = importer.BoneConverterPoseMode
             self.__exportPoseLib(armature, pose_type, filepath, use_pose_mode)
         else:
             raise ValueError('Unknown pose type "{pose_type}"')

@@ -7,23 +7,23 @@ import logging
 import bpy
 from mathutils import Matrix
 
-import mmd_tools.core.vmd.importer
-import mmd_tools.core.vpd
-from mmd_tools.bpyutils import FnContext
+from ..vmd import importer
+from .. import vpd
+from ...bpyutils import FnContext
 
 
 class VPDImporter:
     def __init__(self, filepath, scale=1.0, bone_mapper=None, use_pose_mode=False):
         self.__pose_name = bpy.path.display_name_from_filepath(filepath)
-        self.__vpd_file = mmd_tools.core.vpd.File()
+        self.__vpd_file = vpd.File()
         self.__vpd_file.load(filepath=filepath)
         self.__scale = scale
         self.__bone_mapper = bone_mapper
         if use_pose_mode:
-            self.__bone_util_cls = mmd_tools.core.vmd.importer.BoneConverterPoseMode
+            self.__bone_util_cls = importer.BoneConverterPoseMode
             self.__assignToArmature = self.__assignToArmaturePoseMode
         else:
-            self.__bone_util_cls = mmd_tools.core.vmd.importer.BoneConverter
+            self.__bone_util_cls = importer.BoneConverter
             self.__assignToArmature = self.__assignToArmatureSimple
         logging.info("Loaded %s", self.__vpd_file)
 

@@ -5,7 +5,7 @@
 from bpy.props import FloatProperty
 from bpy.types import Operator
 
-from mmd_tools.core.lamp import MMDLamp
+from ..core.lamp import MMDLamp
 
 
 class ConvertToMMDLamp(Operator):

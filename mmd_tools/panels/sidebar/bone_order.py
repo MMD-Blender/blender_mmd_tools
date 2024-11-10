@@ -4,8 +4,8 @@
 
 import bpy
 
-from mmd_tools.core.model import FnModel
-from mmd_tools.panels.sidebar import PT_ProductionPanelBase
+from ...core.model import FnModel
+from . import PT_ProductionPanelBase
 
 
 class MMDBoneOrder(PT_ProductionPanelBase, bpy.types.Panel):

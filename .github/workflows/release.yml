@@ -22,11 +22,11 @@ jobs:
         run: rm -rf mmd_tools/typings
 
       - name: Create a zip
-        run: zip -r -9 mmd_tools-${GITHUB_REF_NAME}.zip mmd_tools/
+        run: (cd mmd_tools && find . -type f ! -path "*/.*" ! -path "*/__pycache__/*" -print | zip -9r "../mmd_tools-${GITHUB_REF_NAME}.zip" -@)
 
       - name: Create a Release
         id: create_release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: Release ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}

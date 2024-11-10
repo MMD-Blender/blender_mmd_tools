@@ -9,13 +9,14 @@ from typing import TYPE_CHECKING, Callable, Iterable, Optional, Tuple, cast
 import bpy
 from mathutils import Vector
 
-from mmd_tools.bpyutils import FnContext
-from mmd_tools.core.exceptions import MaterialNotFoundError
-from mmd_tools.core.shader import _NodeGroupUtils
+from ..bpyutils import FnContext
+from .exceptions import MaterialNotFoundError
+from .shader import _NodeGroupUtils
 
 if TYPE_CHECKING:
-    from mmd_tools.properties.material import MMDMaterial
+    from ..properties.material import MMDMaterial
 
+# TODO: use enum instead of constants
 SPHERE_MODE_OFF = 0
 SPHERE_MODE_MULT = 1
 SPHERE_MODE_ADD = 2

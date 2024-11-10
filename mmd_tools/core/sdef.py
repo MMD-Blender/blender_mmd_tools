@@ -8,7 +8,7 @@ import time
 import bpy
 from mathutils import Matrix, Vector
 
-from mmd_tools.bpyutils import FnObject
+from ..bpyutils import FnObject
 
 
 def _hash(v):

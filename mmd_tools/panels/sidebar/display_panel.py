@@ -5,9 +5,9 @@
 
 import bpy
 
-from mmd_tools.core.model import FnModel
-from mmd_tools.panels.sidebar import FnDraw, PT_ProductionPanelBase
-from mmd_tools.utils import ItemOp
+from ...core.model import FnModel
+from . import FnDraw, PT_ProductionPanelBase
+from ...utils import ItemOp
 
 
 class MMDDisplayItemsPanel(PT_ProductionPanelBase, bpy.types.Panel):

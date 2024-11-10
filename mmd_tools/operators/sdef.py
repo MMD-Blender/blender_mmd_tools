@@ -7,8 +7,8 @@ from typing import Set
 import bpy
 from bpy.types import Operator
 
-from mmd_tools.core.model import FnModel
-from mmd_tools.core.sdef import FnSDEF
+from ..core.model import FnModel
+from ..core.sdef import FnSDEF
 
 
 def _get_target_objects(context):

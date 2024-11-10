@@ -5,8 +5,8 @@
 from typing import cast
 import bpy
 
-from mmd_tools.core.bone import FnBone
-from mmd_tools.properties import patch_library_overridable
+from ..core.bone import FnBone
+from . import patch_library_overridable
 
 
 def _mmd_bone_update_additional_transform(prop: "MMDBone", context: bpy.types.Context):

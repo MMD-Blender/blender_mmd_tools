@@ -4,7 +4,7 @@
 
 from bpy.types import Panel
 
-from mmd_tools.core.lamp import MMDLamp
+from ..core.lamp import MMDLamp
 
 
 class MMDLampPanel(Panel):

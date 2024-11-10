@@ -4,11 +4,11 @@
 
 import bpy
 
-from mmd_tools import utils
-from mmd_tools.core.bone import FnBone
-from mmd_tools.core.material import FnMaterial
-from mmd_tools.core.model import FnModel, Model
-from mmd_tools.core.morph import FnMorph
+from .. import utils
+from ..core.bone import FnBone
+from ..core.material import FnMaterial
+from ..core.model import FnModel, Model
+from ..core.morph import FnMorph
 
 
 def _morph_base_get_name(prop: "_MorphBase") -> str:
@@ -221,7 +221,7 @@ def _material_morph_data_get_related_mesh(prop):
 def _material_morph_data_update_modifiable_values(prop: "MaterialMorphData", _context):
     if not prop.name.startswith("mmd_bind"):
         return
-    from mmd_tools.core.shader import _MaterialMorph
+    from ..core.shader import _MaterialMorph
 
     mat = prop["material_data"]
     if mat is not None:

@@ -12,15 +12,15 @@ import idprop
 import rna_prop_ui
 from mathutils import Vector
 
-from mmd_tools import MMD_TOOLS_VERSION, bpyutils
-from mmd_tools.bpyutils import FnContext, Props
-from mmd_tools.core import rigid_body
-from mmd_tools.core.morph import FnMorph
-from mmd_tools.core.rigid_body import MODE_DYNAMIC, MODE_DYNAMIC_BONE, MODE_STATIC
+from .. import MMD_TOOLS_VERSION, bpyutils
+from ..bpyutils import FnContext, Props
+from . import rigid_body
+from .morph import FnMorph
+from .rigid_body import MODE_DYNAMIC, MODE_DYNAMIC_BONE, MODE_STATIC
 
 if TYPE_CHECKING:
-    from properties.morph import MaterialMorphData
-    from properties.rigid_body import MMDRigidBody
+    from ..properties.morph import MaterialMorphData
+    from ..properties.rigid_body import MMDRigidBody
 
 
 class FnModel:
@@ -118,6 +118,7 @@ class FnModel:
     @staticmethod
     def find_mesh_object_by_name(root_object: bpy.types.Object, name: str) -> Optional[bpy.types.Object]:
         for o in FnModel.iterate_mesh_objects(root_object):
+            # TODO: consider o.data.name
             if o.name != name:
                 continue
             return o
@@ -600,7 +601,7 @@ class Model:
         setattr(armature_object, Props.show_in_front, True)
         setattr(armature_object, Props.display_type, "WIRE")
 
-        from mmd_tools.core.bone import FnBone
+        from .bone import FnBone
 
         FnBone.setup_special_bone_collections(armature_object)
 

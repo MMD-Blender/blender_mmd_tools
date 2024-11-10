@@ -14,15 +14,15 @@ import bmesh
 import bpy
 import mathutils
 
-from mmd_tools.bpyutils import FnContext
-from mmd_tools.core import pmx
-from mmd_tools.core.material import FnMaterial
-from mmd_tools.core.morph import FnMorph
-from mmd_tools.core.sdef import FnSDEF
-from mmd_tools.core.translations import FnTranslations
-from mmd_tools.core.vmd.importer import BoneConverter, BoneConverterPoseMode
-from mmd_tools.operators.misc import MoveObject
-from mmd_tools.utils import saferelpath
+from ...bpyutils import FnContext
+from .. import pmx
+from ..material import FnMaterial
+from ..morph import FnMorph
+from ..sdef import FnSDEF
+from ..translations import FnTranslations
+from ..vmd.importer import BoneConverter, BoneConverterPoseMode
+from ...operators.misc import MoveObject
+from ...utils import saferelpath
 
 
 class _Vertex:

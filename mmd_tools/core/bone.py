@@ -8,13 +8,13 @@ from typing import TYPE_CHECKING, Iterable, Optional, Set
 import bpy
 from mathutils import Vector
 
-from mmd_tools import bpyutils
-from mmd_tools.bpyutils import TransformConstraintOp
-import mmd_tools.utils
+from .. import bpyutils
+from ..bpyutils import TransformConstraintOp
+from ..utils import ItemOp
 
 if TYPE_CHECKING:
-    from mmd_tools.properties.root import MMDRoot, MMDDisplayItemFrame
-    from mmd_tools.properties.pose_bone import MMDBone
+    from ..properties.root import MMDRoot, MMDDisplayItemFrame
+    from ..properties.pose_bone import MMDBone
 
 
 def remove_constraint(constraints, name):
@@ -152,7 +152,7 @@ class FnBone:
         armature: bpy.types.Armature = armature_object.data
         bone_collections = armature.collections
 
-        from mmd_tools.core.model import FnModel
+        from .model import FnModel
 
         root_object: bpy.types.Object = FnModel.find_root_object(armature_object)
         mmd_root: MMDRoot = root_object.mmd_root
@@ -196,7 +196,7 @@ class FnBone:
         armature: bpy.types.Armature = armature_object.data
         bone_collections: bpy.types.BoneCollections = armature.collections
 
-        from mmd_tools.core.model import FnModel
+        from .model import FnModel
 
         root_object: bpy.types.Object = FnModel.find_root_object(armature_object)
         mmd_root: MMDRoot = root_object.mmd_root
@@ -217,7 +217,7 @@ class FnBone:
                 display_item_frame.name_e = bone_collection_name
             used_frame_index.add(display_item_frames.find(bone_collection_name))
 
-            mmd_tools.utils.ItemOp.resize(display_item_frame.data, len(bone_collection.bones))
+            ItemOp.resize(display_item_frame.data, len(bone_collection.bones))
             for display_item, bone in zip(display_item_frame.data, bone_collection.bones):
                 display_item.type = "BONE"
                 display_item.name = bone.name

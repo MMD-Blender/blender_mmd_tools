@@ -4,11 +4,11 @@
 
 import bpy
 
-from mmd_tools import utils
-from mmd_tools.core import material
-from mmd_tools.core.material import FnMaterial
-from mmd_tools.core.model import FnModel
-from mmd_tools.properties import patch_library_overridable
+from .. import utils
+from ..core import material
+from ..core.material import FnMaterial
+from ..core.model import FnModel
+from . import patch_library_overridable
 
 
 def _mmd_material_update_ambient_color(prop: "MMDMaterial", _context):

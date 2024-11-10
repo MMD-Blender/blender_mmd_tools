@@ -6,12 +6,12 @@ from typing import TYPE_CHECKING, cast
 
 import bpy
 
-from mmd_tools.core.model import FnModel, Model
-from mmd_tools.core.translations import MMD_DATA_TYPE_TO_HANDLERS, FnTranslations
-from mmd_tools.translations import DictionaryEnum
+from ..core.model import FnModel, Model
+from ..core.translations import MMD_DATA_TYPE_TO_HANDLERS, FnTranslations
+from ..translations import DictionaryEnum
 
 if TYPE_CHECKING:
-    from mmd_tools.properties.translations import MMDTranslation, MMDTranslationElement, MMDTranslationElementIndex
+    from ..properties.translations import MMDTranslation, MMDTranslationElement, MMDTranslationElementIndex
 
 
 class TranslateMMDModel(bpy.types.Operator):

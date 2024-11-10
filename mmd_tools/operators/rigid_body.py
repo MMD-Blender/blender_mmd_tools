@@ -8,11 +8,11 @@ from typing import Dict, Optional, Tuple, cast
 import bpy
 from mathutils import Euler, Vector
 
-from mmd_tools import utils
-from mmd_tools.bpyutils import FnContext, Props
-from mmd_tools.core import rigid_body
-from mmd_tools.core.model import FnModel, Model
-from mmd_tools.core.rigid_body import FnRigidBody
+from .. import utils
+from ..bpyutils import FnContext, Props
+from ..core import rigid_body
+from ..core.model import FnModel, Model
+from ..core.rigid_body import FnRigidBody
 
 
 class SelectRigidBody(bpy.types.Operator):

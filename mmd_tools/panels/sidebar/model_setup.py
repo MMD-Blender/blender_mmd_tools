@@ -6,9 +6,9 @@ import time
 
 import bpy
 
-from mmd_tools.core.model import FnModel
-from mmd_tools.core.sdef import FnSDEF
-from mmd_tools.panels.sidebar import PT_PanelBase
+from ...core.model import FnModel
+from ...core.sdef import FnSDEF
+from . import PT_PanelBase
 
 
 class MMDToolsModelSetupPanel(PT_PanelBase, bpy.types.Panel):
