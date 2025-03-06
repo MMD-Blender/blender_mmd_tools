@@ -42,7 +42,7 @@ def _morph_base_set_name(prop: "_MorphBase", value: str):
         elif morph_type == "uv_morphs":
             vg_list = {}
             for mesh in FnCore.iterate_mesh_objects(prop.id_data):
-                for vg, n, x in FnMorph.get_uv_morph_vertex_groups(mesh):
+                for vg, n, x in FnMorph.iterate_uv_morph_vertex_groups(mesh):
                     vg_list.setdefault(n, []).append(vg)
 
             if prop_name in vg_list:

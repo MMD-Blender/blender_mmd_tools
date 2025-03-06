@@ -6,14 +6,13 @@ import itertools
 import re
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import TYPE_CHECKING, Callable, Dict, Optional, Set, Tuple
+from typing import TYPE_CHECKING, Callable, Optional, Tuple
 
 import bpy
 
 from ..translations import DictionaryEnum
 from ..utils import convertLRToName, convertNameToLR
 from . import FnCore
-from .model import MMDModel
 
 if TYPE_CHECKING:
     from ..properties.morph import _MorphBase
@@ -278,7 +277,7 @@ class MMDMaterialHandler(MMDDataHandlerABC):
 
     @classmethod
     def collect_data(cls, mmd_translation: "MMDTranslation"):
-        checked_materials: Set[bpy.types.Material] = set()
+        checked_materials: set[bpy.types.Material] = set()
         mesh_object: bpy.types.Object
         for mesh_object in FnCore.iterate_mesh_objects(mmd_translation.id_data):
             material: bpy.types.Material
@@ -454,10 +453,9 @@ class MMDPhysicsHandler(MMDDataHandlerABC):
     @classmethod
     def collect_data(cls, mmd_translation: "MMDTranslation"):
         root_object: bpy.types.Object = mmd_translation.id_data
-        model = MMDModel(root_object)
 
         obj: bpy.types.Object
-        for obj in model.rigidBodies():
+        for obj in FnCore.iterate_rigid_body_objects(root_object):
             mmd_translation_element: "MMDTranslationElement" = mmd_translation.translation_elements.add()
             mmd_translation_element.type = MMDTranslationElementType.PHYSICS.name
             mmd_translation_element.object = obj
@@ -467,7 +465,7 @@ class MMDPhysicsHandler(MMDDataHandlerABC):
             mmd_translation_element.name_e = obj.mmd_rigid.name_e
 
         obj: bpy.types.Object
-        for obj in model.joints():
+        for obj in FnCore.iterate_joint_objects(root_object):
             mmd_translation_element: "MMDTranslationElement" = mmd_translation.translation_elements.add()
             mmd_translation_element.type = MMDTranslationElementType.PHYSICS.name
             mmd_translation_element.object = obj
@@ -610,7 +608,7 @@ class MMDInfoHandler(MMDDataHandlerABC):
         return (info_object.name, "", "")
 
 
-MMD_DATA_HANDLERS: Set[MMDDataHandlerABC] = {
+MMD_DATA_HANDLERS: set[type[MMDDataHandlerABC]] = {
     MMDBoneHandler,
     MMDMorphHandler,
     MMDMaterialHandler,
@@ -619,7 +617,7 @@ MMD_DATA_HANDLERS: Set[MMDDataHandlerABC] = {
     MMDInfoHandler,
 }
 
-MMD_DATA_TYPE_TO_HANDLERS: Dict[str, MMDDataHandlerABC] = {h.type_name: h for h in MMD_DATA_HANDLERS}
+MMD_DATA_TYPE_TO_HANDLERS: dict[str, type[MMDDataHandlerABC]] = {h.type_name: h for h in MMD_DATA_HANDLERS}
 
 
 class FnTranslations:
@@ -629,7 +627,7 @@ class FnTranslations:
         mmd_translation_element_index: "MMDTranslationElementIndex"
         for mmd_translation_element_index in mmd_translation.filtered_translation_element_indices:
             mmd_translation_element: "MMDTranslationElement" = mmd_translation.translation_elements[mmd_translation_element_index.value]
-            handler: MMDDataHandlerABC = MMD_DATA_TYPE_TO_HANDLERS[mmd_translation_element.type]
+            handler: type[MMDDataHandlerABC] = MMD_DATA_TYPE_TO_HANDLERS[mmd_translation_element.type]
             name, name_j, name_e = handler.get_names(mmd_translation_element)
             handler.set_names(
                 mmd_translation_element,
@@ -639,7 +637,7 @@ class FnTranslations:
             )
 
     @staticmethod
-    def execute_translation_batch(root_object: bpy.types.Object) -> Tuple[Dict[str, str], Optional[bpy.types.Text]]:
+    def execute_translation_batch(root_object: bpy.types.Object) -> Tuple[dict[str, str], Optional[bpy.types.Text]]:
         mmd_translation: "MMDTranslation" = root_object.mmd_root.translation
         batch_operation_script = mmd_translation.batch_operation_script
         if not batch_operation_script:

@@ -3,12 +3,26 @@
 # This file is part of MMD Tools.
 
 
+import dataclasses
 import itertools
 from typing import Callable, Dict, Iterator, Optional, TypeGuard, cast
 
 import bpy
 
 from ..bpyutils import FnContext
+
+
+@dataclasses.dataclass
+class MMDModelObjects:
+    """
+    A data class that holds the objects of an MMD model.
+    """
+
+    root_object: bpy.types.Object
+    armature_object: bpy.types.Object
+    rigid_group_object: bpy.types.Object
+    joint_group_object: bpy.types.Object
+    temporary_group_object: bpy.types.Object
 
 
 class FnCore:
@@ -24,7 +38,7 @@ class FnCore:
     -----------------
     The MMD model hierarchy consists of the following objects:
 
-    - Root Object: The root object of the model.
+    - Root Object: The root object of the model. The typical object name is MMD Model name.
         - Armature Object: The armature object of the model.
             - Mesh Objects: The mesh objects of the model.
         - Rigid Group Object: The rigid group object of the model.
@@ -33,7 +47,8 @@ class FnCore:
             - Joint Objects: The joint objects of the model.
         - Temporary Group Object: The temporary group object of the model.
             - Temporary Objects: The temporary objects of the model.
-        - Placeholder Object: The placeholder object of the model.
+        - Placeholder Mesh Object: The placeholder mesh object of the model.
+            - Placeholder Armature Object: The placeholder armature object of the model.
 
     Object Types:
     -------------
@@ -51,7 +66,8 @@ class FnCore:
     | Joint Objects          | EMPTY    | JOINT               |
     | Temporary Group Object | EMPTY    | TEMPORARY_GRP_OBJ   |
     | Temporary Objects      | EMPTY    | TRACK_TARGET, ...   |
-    | Placeholder Object     | MESH     | PLACEHOLDER         |
+    | Placeholder Mesh Object | MESH     | PLACEHOLDER         |
+    | Placeholder Armature Object | ARMATURE | PLACEHOLDER    |
     +------------------------+----------+---------------------+
     """
 
@@ -82,10 +98,7 @@ class FnCore:
         Returns:
             Optional[bpy.types.Object]: The armature object of the model. If the model does not have an armature, None is returned.
         """
-        for o in root_object.children:
-            if o.type == "ARMATURE":
-                return o
-        return None
+        return next((o for o in root_object.children if o.type == "ARMATURE" and o.mmd_type == "NONE"), None)
 
     @staticmethod
     def find_rigid_group_object(root_object: bpy.types.Object) -> Optional[bpy.types.Object]:
@@ -100,10 +113,7 @@ class FnCore:
         Returns:
             Optional[bpy.types.Object]: The rigid group object of the model. If the model does not have a rigid group object, None is returned.
         """
-        for o in root_object.children:
-            if o.type == "EMPTY" and o.mmd_type == "RIGID_GRP_OBJ":
-                return o
-        return None
+        return next((o for o in root_object.children if o.type == "EMPTY" and o.mmd_type == "RIGID_GRP_OBJ"), None)
 
     @staticmethod
     def ensure_rigid_group_object(context: bpy.types.Context, root_object: bpy.types.Object) -> bpy.types.Object:
@@ -134,10 +144,7 @@ class FnCore:
             Optional[bpy.types.Object]: The joint group object if found, otherwise None.
 
         """
-        for o in root_object.children:
-            if o.type == "EMPTY" and o.mmd_type == "JOINT_GRP_OBJ":
-                return o
-        return None
+        return next((o for o in root_object.children if o.type == "EMPTY" and o.mmd_type == "JOINT_GRP_OBJ"), None)
 
     @staticmethod
     def ensure_joint_group_object(context: bpy.types.Context, root_object: bpy.types.Object) -> bpy.types.Object:
@@ -167,10 +174,7 @@ class FnCore:
         Returns:
             Optional[bpy.types.Object]: The temporary group object if found, otherwise None.
         """
-        for o in root_object.children:
-            if o.type == "EMPTY" and o.mmd_type == "TEMPORARY_GRP_OBJ":
-                return o
-        return None
+        return next((o for o in root_object.children if o.type == "EMPTY" and o.mmd_type == "TEMPORARY_GRP_OBJ"), None)
 
     @staticmethod
     def ensure_temporary_group_object(context: bpy.types.Context, root_object: bpy.types.Object) -> bpy.types.Object:
@@ -205,7 +209,7 @@ class FnCore:
             return None
 
         # TODO: consistency issue
-        return next(filter(lambda o: o.type == "MESH" and "mmd_bone_order_override" in o.modifiers, armature_object.children), None)
+        return next((o for o in armature_object.children if o.type == "MESH" and "mmd_bone_order_override" in o.modifiers), None)
 
     @staticmethod
     def find_mesh_object_by_name(root_object: bpy.types.Object, name: str) -> Optional[bpy.types.Object]:
@@ -238,15 +242,12 @@ class FnCore:
         Returns:
             Optional[bpy.types.Object]: The mesh object if found, otherwise None.
         """
-        for i, o in enumerate(FnCore.iterate_mesh_objects(root_object)):
-            if i == index:
-                return o
-        return None
+        return next((o for i, o in enumerate(FnCore.iterate_mesh_objects(root_object)) if i == index), None)
 
     @staticmethod
     def find_mesh_object_index_by_name(root_object: bpy.types.Object, name: str) -> int:
         """
-        Get the index of a mesh object by name.
+        Find the index of a mesh object by name.
 
         Args:
             root_object (bpy.types.Object): The root object to search for the mesh object.
@@ -255,11 +256,34 @@ class FnCore:
         Returns:
             int: The index of the mesh object if found, otherwise -1.
         """
-        for i, o in enumerate(FnCore.iterate_mesh_objects(root_object)):
-            # TODO: consider o.data.name
-            if o.name == name:
-                return i
-        return -1
+        # TODO: consider o.data.name
+        return next((i for i, o in enumerate(FnCore.iterate_mesh_objects(root_object)) if o.name == name), -1)
+
+    @staticmethod
+    def find_placeholder_mesh_object(root_object: bpy.types.Object) -> Optional[bpy.types.Object]:
+        """
+        Find the placeholder mesh object of the model.
+
+        Args:
+            root_object (bpy.types.Object): The root object to search for the placeholder mesh object.
+
+        Returns:
+            Optional[bpy.types.Object]: The placeholder mesh object if found, otherwise None.
+        """
+        return next((o for o in root_object.children if o.type == "MESH" and o.mmd_type == "PLACEHOLDER"), None)
+
+    @staticmethod
+    def find_placeholder_armature_object(placeholder_mesh_object: bpy.types.Object) -> Optional[bpy.types.Object]:
+        """
+        Find the placeholder armature object of the model.
+
+        Args:
+            placeholder_mesh_object (bpy.types.Object): The placeholder mesh object to search for the placeholder armature object.
+
+        Returns:
+            Optional[bpy.types.Object]: The placeholder armature object if found, otherwise None.
+        """
+        return next((o for o in placeholder_mesh_object.children if o.type == "ARMATURE" and o.mmd_type == "PLACEHOLDER"), None)
 
     @staticmethod
     def iterate_child_objects(target_object: bpy.types.Object) -> Iterator[bpy.types.Object]:
@@ -402,6 +426,19 @@ class FnCore:
         return target_object is not None and target_object.mmd_type == "ROOT"
 
     @staticmethod
+    def is_rigid_group_object(target_object: Optional[bpy.types.Object]) -> TypeGuard[bpy.types.Object]:
+        """
+        Check if the object is a rigid group object.
+
+        Args:
+            target_object (Optional[bpy.types.Object]): The object to check.
+
+        Returns:
+            TypeGuard[bpy.types.Object]: True if the object is a rigid group object, otherwise False.
+        """
+        return target_object is not None and target_object.mmd_type == "RIGID_GRP_OBJ"
+
+    @staticmethod
     def is_rigid_body_object(target_object: Optional[bpy.types.Object]) -> TypeGuard[bpy.types.Object]:
         """
         Check if the object is a rigid body object.
@@ -413,6 +450,19 @@ class FnCore:
             TypeGuard[bpy.types.Object]: True if the object is a rigid body object, otherwise False.
         """
         return target_object is not None and target_object.mmd_type == "RIGID_BODY"
+
+    @staticmethod
+    def is_joint_group_object(target_object: Optional[bpy.types.Object]) -> TypeGuard[bpy.types.Object]:
+        """
+        Check if the object is a joint group object.
+
+        Args:
+            target_object (Optional[bpy.types.Object]): The object to check.
+
+        Returns:
+            TypeGuard[bpy.types.Object]: True if the object is a joint group object, otherwise False.
+        """
+        return target_object is not None and target_object.mmd_type == "JOINT_GRP_OBJ"
 
     @staticmethod
     def is_joint_object(target_object: Optional[bpy.types.Object]) -> TypeGuard[bpy.types.Object]:
@@ -452,6 +502,19 @@ class FnCore:
             TypeGuard[bpy.types.Object]: True if the object is a mesh object, otherwise False.
         """
         return target_object is not None and target_object.type == "MESH" and target_object.mmd_type == "NONE"
+
+    @staticmethod
+    def is_placeholder_object(target_object: Optional[bpy.types.Object]) -> TypeGuard[bpy.types.Object]:
+        """
+        Check if the object is a placeholder object.
+
+        Args:
+            target_object (Optional[bpy.types.Object]): The object to check.
+
+        Returns:
+            TypeGuard[bpy.types.Object]: True if the object is a placeholder object, otherwise False.
+        """
+        return target_object is not None and target_object.type == "MESH" and target_object.mmd_type == "PLACEHOLDER"
 
     @staticmethod
     def __new_group_object(context: bpy.types.Context, name: str, mmd_type: str, parent: bpy.types.Object) -> bpy.types.Object:

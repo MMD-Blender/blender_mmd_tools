@@ -282,10 +282,12 @@ class FnObject:
         key: bpy.types.Key = shape_key.id_data
         assert key == mesh_object.data.shape_keys
 
+        shape_key_path = shape_key.path_from_id()
+
         if mesh_object.animation_data is not None:
             fc_curve: bpy.types.FCurve
             for fc_curve in mesh_object.animation_data.drivers:
-                if not fc_curve.data_path.startswith(shape_key.path_from_id()):
+                if not fc_curve.data_path.startswith(shape_key_path):
                     continue
                 mesh_object.driver_remove(fc_curve.data_path)
 

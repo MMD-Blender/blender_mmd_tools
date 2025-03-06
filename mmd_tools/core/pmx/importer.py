@@ -17,7 +17,7 @@ from ...operators.misc import MoveObject
 from .. import FnCore, pmx
 from ..bone import FnBone
 from ..material import FnMaterial
-from ..model import FnModel, MMDModel
+from ..model import FnModel
 from ..morph import FnMorph
 from ..rigid_body import FnRigidBody
 from ..vmd.importer import BoneConverter
@@ -83,20 +83,20 @@ class PMXImporter:
         """Create main objects and link them to scene."""
         pmxModel = self.__model
         obj_name = self.__safe_name(bpy.path.display_name(pmxModel.filepath), max_length=54)
-        self.__rig = MMDModel.create(pmxModel.name, pmxModel.name_e, self.__scale, obj_name)
-        root = self.__rig.rootObject()
-        mmd_root: MMDRoot = root.mmd_root
-        self.__root = root
-        self.__armObj = self.__rig.armature()
+        root_object = FnModel.new_model(pmxModel.name, pmxModel.name_e, self.__scale, obj_name)
+        self.__root = root_object
+        self.__armObj = FnCore.find_armature_object(root_object)
 
-        root["import_folder"] = os.path.dirname(pmxModel.filepath)
+        root_object["import_folder"] = os.path.dirname(pmxModel.filepath)
 
+        mmd_root: MMDRoot = root_object.mmd_root
         txt = bpy.data.texts.new(obj_name)
         txt.from_string(pmxModel.comment.replace("\r", ""))
         mmd_root.comment_text = txt.name
-        txt = bpy.data.texts.new(obj_name + "_e")
-        txt.from_string(pmxModel.comment_e.replace("\r", ""))
-        mmd_root.comment_e_text = txt.name
+
+        txt_e = bpy.data.texts.new(obj_name + "_e")
+        txt_e.from_string(pmxModel.comment_e.replace("\r", ""))
+        mmd_root.comment_e_text = txt_e.name
 
     def __createMeshObject(self):
         model_name = self.__root.name

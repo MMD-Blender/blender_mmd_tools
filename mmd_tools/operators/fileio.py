@@ -12,12 +12,13 @@ import bpy
 from bpy.types import Operator, OperatorFileListElement
 from bpy_extras.io_utils import ExportHelper, ImportHelper
 
+from core.morph import FnMorph
+
 from .. import auto_scene_setup
 from ..bpyutils import FnContext
 from ..core import FnCore
 from ..core.camera import MMDCamera
 from ..core.lamp import MMDLamp
-from ..core.model import MMDModel
 from ..core.pmd import importer as pmd_importer
 from ..core.pmx import exporter as pmx_exporter
 from ..core.pmx import importer as pmx_importer
@@ -34,6 +35,25 @@ LOG_LEVEL_ITEMS = [
     ("WARNING", "2. WARNING", "", 3),
     ("ERROR", "1. ERROR", "", 4),
 ]
+
+
+def __expand_selected_objects(selected_objects: set[bpy.types.Object]) -> set[bpy.types.Object]:
+    results = selected_objects.copy()
+    for obj in selected_objects:
+        if not FnCore.is_root_object(obj):
+            continue
+
+        armature_object = FnCore.find_armature_object(obj)
+        if armature_object is not None:
+            results.add(armature_object)
+
+        placeholder_object = FnMorph.get_morph_slider(obj).placeholder()
+        if placeholder_object is not None:
+            results.add(placeholder_object)
+
+        results |= set(FnCore.iterate_mesh_objects(obj))
+
+    return results
 
 
 def log_handler(log_level, filepath=None):
@@ -313,14 +333,7 @@ class ImportVmd(Operator, ImportHelper):
         layout.prop(self, "update_scene_settings")
 
     def execute(self, context):
-        selected_objects = set(context.selected_objects)
-        for i in frozenset(selected_objects):
-            root = FnCore.find_root_object(i)
-            if root == i:
-                rig = MMDModel(root)
-                selected_objects.add(rig.armature())
-                selected_objects.add(rig.morph_slider.placeholder())
-                selected_objects |= set(rig.meshes())
+        selected_objects = __expand_selected_objects(set(context.selected_objects))
 
         bone_mapper = None
         if self.bone_mapper == "PMX":
@@ -421,14 +434,7 @@ class ImportVpd(Operator, ImportHelper):
         layout.prop(self, "use_pose_mode")
 
     def execute(self, context):
-        selected_objects = set(context.selected_objects)
-        for i in frozenset(selected_objects):
-            root = FnCore.find_root_object(i)
-            if root == i:
-                rig = MMDModel(root)
-                selected_objects.add(rig.armature())
-                selected_objects.add(rig.morph_slider.placeholder())
-                selected_objects |= set(rig.meshes())
+        selected_objects = __expand_selected_objects(set(context.selected_objects))
 
         bone_mapper = None
         if self.bone_mapper == "PMX":

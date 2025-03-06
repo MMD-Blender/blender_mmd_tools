@@ -4,7 +4,7 @@
 
 import itertools
 import logging
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, Optional, Set, TypeGuard, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, Iterable, Iterator, Optional, Set, Union, cast
 
 import bpy
 import idprop
@@ -460,7 +460,7 @@ class MigrationFnModel:
             root_object["mmd_tools_version"] = "2.8.0"
 
 
-class MMDModel:
+class _MMDModel:
     """
     MMD Model class
     """
@@ -479,7 +479,7 @@ class MMDModel:
         return FnMorph.get_morph_slider(self)
 
     def loadMorphs(self):
-        FnMorph.load_morphs(self)
+        FnMorph.__load_morphs(self)
 
     def allObjects(self, obj: Optional[bpy.types.Object] = None) -> Iterator[bpy.types.Object]:
         if obj is None:

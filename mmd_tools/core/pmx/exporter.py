@@ -1033,7 +1033,7 @@ class __PmxExporter:
         else:
             get_vertex_order = lambda x: None
 
-        uv_morph_names = {g.index: (n, x) for g, n, x in FnMorph.get_uv_morph_vertex_groups(meshObj)}
+        uv_morph_names = {g.index: (n, x) for g, n, x in FnMorph.iterate_uv_morph_vertex_groups(meshObj)}
 
         def get_uv_offsets(v):
             uv_offsets = {}

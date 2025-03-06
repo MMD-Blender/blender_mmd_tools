@@ -147,7 +147,7 @@ class CopyMorph(bpy.types.Operator):
         elif morph_type.startswith("uv"):
             if morph.data_type == "VERTEX_GROUP":
                 for obj in FnCore.iterate_mesh_objects(root):
-                    FnMorph.copy_uv_morph_vertex_groups(obj, name_orig, name_tmp)
+                    FnMorph.copy_uv_morph_vertex_groups(context, obj, name_orig, name_tmp)
 
         morph_new, mmd_root.active_morph = ItemOp.add_after(morphs, mmd_root.active_morph)
         for k, v in morph.items():
@@ -239,7 +239,7 @@ class RemoveMorphOffset(bpy.types.Operator):
         if self.all:
             if morph_type.startswith("vertex"):
                 for obj in FnCore.iterate_mesh_objects(root):
-                    FnMorph.remove_shape_key(obj, morph.name)
+                    FnMorph.remove_shape_key_by_name(obj, morph.name)
                 return {"FINISHED"}
             elif morph_type.startswith("uv"):
                 if morph.data_type == "VERTEX_GROUP":
