@@ -471,7 +471,7 @@ class VMDImporter:
                     bone = pose_bones.get(ikName, None)
                     if not bone:
                         continue
-                    bone.mmd_ik_toggle = enable
+
                     self.__keyframe_insert(action.fcurves, f'pose.bones["{bone.name}"].mmd_ik_toggle', frame, enable)
 
         self.__assign_action(armObj, action)
