@@ -101,7 +101,7 @@ def select_object(obj: bpy.types.Object, objects: Optional[List[bpy.types.Object
        with select_object(obj):
            some functions...
     """
-    # TODO: reimplement with bpy.context.temp_override
+    # TODO: Reimplement with bpy.context.temp_override (If it ain't broke, don't fix it.)
     return __SelectObjects(obj, objects)
 
 
