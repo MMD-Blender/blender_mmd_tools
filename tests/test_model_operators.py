@@ -2,7 +2,7 @@ import unittest
 
 import bpy
 
-from mmd_tools.core.model import Model
+from bl_ext.user_default.mmd_tools.core.model import Model
 
 # Usage: blender --background -noaudio --python tests/test_model_operators.py -- --verbose
 
@@ -23,6 +23,10 @@ class ModelOperatorsTest(unittest.TestCase):
         """
         We should start each test with a clean state
         """
+        # Ensure active object exists (user may have deleted the default cube)
+        if not bpy.context.active_object:
+            bpy.ops.mesh.primitive_cube_add()
+
         bpy.ops.object.mode_set(mode='OBJECT')
         bpy.ops.object.select_all(action='SELECT')
         bpy.ops.object.delete(use_global=True)
