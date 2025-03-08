@@ -607,12 +607,26 @@ class Model:
 
         if add_root_bone:
             bone_name = "全ての親"
+            bone_name_english = "Root"
+
+            # Create the root bone
             with bpyutils.edit_object(armature_object) as data:
                 bone = data.edit_bones.new(name=bone_name)
-                bone.head = [0.0, 0.0, 0.0]
-                bone.tail = [0.0, 0.0, getattr(root, Props.empty_display_size)]
-            armature_object.pose.bones[bone_name].mmd_bone.name_j = bone_name
-            armature_object.pose.bones[bone_name].mmd_bone.name_e = "Root"
+                bone.head = (0.0, 0.0, 0.0)
+                bone.tail = (0.0, 0.0, getattr(root, Props.empty_display_size))
+
+            # Set MMD bone properties
+            pose_bone = armature_object.pose.bones[bone_name]
+            pose_bone.mmd_bone.name_j = bone_name
+            pose_bone.mmd_bone.name_e = bone_name_english
+
+            # Create a bone collection named "Root"
+            bone_collection_name = bone_name_english
+            bone_collection = armature_object.data.collections.new(name=bone_collection_name)
+
+            # Assign the new bone to the bone collection
+            data_bone = armature_object.data.bones[bone_name]
+            bone_collection.assign(data_bone)
 
         FnContext.set_active_and_select_single_object(context, root)
         return Model(root)

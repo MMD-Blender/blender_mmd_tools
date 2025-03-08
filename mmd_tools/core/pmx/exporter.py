@@ -376,7 +376,12 @@ class __PmxExporter:
 
                 pmx_bone.location = __to_pmx_location(p_bone.head)
                 pmx_bone.parent = bone.parent
-                pmx_bone.visible = not bone.hide and any(c.is_visible for c in bone.collections)
+                # Determine bone visibility: visible if not hidden and either has no collections or belongs to at least one visible collection
+                # This logic is the same as Blender's
+                pmx_bone.visible = (
+                    not bone.hide
+                    and (not bone.collections or any(collection.is_visible for collection in bone.collections))
+                )
                 pmx_bone.isControllable = mmd_bone.is_controllable
                 pmx_bone.isMovable = not all(p_bone.lock_location)
                 pmx_bone.isRotatable = not all(p_bone.lock_rotation)
