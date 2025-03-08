@@ -112,16 +112,19 @@ class FnModel:
         if armature_object is None:
             return None
 
-        # TODO consistency issue
-        return next(filter(lambda o: o.type == "MESH" and "mmd_bone_order_override" in o.modifiers, armature_object.children), None)
+        for o in armature_object.children:
+            if o.type == "MESH" and "mmd_bone_order_override" in o.modifiers:
+                return o
+        return None
 
     @staticmethod
     def find_mesh_object_by_name(root_object: bpy.types.Object, name: str) -> Optional[bpy.types.Object]:
+        if not name:
+            return None
+            
         for o in FnModel.iterate_mesh_objects(root_object):
-            # TODO: consider o.data.name
-            if o.name != name:
-                continue
-            return o
+            if o.name == name or (hasattr(o.data, 'name') and o.data.name == name):
+                return o
         return None
 
     @staticmethod

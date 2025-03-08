@@ -294,7 +294,10 @@ class ApplyMaterialOffset(bpy.types.Operator):
         morph = mmd_root.material_morphs[mmd_root.active_morph]
         mat_data = morph.data[morph.active_data]
 
-        meshObj = FnModel.find_mesh_object_by_name(mat_data.related_mesh)
+        if not mat_data.related_mesh:
+            self.report({"ERROR"}, "You need to choose a Related Mesh first")
+            return {"CANCELLED"}
+        meshObj = FnModel.find_mesh_object_by_name(morph.id_data, mat_data.related_mesh)
         if meshObj is None:
             self.report({"ERROR"}, "The model mesh can't be found")
             return {"CANCELLED"}
@@ -355,7 +358,10 @@ class CreateWorkMaterial(bpy.types.Operator):
         morph = mmd_root.material_morphs[mmd_root.active_morph]
         mat_data = morph.data[morph.active_data]
 
-        meshObj = FnModel.find_mesh_object_by_name(mat_data.related_mesh)
+        if not mat_data.related_mesh:
+            self.report({"ERROR"}, "You need to choose a Related Mesh first")
+            return {"CANCELLED"}
+        meshObj = FnModel.find_mesh_object_by_name(morph.id_data, mat_data.related_mesh)
         if meshObj is None:
             self.report({"ERROR"}, "The model mesh can't be found")
             return {"CANCELLED"}
