@@ -19,6 +19,7 @@ def selectAObject(obj):
     except Exception:
         pass
     bpy.ops.object.select_all(action="DESELECT")
+    FnContext.select_object(FnContext.ensure_context(), obj)
     FnContext.set_active_object(FnContext.ensure_context(), obj)
 
 
