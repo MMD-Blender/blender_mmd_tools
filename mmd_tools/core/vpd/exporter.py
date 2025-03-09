@@ -61,8 +61,10 @@ class VPDExporter:
     def __exportPoseLib(self, armObj: bpy.types.Object, pose_type, filepath, use_pose_mode=False):
         if armObj is None:
             return None
-        # FIXME: armObj.pose_library is deprecated, use armObj.animation_data instead
-        if armObj.pose_library is None:
+        
+        # Use animation_data and action, checking if they are available
+        if armObj.animation_data is None or armObj.animation_data.action is None:
+            logging.warning('[WARNING] armature "%s" has no animation data or action', armObj.name)
             return None
 
         pose_bones = armObj.pose.bones
@@ -79,12 +81,14 @@ class VPDExporter:
         def __export_index(index, filepath):
             for b in pose_bones:
                 b.matrix_basis = matrix_basis_map.get(b, None) or Matrix.Identity(4)
-            bpy.ops.poselib.apply_pose(pose_index=index)
+            pose_markers = armObj.animation_data.action.pose_markers
+            frame = pose_markers[index].frame if index < len(pose_markers) else 1
+            bpy.context.scene.frame_set(frame)
             vpd_bones = self.__exportBones(armObj, converters, matrix_basis_map)
             self.__exportVPDFile(filepath, vpd_bones)
 
         try:
-            pose_markers = armObj.pose_library.pose_markers
+            pose_markers = armObj.animation_data.action.pose_markers
             with FnContext.temp_override_objects(FnContext.ensure_context(), active_object=armObj, selected_objects=[armObj]):
                 bpy.ops.object.mode_set(mode="POSE")
                 if pose_type == "ACTIVE":

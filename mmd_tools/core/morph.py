@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Tuple, cast
 
 import bpy
 
+from .. import utils
 from .. import bpyutils
 from ..bpyutils import FnContext, FnObject, TransformConstraintOp
 
@@ -140,29 +141,39 @@ class FnMorph:
             obj.vertex_groups.active.name = vg_name.replace(src_name, dest_name)
 
     @staticmethod
-    def overwrite_bone_morphs_from_pose_library(armature_object):
+    def overwrite_bone_morphs_from_action_pose(armature_object):
         armature = armature_object.id_data
-        pose_library = armature.pose_library
+        
+        # Use animation_data and action instead of action_pose
+        if armature.animation_data is None or armature.animation_data.action is None:
+            logging.warning('[WARNING] armature "%s" has no animation data or action', armature_object.name)
+            return
 
-        if pose_library is None:
+        action = armature.animation_data.action
+        pose_markers = action.pose_markers
+
+        if not pose_markers:
             return
 
         root = armature_object.parent
         mmd_root = root.mmd_root
         bone_morphs = mmd_root.bone_morphs
 
+        utils.selectAObject(armature_object)
         original_mode = bpy.context.object.mode
         bpy.ops.object.mode_set(mode="POSE")
         try:
-            for index, pose_maker in enumerate(pose_library.pose_markers):
-                bone_morph = next(iter([m for m in bone_morphs if m.name == pose_maker.name]), None)
+            for index, pose_marker in enumerate(pose_markers):
+                bone_morph = next(iter([m for m in bone_morphs if m.name == pose_marker.name]), None)
                 if bone_morph is None:
                     bone_morph = bone_morphs.add()
-                    bone_morph.name = pose_maker.name
+                    bone_morph.name = pose_marker.name
 
                 bpy.ops.pose.select_all(action="SELECT")
                 bpy.ops.pose.transforms_clear()
-                bpy.ops.poselib.apply_pose(pose_index=index)
+                
+                frame = pose_marker.frame
+                bpy.context.scene.frame_set(int(frame))
 
                 mmd_root.active_morph = bone_morphs.find(bone_morph.name)
                 bpy.ops.mmd_tools.apply_bone_morph()
@@ -171,6 +182,7 @@ class FnMorph:
 
         finally:
             bpy.ops.object.mode_set(mode=original_mode)
+        utils.selectAObject(root)
 
     @staticmethod
     def clean_uv_morph_vertex_groups(obj):

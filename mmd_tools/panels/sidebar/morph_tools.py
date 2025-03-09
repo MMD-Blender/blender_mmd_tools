@@ -327,7 +327,7 @@ class MMDMorphMenu(bpy.types.Menu):
         layout.operator("mmd_tools.morph_slider_setup", text="Unbind morphs from .placeholder", icon="UNLINKED").type = "UNBIND"
         layout.separator()
         layout.operator("mmd_tools.morph_copy", icon="COPY_ID")
-        layout.operator("mmd_tools.morph_overwrite_from_active_pose_library", icon="PRESET_NEW")
+        layout.operator("mmd_tools.morph_overwrite_from_active_action_pose", icon="PRESET_NEW")
         layout.operator("mmd_tools.clean_duplicated_material_morphs", icon="TRASH")
         layout.separator()
         layout.operator("mmd_tools.morph_move", icon="TRIA_UP_BAR", text="Move To Top").type = "TOP"

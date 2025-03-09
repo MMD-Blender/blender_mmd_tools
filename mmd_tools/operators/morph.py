@@ -156,9 +156,9 @@ class CopyMorph(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class OverwriteBoneMorphsFromPoseLibrary(bpy.types.Operator):
-    bl_idname = "mmd_tools.morph_overwrite_from_active_pose_library"
-    bl_label = "Overwrite Bone Morphs from active Pose Library"
+class OverwriteBoneMorphsFromActionPose(bpy.types.Operator):
+    bl_idname = "mmd_tools.morph_overwrite_from_active_action_pose"
+    bl_label = "Overwrite Bone Morphs from active Action Pose"
     bl_options = {"REGISTER", "UNDO", "INTERNAL"}
 
     @classmethod
@@ -171,7 +171,7 @@ class OverwriteBoneMorphsFromPoseLibrary(bpy.types.Operator):
 
     def execute(self, context):
         root = FnModel.find_root_object(context.active_object)
-        FnMorph.overwrite_bone_morphs_from_pose_library(FnModel.find_armature_object(root))
+        FnMorph.overwrite_bone_morphs_from_action_pose(FnModel.find_armature_object(root))
 
         return {"FINISHED"}
 
