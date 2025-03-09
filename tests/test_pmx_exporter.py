@@ -587,7 +587,7 @@ class TestPmxExporter(unittest.TestCase):
         pref = getattr(bpy.context, 'preferences', None) or bpy.context.user_preferences
         if not pref.addons.get('mmd_tools', None):
             addon_enable = bpy.ops.wm.addon_enable if 'addon_enable' in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module='mmd_tools') # make sure addon 'mmd_tools' is enabled
+            addon_enable(module='bl_ext.user_default.mmd_tools') # make sure addon 'mmd_tools' is enabled
 
     def test_pmx_exporter(self):
         '''
