@@ -8,8 +8,7 @@ from typing import TYPE_CHECKING, Tuple, cast
 
 import bpy
 
-from .. import utils
-from .. import bpyutils
+from .. import bpyutils, utils
 from ..bpyutils import FnContext, FnObject, TransformConstraintOp
 
 if TYPE_CHECKING:

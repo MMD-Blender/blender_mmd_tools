@@ -896,7 +896,7 @@ class PMXImporter:
 
         FnModel.change_mmd_ik_loop_factor(self.__root, args.get("ik_loop_factor", 1))
         # bpy.context.scene.gravity[2] = -9.81 * 10 * self.__scale
-        FnContext.set_active_object(self.__targetContext, self.__root)
+        utils.selectAObject(self.__root)
 
         logging.info(" Finished importing the model in %f seconds.", time.time() - start_time)
         logging.info("----------------------------------------")
