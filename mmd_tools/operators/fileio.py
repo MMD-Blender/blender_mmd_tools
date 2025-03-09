@@ -356,7 +356,7 @@ class ImportVmd(Operator, ImportHelper):
 class ImportVpd(Operator, ImportHelper):
     bl_idname = "mmd_tools.import_vpd"
     bl_label = "Import VPD File (.vpd)"
-    bl_description = "Import VPD file(s) to selected rig's pose library (.vpd)"
+    bl_description = "Import VPD file(s) to selected rig's Action Pose (.vpd)"
     bl_options = {"REGISTER", "UNDO", "PRESET"}
 
     files: bpy.props.CollectionProperty(type=OperatorFileListElement, options={"HIDDEN", "SKIP_SAVE"})
@@ -483,9 +483,9 @@ class ExportPmx(Operator, ExportHelper):
         description="Export visible meshes only",
         default=False,
     )
-    overwrite_bone_morphs_from_pose_library: bpy.props.BoolProperty(
+    overwrite_bone_morphs_from_action_pose: bpy.props.BoolProperty(
         name="Overwrite Bone Morphs",
-        description="Overwrite the bone morphs from active pose library before exporting.",
+        description="Overwrite the bone morphs from active Action Pose before exporting.",
         default=False,
     )
     translate_in_presets: bpy.props.BoolProperty(
@@ -571,7 +571,7 @@ class ExportPmx(Operator, ExportHelper):
                 rigid_bodies=FnModel.iterate_rigid_body_objects(root),
                 joints=FnModel.iterate_joint_objects(root),
                 copy_textures=self.copy_textures,
-                overwrite_bone_morphs_from_pose_library=self.overwrite_bone_morphs_from_pose_library,
+                overwrite_bone_morphs_from_action_pose=self.overwrite_bone_morphs_from_action_pose,
                 translate_in_presets=self.translate_in_presets,
                 sort_materials=self.sort_materials,
                 sort_vertices=self.sort_vertices,
@@ -675,7 +675,7 @@ class ExportVpd(Operator, ExportHelper):
     bl_idname = "mmd_tools.export_vpd"
     bl_label = "Export VPD File (.vpd)"
     bl_description = "Export to VPD file(s) (.vpd)"
-    bl_description = "Export active rig's pose library to VPD file(s) (.vpd)"
+    bl_description = "Export active rig's Action Pose to VPD file(s) (.vpd)"
     bl_options = {"PRESET"}
 
     filename_ext = ".vpd"
@@ -691,8 +691,8 @@ class ExportVpd(Operator, ExportHelper):
         description="Choose the pose type to export",
         items=[
             ("CURRENT", "Current Pose", "Current pose of the rig", 0),
-            ("ACTIVE", "Active Pose", "Active pose of the rig's pose library", 1),
-            ("ALL", "All Poses", "All poses of the rig's pose library (the pose name will be the file name)", 2),
+            ("ACTIVE", "Active Pose", "Active pose of the rig's Action Pose", 1),
+            ("ALL", "All Poses", "All poses of the rig's Action Pose (the pose name will be the file name)", 2),
         ],
         default="CURRENT",
     )

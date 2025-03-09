@@ -19,23 +19,10 @@ class VPDImporter:
         self.__vpd_file.load(filepath=filepath)
         self.__scale = scale
         self.__bone_mapper = bone_mapper
-        if use_pose_mode:
-            self.__bone_util_cls = importer.BoneConverterPoseMode
-            self.__assignToArmature = self.__assignToArmaturePoseMode
-        else:
-            self.__bone_util_cls = importer.BoneConverter
-            self.__assignToArmature = self.__assignToArmatureSimple
+        self.__bone_util_cls = importer.BoneConverter
         logging.info("Loaded %s", self.__vpd_file)
 
-    def __assignToArmaturePoseMode(self, armObj):
-        pose_orig = {b: b.matrix_basis.copy() for b in armObj.pose.bones}
-        try:
-            self.__assignToArmatureSimple(armObj, reset_transform=False)
-        finally:
-            for bone, matrix_basis in pose_orig.items():
-                bone.matrix_basis = matrix_basis
-
-    def __assignToArmatureSimple(self, armObj: bpy.types.Object, reset_transform=True):
+    def __assignToArmature(self, armObj: bpy.types.Object):
         logging.info('  - assigning to armature "%s"', armObj.name)
 
         pose_bones = armObj.pose.bones
@@ -54,22 +41,59 @@ class VPDImporter:
             assert bone not in pose_data
             pose_data[bone] = Matrix.Translation(loc) @ rot.to_matrix().to_4x4()
 
+        # Check if animation data exists
+        if armObj.animation_data is None:
+            armObj.animation_data_create()
+
+        # Check if an action exists
+        if armObj.animation_data.action is None:
+            action = bpy.data.actions.new(name="PoseLib")
+            armObj.animation_data.action = action
+        else:
+            action = armObj.animation_data.action
+
+        # Get the current frame
+        current_frame = bpy.context.scene.frame_current
+
+        prop_rot_map = {"QUATERNION": "rotation_quaternion", "AXIS_ANGLE": "rotation_axis_angle"}
+
+        # Update and keyframe only the bones affected by the current VPD file
         for bone in armObj.pose.bones:
             vpd_pose = pose_data.get(bone, None)
-            bone.bone.select = bool(vpd_pose)
             if vpd_pose:
                 bone.matrix_basis = vpd_pose
-            elif reset_transform:
-                bone.matrix_basis.identity()
+                
+                data_path_rot = prop_rot_map.get(bone.rotation_mode, "rotation_euler")
+                bone_rotation = getattr(bone, data_path_rot)
+                fcurves = [None] * (3 + len(bone_rotation))  # x, y, z, r0, r1, r2, (r3)
+                
+                data_path = 'pose.bones["%s"].location' % bone.name
+                for axis_i in range(3):
+                    fcurves[axis_i] = action.fcurves.find(data_path, index=axis_i)
+                    if fcurves[axis_i] is None:
+                        fcurves[axis_i] = action.fcurves.new(data_path=data_path, index=axis_i, action_group=bone.name)
+                
+                data_path = 'pose.bones["%s"].%s' % (bone.name, data_path_rot)
+                for axis_i in range(len(bone_rotation)):
+                    fcurves[3 + axis_i] = action.fcurves.find(data_path, index=axis_i) 
+                    if fcurves[3 + axis_i] is None:
+                        fcurves[3 + axis_i] = action.fcurves.new(data_path=data_path, index=axis_i, action_group=bone.name)
+                
+                for axis_i in range(3):
+                    fcurves[axis_i].keyframe_points.insert(current_frame, bone.location[axis_i])
+                
+                for axis_i in range(len(bone_rotation)):
+                    fcurves[3 + axis_i].keyframe_points.insert(current_frame, bone_rotation[axis_i])
 
-        # FIXME: armObj.pose_library is None when the armature is not in pose mode
-        if armObj.pose_library is None:
-            armObj.pose_library = bpy.data.actions.new(name="PoseLib")
+        # Add or update a pose marker
+        if self.__pose_name not in action.pose_markers:
+            marker = action.pose_markers.new(self.__pose_name)
+        else:
+            marker = action.pose_markers[self.__pose_name]
+        marker.frame = current_frame
 
-        frames = [m.frame for m in armObj.pose_library.pose_markers]
-        frame_max = max(frames) if len(frames) else 0
-        # FIXME: poselib.pose_add is deprecated, use animation_data instead
-        bpy.ops.poselib.pose_add(frame=frame_max + 1, name=self.__pose_name)
+        # Ensure the timeline is updated
+        bpy.context.view_layer.update()
 
     def __assignToMesh(self, meshObj):
         if meshObj.data.shape_keys is None:
@@ -77,28 +101,45 @@ class VPDImporter:
 
         logging.info('  - assigning to mesh "%s"', meshObj.name)
 
-        key_blocks = meshObj.data.shape_keys.key_blocks
-        for i in key_blocks.values():
-            i.value = 0
+        # Check if animation data exists
+        if meshObj.data.shape_keys.animation_data is None:
+            meshObj.data.shape_keys.animation_data_create()
 
+        # Check if an action exists or create new one
+        if meshObj.data.shape_keys.animation_data.action is None:
+            action = bpy.data.actions.new(name=meshObj.name+"_ShapeKeys")
+            meshObj.data.shape_keys.animation_data.action = action
+        else:
+            action = meshObj.data.shape_keys.animation_data.action
+
+        # Get current frame
+        current_frame = bpy.context.scene.frame_current
+
+        # Set and keyframe shape keys from VPD file
+        key_blocks = meshObj.data.shape_keys.key_blocks
         for m in self.__vpd_file.morphs:
             shape_key = key_blocks.get(m.morph_name, None)
             if shape_key is None:
                 logging.warning(" * Shape key not found: %s", m.morph_name)
                 continue
+            
+            # Set the value
             shape_key.value = m.weight
+            
+            # Create or get FCurve
+            data_path = 'key_blocks["%s"].value' % shape_key.name
+            fcurve = action.fcurves.find(data_path)
+            if fcurve is None:
+                fcurve = action.fcurves.new(data_path=data_path)
+            
+            # Add keyframe
+            fcurve.keyframe_points.insert(current_frame, m.weight)
 
     def assign(self, obj):
         if obj is None:
             return
         if obj.type == "ARMATURE":
-            with FnContext.temp_override_objects(
-                FnContext.ensure_context(),
-                active_object=obj,
-                selected_objects=[obj],
-            ):
-                bpy.ops.object.mode_set(mode="POSE")
-                self.__assignToArmature(obj)
+            self.__assignToArmature(obj)
         elif obj.type == "MESH":
             self.__assignToMesh(obj)
         else:

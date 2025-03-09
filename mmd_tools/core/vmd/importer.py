@@ -458,11 +458,6 @@ class VMDImporter:
         for c in action.fcurves:
             self.__fixFcurveHandles(c)
 
-        # # ensure IK's default state
-        # for b in armObj.pose.bones:
-        #     if not b.mmd_ik_toggle:
-        #         b.mmd_ik_toggle = True
-
         # property animation
         propertyAnim = self.__vmdFile.propertyAnimation
         if len(propertyAnim) > 0:
@@ -478,6 +473,27 @@ class VMDImporter:
                     self.__keyframe_insert(action.fcurves, f'pose.bones["{bone.name}"].mmd_ik_toggle', frame, enable)
 
         self.__assign_action(armObj, action)
+
+        # Ensure IK toggle state is set based on the first frame of VMD animation
+        if len(propertyAnim) > 0:
+            # Collect IK states from the first frame
+            first_frame_ik_states = {}
+            first_frame = float('inf')
+            for keyFrame in propertyAnim:
+                frame_num = keyFrame.frame_number
+                if frame_num < first_frame:
+                    first_frame = frame_num
+                    for ikName, enable in keyFrame.ik_states:
+                        first_frame_ik_states[ikName] = enable
+                elif frame_num == first_frame:
+                    for ikName, enable in keyFrame.ik_states:
+                        if ikName not in first_frame_ik_states:
+                            first_frame_ik_states[ikName] = enable
+            # Set the mmd_ik_toggle property for each bone based on the collected first frame IK states
+            for ikName, enable in first_frame_ik_states.items():
+                bone = pose_bones.get(ikName, None)
+                if bone and bone.mmd_ik_toggle != enable:
+                    bone.mmd_ik_toggle = enable  # This will trigger the _pose_bone_update_mmd_ik_toggle method
 
     def __assignToMesh(self, meshObj, action_name=None):
         shapeKeyAnim = self.__vmdFile.shapeKeyAnimation

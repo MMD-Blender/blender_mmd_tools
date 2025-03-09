@@ -4,8 +4,8 @@ import unittest
 
 import bpy
 
-from mmd_tools.core import pmx
-from mmd_tools.core.model import Model
+from bl_ext.user_default.mmd_tools.core import pmx
+from bl_ext.user_default.mmd_tools.core.model import Model
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), 'samples')
@@ -31,6 +31,10 @@ class TestFileIoOperators(unittest.TestCase):
         """
         We should start each test with a clean state
         """
+        # Ensure active object exists (user may have deleted the default cube)
+        if not bpy.context.active_object:
+            bpy.ops.mesh.primitive_cube_add()
+
         bpy.ops.object.mode_set(mode='OBJECT')
         bpy.ops.object.select_all(action='SELECT')
         bpy.ops.object.delete(use_global=True)

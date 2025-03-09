@@ -84,7 +84,7 @@ class __PmxExporter:
         self.__exported_vertices = []
         self.__default_material = None
         self.__vertex_order_map = None  # used for controlling vertex order
-        self.__overwrite_bone_morphs_from_pose_library = False
+        self.__overwrite_bone_morphs_from_action_pose = False
         self.__translate_in_presets = False
         self.__disable_specular = False
         self.__add_uv_count = 0
@@ -376,7 +376,12 @@ class __PmxExporter:
 
                 pmx_bone.location = __to_pmx_location(p_bone.head)
                 pmx_bone.parent = bone.parent
-                pmx_bone.visible = not bone.hide and any(c.is_visible for c in bone.collections)
+                # Determine bone visibility: visible if not hidden and either has no collections or belongs to at least one visible collection
+                # This logic is the same as Blender's
+                pmx_bone.visible = (
+                    not bone.hide
+                    and (not bone.collections or any(collection.is_visible for collection in bone.collections))
+                )
                 pmx_bone.isControllable = mmd_bone.is_controllable
                 pmx_bone.isMovable = not all(p_bone.lock_location)
                 pmx_bone.isRotatable = not all(p_bone.lock_rotation)
@@ -687,8 +692,8 @@ class __PmxExporter:
         self.__model.faces = sorted_faces
 
     def __export_bone_morphs(self, root):
-        if self.__overwrite_bone_morphs_from_pose_library:
-            FnMorph.overwrite_bone_morphs_from_pose_library(self.__armature)
+        if self.__overwrite_bone_morphs_from_action_pose:
+            FnMorph.overwrite_bone_morphs_from_action_pose(self.__armature)
 
         mmd_root = root.mmd_root
         if len(mmd_root.bone_morphs) == 0:
@@ -1242,7 +1247,7 @@ class __PmxExporter:
         if sort_vertices != "NONE":
             self.__vertex_order_map = {"method": sort_vertices}
 
-        self.__overwrite_bone_morphs_from_pose_library = args.get("overwrite_bone_morphs_from_pose_library", False)
+        self.__overwrite_bone_morphs_from_action_pose = args.get("overwrite_bone_morphs_from_action_pose", False)
         self.__translate_in_presets = args.get("translate_in_presets", False)
 
         if self.__translate_in_presets:

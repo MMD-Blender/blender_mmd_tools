@@ -9,10 +9,10 @@ import bpy
 from math import pi
 from mathutils import Euler
 from mathutils import Vector
-from mmd_tools.core import pmx
-from mmd_tools.core.model import Model
-from mmd_tools.core.pmd.importer import import_pmd_to_pmx
-from mmd_tools.core.pmx.importer import PMXImporter
+from bl_ext.user_default.mmd_tools.core import pmx
+from bl_ext.user_default.mmd_tools.core.model import Model
+from bl_ext.user_default.mmd_tools.core.pmd.importer import import_pmd_to_pmx
+from bl_ext.user_default.mmd_tools.core.pmx.importer import PMXImporter
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), 'samples')
@@ -587,7 +587,7 @@ class TestPmxExporter(unittest.TestCase):
         pref = getattr(bpy.context, 'preferences', None) or bpy.context.user_preferences
         if not pref.addons.get('mmd_tools', None):
             addon_enable = bpy.ops.wm.addon_enable if 'addon_enable' in dir(bpy.ops.wm) else bpy.ops.preferences.addon_enable
-            addon_enable(module='mmd_tools') # make sure addon 'mmd_tools' is enabled
+            addon_enable(module='bl_ext.user_default.mmd_tools') # make sure addon 'mmd_tools' is enabled
 
     def test_pmx_exporter(self):
         '''
