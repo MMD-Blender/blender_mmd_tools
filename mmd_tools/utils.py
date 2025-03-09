@@ -208,21 +208,19 @@ def saferelpath(path, start, strategy="inside"):
     - absolute: this will return the absolute path instead of a relative.
     See http://bugs.python.org/issue7195
     """
-    result = os.path.basename(path)
-    if os.name == "nt":
-        d1 = os.path.splitdrive(path)[0]
-        d2 = os.path.splitdrive(start)[0]
-        if d1 != d2:
-            if strategy == "outside":
-                result = ".." + os.sep + os.path.basename(path)
-            elif strategy == "absolute":
-                result = os.path.abspath(path)
-        else:
-            result = os.path.relpath(path, start)
-    else:
-        result = os.path.relpath(path, start)
-    return result
+    if strategy == "inside":
+        return os.path.basename(path)
 
+    if strategy == "absolute":
+        return os.path.abspath(path)
+
+    if strategy == "outside" and os.name == "nt":
+        d1, _ = os.path.splitdrive(path)
+        d2, _ = os.path.splitdrive(start)
+        if d1 != d2:
+            return ".." + os.sep + os.path.basename(path)
+
+    return os.path.relpath(path, start)
 
 class ItemOp:
     @staticmethod
