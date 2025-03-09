@@ -566,6 +566,8 @@ class MigrationFnModel:
 
 class Model:
     def __init__(self, root_obj):
+        if root_obj is None:
+            raise ValueError("must be MMD ROOT type object")
         if root_obj.mmd_type != "ROOT":
             raise ValueError("must be MMD ROOT type object")
         self.__root: bpy.types.Object = getattr(root_obj, "original", root_obj)

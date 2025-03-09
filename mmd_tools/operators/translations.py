@@ -71,6 +71,11 @@ class TranslateMMDModel(bpy.types.Operator):
         default=False,
     )
 
+    @classmethod
+    def poll(cls, context):
+        obj = context.active_object
+        return obj in context.selected_objects and FnModel.find_root_object(obj)
+
     def invoke(self, context, event):
         vm = context.window_manager
         return vm.invoke_props_dialog(self)
