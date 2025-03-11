@@ -514,6 +514,11 @@ class ExportPmx(Operator, ExportHelper):
         description="Create a log file",
         default=False,
     )
+    export_curves: bpy.props.BoolProperty(
+        name="Export Curves",
+        description="Convert curves to meshes before exporting",
+        default=True,
+    )
 
     @classmethod
     def poll(cls, context):
@@ -558,10 +563,20 @@ class ExportPmx(Operator, ExportHelper):
             arm.update_tag()
             context.scene.frame_set(context.scene.frame_current)
 
+        temp_meshes = []
         try:
-            meshes = FnModel.iterate_mesh_objects(root)
+            # Get meshes and optionally convert curves
+            meshes = list(FnModel.iterate_mesh_objects(root))
+            
+            if self.export_curves:
+                from ..operators.export_cvt import convert_curves_to_meshes
+                temp_meshes, _ = convert_curves_to_meshes(context, root)
+                if temp_meshes:
+                    meshes.extend(temp_meshes)
+            
             if self.visible_meshes_only:
-                meshes = (x for x in meshes if x in context.visible_objects)
+                meshes = [x for x in meshes if x in context.visible_objects]
+            
             pmx_exporter.export(
                 filepath=self.filepath,
                 scale=self.scale,
@@ -583,6 +598,10 @@ class ExportPmx(Operator, ExportHelper):
             logging.error(err_msg)
             raise
         finally:
+            # Clean up temporary meshes
+            for mesh in temp_meshes:
+                bpy.data.objects.remove(mesh)
+                
             if orig_pose_position:
                 arm.data.pose_position = orig_pose_position
             if self.save_log:
