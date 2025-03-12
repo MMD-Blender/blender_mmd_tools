@@ -7,9 +7,8 @@
 import bpy
 
 from .. import bpyutils
-from ..core import rigid_body
-from ..core.rigid_body import RigidBodyMaterial, FnRigidBody
-from ..core.model import FnModel
+from ..core import FnCore, rigid_body
+from ..core.rigid_body import FnRigidBody, RigidBodyMaterial
 from . import patch_library_overridable
 
 
@@ -17,9 +16,9 @@ def _updateCollisionGroup(prop, _context):
     obj = prop.id_data
     materials = obj.data.materials
     if len(materials) == 0:
-        materials.append(RigidBodyMaterial.getMaterial(prop.collision_group_number))
+        materials.append(RigidBodyMaterial.get_material(prop.collision_group_number))
     else:
-        obj.material_slots[0].material = RigidBodyMaterial.getMaterial(prop.collision_group_number)
+        obj.material_slots[0].material = RigidBodyMaterial.get_material(prop.collision_group_number)
 
 
 def _updateType(prop, _context):
@@ -63,9 +62,9 @@ def _set_bone(prop, value):
 
     arm = relation.target
     if arm is None:
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         if root:
-            arm = relation.target = FnModel.find_armature_object(root)
+            arm = relation.target = FnCore.find_armature_object(root)
 
     if arm is not None and bone_name in arm.data.bones:
         relation.subtarget = bone_name

@@ -8,8 +8,12 @@ class MaterialMorph:
 class UVMorph:
     pass
 
+class BoneMorphData:
+    name: str
+
 class BoneMorph:
-    pass
+    name: str
+    data: BoneMorphData
 
 class GroupMorph:
     pass

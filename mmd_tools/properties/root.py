@@ -8,8 +8,8 @@ import bpy
 
 from .. import utils
 from ..bpyutils import FnContext
+from ..core import FnCore
 from ..core.material import FnMaterial
-from ..core.model import FnModel
 from ..core.sdef import FnSDEF
 from . import patch_library_overridable
 from .morph import BoneMorph, GroupMorph, MaterialMorph, UVMorph, VertexMorph
@@ -37,7 +37,7 @@ def __add_single_prop(variables, id_obj, data_path, prefix):
 
 def _toggleUsePropertyDriver(self: "MMDRoot", _context):
     root_object: bpy.types.Object = self.id_data
-    armature_object = FnModel.find_armature_object(root_object)
+    armature_object = FnCore.find_armature_object(root_object)
 
     if armature_object is None:
         ik_map = {}
@@ -55,7 +55,7 @@ def _toggleUsePropertyDriver(self: "MMDRoot", _context):
                 if c:
                     driver, variables = __driver_variables(c, "influence")
                     driver.expression = "%s" % __add_single_prop(variables, ik.id_data, ik.path_from_id("mmd_ik_toggle"), "use_ik").name
-        for i in FnModel.iterate_mesh_objects(root_object):
+        for i in FnCore.iterate_mesh_objects(root_object):
             for prop_hide in ("hide_viewport", "hide_render"):
                 driver, variables = __driver_variables(i, prop_hide)
                 driver.expression = "not %s" % __add_single_prop(variables, root_object, "mmd_root.show_meshes", "show").name
@@ -67,7 +67,7 @@ def _toggleUsePropertyDriver(self: "MMDRoot", _context):
                 c = next((c for c in b.constraints if c.type == "LIMIT_ROTATION" and not c.mute), None)
                 if c:
                     c.driver_remove("influence")
-        for i in FnModel.iterate_mesh_objects(root_object):
+        for i in FnCore.iterate_mesh_objects(root_object):
             for prop_hide in ("hide_viewport", "hide_render"):
                 i.driver_remove(prop_hide)
 
@@ -79,7 +79,7 @@ def _toggleUsePropertyDriver(self: "MMDRoot", _context):
 
 def _toggleUseToonTexture(self: "MMDRoot", _context):
     use_toon = self.use_toon_texture
-    for i in FnModel.iterate_mesh_objects(self.id_data):
+    for i in FnCore.iterate_mesh_objects(self.id_data):
         for m in i.data.materials:
             if m:
                 FnMaterial(m).use_toon_texture(use_toon)
@@ -87,7 +87,7 @@ def _toggleUseToonTexture(self: "MMDRoot", _context):
 
 def _toggleUseSphereTexture(self: "MMDRoot", _context):
     use_sphere = self.use_sphere_texture
-    for i in FnModel.iterate_mesh_objects(self.id_data):
+    for i in FnCore.iterate_mesh_objects(self.id_data):
         for m in i.data.materials:
             if m:
                 FnMaterial(m).use_sphere_texture(use_sphere, i)
@@ -95,14 +95,14 @@ def _toggleUseSphereTexture(self: "MMDRoot", _context):
 
 def _toggleUseSDEF(self: "MMDRoot", _context):
     mute_sdef = not self.use_sdef
-    for i in FnModel.iterate_mesh_objects(self.id_data):
+    for i in FnCore.iterate_mesh_objects(self.id_data):
         FnSDEF.mute_sdef_set(i, mute_sdef)
 
 
 def _toggleVisibilityOfMeshes(self: "MMDRoot", context: bpy.types.Context):
     root = self.id_data
     hide = not self.show_meshes
-    for i in FnModel.iterate_mesh_objects(self.id_data):
+    for i in FnCore.iterate_mesh_objects(self.id_data):
         i.hide_set(hide)
         i.hide_render = hide
     if hide and context.active_object is None:
@@ -112,7 +112,7 @@ def _toggleVisibilityOfMeshes(self: "MMDRoot", context: bpy.types.Context):
 def _toggleVisibilityOfRigidBodies(self: "MMDRoot", context: bpy.types.Context):
     root = self.id_data
     hide = not self.show_rigid_bodies
-    for i in FnModel.iterate_rigid_body_objects(root):
+    for i in FnCore.iterate_rigid_body_objects(root):
         i.hide_set(hide)
     if hide and context.active_object is None:
         FnContext.set_active_object(context, root)
@@ -121,7 +121,7 @@ def _toggleVisibilityOfRigidBodies(self: "MMDRoot", context: bpy.types.Context):
 def _toggleVisibilityOfJoints(self: "MMDRoot", context):
     root_object = self.id_data
     hide = not self.show_joints
-    for i in FnModel.iterate_joint_objects(root_object):
+    for i in FnCore.iterate_joint_objects(root_object):
         i.hide_set(hide)
     if hide and context.active_object is None:
         FnContext.set_active_object(context, root_object)
@@ -131,7 +131,7 @@ def _toggleVisibilityOfTemporaryObjects(self: "MMDRoot", context: bpy.types.Cont
     root_object: bpy.types.Object = self.id_data
     hide = not self.show_temporary_objects
     with FnContext.temp_override_active_layer_collection(context, root_object):
-        for i in FnModel.iterate_temporary_objects(root_object):
+        for i in FnCore.iterate_temporary_objects(root_object):
             i.hide_set(hide)
     if hide and context.active_object is None:
         FnContext.set_active_object(context, root_object)
@@ -140,20 +140,20 @@ def _toggleVisibilityOfTemporaryObjects(self: "MMDRoot", context: bpy.types.Cont
 def _toggleShowNamesOfRigidBodies(self: "MMDRoot", _context):
     root = self.id_data
     show_names = root.mmd_root.show_names_of_rigid_bodies
-    for i in FnModel.iterate_rigid_body_objects(root):
+    for i in FnCore.iterate_rigid_body_objects(root):
         i.show_name = show_names
 
 
 def _toggleShowNamesOfJoints(self: "MMDRoot", _context):
     root = self.id_data
     show_names = root.mmd_root.show_names_of_joints
-    for i in FnModel.iterate_joint_objects(root):
+    for i in FnCore.iterate_joint_objects(root):
         i.show_name = show_names
 
 
 def _setVisibilityOfMMDRigArmature(prop: "MMDRoot", v: bool):
     root = prop.id_data
-    arm = FnModel.find_armature_object(root)
+    arm = FnCore.find_armature_object(root)
     if arm is None:
         return
     if not v and bpy.context.active_object == arm:
@@ -164,13 +164,13 @@ def _setVisibilityOfMMDRigArmature(prop: "MMDRoot", v: bool):
 def _getVisibilityOfMMDRigArmature(prop: "MMDRoot"):
     if prop.id_data.mmd_type != "ROOT":
         return False
-    arm = FnModel.find_armature_object(prop.id_data)
+    arm = FnCore.find_armature_object(prop.id_data)
     return arm and not arm.hide_get()
 
 
 def _setActiveRigidbodyObject(prop: "MMDRoot", v: int):
     obj = FnContext.get_scene_objects(bpy.context)[v]
-    if FnModel.is_rigid_body_object(obj):
+    if FnCore.is_rigid_body_object(obj):
         FnContext.set_active_and_select_single_object(bpy.context, obj)
     prop["active_rigidbody_object_index"] = v
 
@@ -178,14 +178,14 @@ def _setActiveRigidbodyObject(prop: "MMDRoot", v: int):
 def _getActiveRigidbodyObject(prop: "MMDRoot"):
     context = bpy.context
     active_obj = FnContext.get_active_object(context)
-    if FnModel.is_rigid_body_object(active_obj):
+    if FnCore.is_rigid_body_object(active_obj):
         prop["active_rigidbody_object_index"] = FnContext.get_scene_objects(context).find(active_obj.name)
     return prop.get("active_rigidbody_object_index", 0)
 
 
 def _setActiveJointObject(prop: "MMDRoot", v: int):
     obj = FnContext.get_scene_objects(bpy.context)[v]
-    if FnModel.is_joint_object(obj):
+    if FnCore.is_joint_object(obj):
         FnContext.set_active_and_select_single_object(bpy.context, obj)
     prop["active_joint_object_index"] = v
 
@@ -193,7 +193,7 @@ def _setActiveJointObject(prop: "MMDRoot", v: int):
 def _getActiveJointObject(prop: "MMDRoot"):
     context = bpy.context
     active_obj = FnContext.get_active_object(context)
-    if FnModel.is_joint_object(active_obj):
+    if FnCore.is_joint_object(active_obj):
         prop["active_joint_object_index"] = FnContext.get_scene_objects(context).find(active_obj.name)
     return prop.get("active_joint_object_index", 0)
 
@@ -212,7 +212,7 @@ def _getActiveMorph(prop: "MMDRoot"):
 
 def _setActiveMeshObject(prop: "MMDRoot", v: int):
     obj = FnContext.get_scene_objects(bpy.context)[v]
-    if FnModel.is_mesh_object(obj):
+    if FnCore.is_mesh_object(obj):
         FnContext.set_active_and_select_single_object(bpy.context, obj)
     prop["active_mesh_index"] = v
 
@@ -220,7 +220,7 @@ def _setActiveMeshObject(prop: "MMDRoot", v: int):
 def _getActiveMeshObject(prop: "MMDRoot"):
     context = bpy.context
     active_obj = FnContext.get_active_object(context)
-    if FnModel.is_mesh_object(active_obj):
+    if FnCore.is_mesh_object(active_obj):
         prop["active_mesh_index"] = FnContext.get_scene_objects(context).find(active_obj.name)
     return prop.get("active_mesh_index", -1)
 

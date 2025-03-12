@@ -4,7 +4,7 @@
 
 import bpy
 
-from ...core.model import FnModel
+from ...core import FnCore
 from . import PT_ProductionPanelBase
 
 
@@ -23,7 +23,7 @@ class MMDModelProductionPanel(PT_ProductionPanelBase, bpy.types.Panel):
         row.operator("mmd_tools.create_mmd_model_root_object", text="Create Model", icon="OUTLINER_OB_ARMATURE")
         row.operator("mmd_tools.convert_to_mmd_model", text="Convert Model", icon="ARMATURE_DATA")
 
-        root = FnModel.find_root_object(active_obj)
+        root = FnCore.find_root_object(active_obj)
         row = grid.row(align=True)
         row.enabled = root is not None
         row.operator("mmd_tools.attach_meshes", text="Attach Meshes", icon="OUTLINER_OB_MESH")

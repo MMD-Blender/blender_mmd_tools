@@ -5,7 +5,7 @@
 
 import bpy
 
-from ...core.model import FnModel
+from ...core import FnCore
 from . import FnDraw, PT_ProductionPanelBase
 from ...utils import ItemOp
 
@@ -18,7 +18,7 @@ class MMDDisplayItemsPanel(PT_ProductionPanelBase, bpy.types.Panel):
 
     def draw(self, context):
         active_obj = context.active_object
-        root = FnModel.find_root_object(active_obj)
+        root = FnCore.find_root_object(active_obj)
         if root is None:
             self.layout.label(text="Select a MMD Model")
             return
@@ -130,7 +130,7 @@ class MMD_ROOT_UL_display_items(bpy.types.UIList):
             if item.type == "BONE":
                 row = layout.split(factor=0.5, align=True)
                 row.prop(item, "name", text="", emboss=False, icon="BONE_DATA")
-                FnDraw.draw_bone_special(row, FnModel.find_armature_object(item.id_data), item.name, self.mmd_name)
+                FnDraw.draw_bone_special(row, FnCore.find_armature_object(item.id_data), item.name, self.mmd_name)
             else:
                 row = layout.split(factor=0.6, align=True)
                 row.prop(item, "name", text="", emboss=False, icon="SHAPEKEY_DATA")

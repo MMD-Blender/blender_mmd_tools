@@ -12,7 +12,13 @@ import bpy
 from bpy.types import Operator, OperatorFileListElement
 from bpy_extras.io_utils import ExportHelper, ImportHelper
 
-from ..core.model import Model, FnModel
+from core.morph import FnMorph
+
+from .. import auto_scene_setup
+from ..bpyutils import FnContext
+from ..core import FnCore
+from ..core.camera import MMDCamera
+from ..core.lamp import MMDLamp
 from ..core.pmd import importer as pmd_importer
 from ..core.pmx import exporter as pmx_exporter
 from ..core.pmx import importer as pmx_importer
@@ -20,9 +26,6 @@ from ..core.vmd import exporter as vmd_exporter
 from ..core.vmd import importer as vmd_importer
 from ..core.vpd import exporter as vpd_exporter
 from ..core.vpd import importer as vpd_importer
-from .. import auto_scene_setup
-from ..core.camera import MMDCamera
-from ..core.lamp import MMDLamp
 from ..translations import DictionaryEnum
 from ..utils import makePmxBoneMap
 
@@ -32,6 +35,25 @@ LOG_LEVEL_ITEMS = [
     ("WARNING", "2. WARNING", "", 3),
     ("ERROR", "1. ERROR", "", 4),
 ]
+
+
+def __expand_selected_objects(selected_objects: set[bpy.types.Object]) -> set[bpy.types.Object]:
+    results = selected_objects.copy()
+    for obj in selected_objects:
+        if not FnCore.is_root_object(obj):
+            continue
+
+        armature_object = FnCore.find_armature_object(obj)
+        if armature_object is not None:
+            results.add(armature_object)
+
+        placeholder_object = FnMorph.get_morph_slider(obj).placeholder()
+        if placeholder_object is not None:
+            results.add(placeholder_object)
+
+        results |= set(FnCore.iterate_mesh_objects(obj))
+
+    return results
 
 
 def log_handler(log_level, filepath=None):
@@ -311,14 +333,7 @@ class ImportVmd(Operator, ImportHelper):
         layout.prop(self, "update_scene_settings")
 
     def execute(self, context):
-        selected_objects = set(context.selected_objects)
-        for i in frozenset(selected_objects):
-            root = FnModel.find_root_object(i)
-            if root == i:
-                rig = Model(root)
-                selected_objects.add(rig.armature())
-                selected_objects.add(rig.morph_slider.placeholder())
-                selected_objects |= set(rig.meshes())
+        selected_objects = __expand_selected_objects(set(context.selected_objects))
 
         bone_mapper = None
         if self.bone_mapper == "PMX":
@@ -349,7 +364,8 @@ class ImportVmd(Operator, ImportHelper):
         if self.update_scene_settings:
             auto_scene_setup.setupFrameRanges()
             auto_scene_setup.setupFps()
-        context.scene.frame_set(context.scene.frame_current)
+
+        FnContext.viewlayer_update(context)
         return {"FINISHED"}
 
 
@@ -418,14 +434,7 @@ class ImportVpd(Operator, ImportHelper):
         layout.prop(self, "use_pose_mode")
 
     def execute(self, context):
-        selected_objects = set(context.selected_objects)
-        for i in frozenset(selected_objects):
-            root = FnModel.find_root_object(i)
-            if root == i:
-                rig = Model(root)
-                selected_objects.add(rig.armature())
-                selected_objects.add(rig.morph_slider.placeholder())
-                selected_objects |= set(rig.meshes())
+        selected_objects = __expand_selected_objects(set(context.selected_objects))
 
         bone_mapper = None
         if self.bone_mapper == "PMX":
@@ -518,12 +527,12 @@ class ExportPmx(Operator, ExportHelper):
     @classmethod
     def poll(cls, context):
         obj = context.active_object
-        return obj in context.selected_objects and FnModel.find_root_object(obj)
+        return obj in context.selected_objects and FnCore.find_root_object(obj)
 
     def execute(self, context):
         try:
             folder = os.path.dirname(self.filepath)
-            models = {FnModel.find_root_object(i) for i in context.selected_objects}
+            models = {FnCore.find_root_object(i) for i in context.selected_objects}
             for root in models:
                 if root is None:
                     continue
@@ -547,7 +556,7 @@ class ExportPmx(Operator, ExportHelper):
             handler = log_handler(self.log_level, filepath=self.filepath + ".mmd_tools.export.log")
             logger.addHandler(handler)
 
-        arm = FnModel.find_armature_object(root)
+        arm = FnCore.find_armature_object(root)
         if arm is None:
             self.report({"ERROR"}, '[Skipped] The armature object of MMD model "%s" can\'t be found' % root.name)
             return {"CANCELLED"}
@@ -556,20 +565,20 @@ class ExportPmx(Operator, ExportHelper):
             orig_pose_position = arm.data.pose_position
             arm.data.pose_position = "REST"
             arm.update_tag()
-            context.scene.frame_set(context.scene.frame_current)
+            FnContext.viewlayer_update(context)
 
         try:
-            meshes = FnModel.iterate_mesh_objects(root)
+            meshes = FnCore.iterate_mesh_objects(root)
             if self.visible_meshes_only:
                 meshes = (x for x in meshes if x in context.visible_objects)
             pmx_exporter.export(
                 filepath=self.filepath,
                 scale=self.scale,
                 root=root,
-                armature=FnModel.find_armature_object(root),
+                armature=FnCore.find_armature_object(root),
                 meshes=meshes,
-                rigid_bodies=FnModel.iterate_rigid_body_objects(root),
-                joints=FnModel.iterate_joint_objects(root),
+                rigid_bodies=FnCore.iterate_rigid_body_objects(root),
+                joints=FnCore.iterate_joint_objects(root),
                 copy_textures=self.copy_textures,
                 overwrite_bone_morphs_from_action_pose=self.overwrite_bone_morphs_from_action_pose,
                 translate_in_presets=self.translate_in_presets,
@@ -642,7 +651,7 @@ class ExportVmd(Operator, ExportHelper):
 
         obj = context.active_object
         if obj.mmd_type == "ROOT":
-            rig = Model(obj)
+            rig = MMDModel(obj)
             params["mesh"] = rig.morph_slider.placeholder(binded=True) or rig.firstMesh()
             params["armature"] = rig.armature()
             params["model_name"] = obj.mmd_root.name or obj.name
@@ -733,7 +742,7 @@ class ExportVpd(Operator, ExportHelper):
 
         obj = context.active_object
         if obj.mmd_type == "ROOT":
-            rig = Model(obj)
+            rig = MMDModel(obj)
             params["mesh"] = rig.morph_slider.placeholder(binded=True) or rig.firstMesh()
             params["armature"] = rig.armature()
             params["model_name"] = obj.mmd_root.name or obj.name

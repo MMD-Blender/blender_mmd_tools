@@ -10,8 +10,8 @@ from mathutils import Euler, Vector
 
 from .. import utils
 from ..bpyutils import FnContext, Props
-from ..core import rigid_body
-from ..core.model import FnModel, Model
+from ..core import rigid_body, FnCore
+from ..core.model import FnModel, MMDModel
 from ..core.rigid_body import FnRigidBody
 
 
@@ -46,16 +46,16 @@ class SelectRigidBody(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return FnModel.is_rigid_body_object(context.active_object)
+        return FnCore.is_rigid_body_object(context.active_object)
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         if root is None:
             self.report({"ERROR"}, "The model root can't be found")
             return {"CANCELLED"}
 
-        selection = set(FnModel.iterate_rigid_body_objects(root))
+        selection = set(FnCore.iterate_rigid_body_objects(root))
 
         for prop_name in self.properties:
             prop_value = getattr(obj.mmd_rigid, prop_name)
@@ -204,7 +204,7 @@ class AddRigidBody(bpy.types.Operator):
                 size.x /= 3
 
         return FnRigidBody.setup_rigid_body_object(
-            obj=FnRigidBody.new_rigid_body_object(context, FnModel.ensure_rigid_group_object(context, root_object)),
+            obj=FnRigidBody.new_rigid_body_object(context, FnCore.ensure_rigid_group_object(context, root_object)),
             shape_type=rigid_body.shapeType(self.rigid_shape),
             location=loc,
             rotation=rot,
@@ -224,11 +224,11 @@ class AddRigidBody(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        root_object = FnModel.find_root_object(context.active_object)
+        root_object = FnCore.find_root_object(context.active_object)
         if root_object is None:
             return False
 
-        armature_object = FnModel.find_armature_object(root_object)
+        armature_object = FnCore.find_armature_object(root_object)
         if armature_object is None:
             return False
 
@@ -237,8 +237,8 @@ class AddRigidBody(bpy.types.Operator):
     def execute(self, context):
         active_object = context.active_object
 
-        root_object = cast(bpy.types.Object, FnModel.find_root_object(active_object))
-        armature_object = cast(bpy.types.Object, FnModel.find_armature_object(root_object))
+        root_object = cast(bpy.types.Object, FnCore.find_root_object(active_object))
+        armature_object = cast(bpy.types.Object, FnCore.find_armature_object(root_object))
 
         if active_object != armature_object:
             FnContext.select_single_object(context, root_object).select_set(False)
@@ -286,11 +286,11 @@ class RemoveRigidBody(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return FnModel.is_rigid_body_object(context.active_object)
+        return FnCore.is_rigid_body_object(context.active_object)
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         utils.selectAObject(obj)  # ensure this is the only one object select
         bpy.ops.object.delete(use_global=True)
         if root:
@@ -413,7 +413,7 @@ class AddJoint(bpy.types.Operator):
         name_e = rigid_b.mmd_rigid.name_e or rigid_b.name
 
         return FnRigidBody.setup_joint_object(
-            obj=FnRigidBody.new_joint_object(context, FnModel.ensure_joint_group_object(context, root_object), FnModel.get_empty_display_size(root_object)),
+            obj=FnRigidBody.new_joint_object(context, FnCore.ensure_joint_group_object(context, root_object), FnModel.get_empty_display_size(root_object)),
             name=name_j,
             name_e=name_e,
             location=loc,
@@ -430,11 +430,11 @@ class AddJoint(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        root_object = FnModel.find_root_object(context.active_object)
+        root_object = FnCore.find_root_object(context.active_object)
         if root_object is None:
             return False
 
-        armature_object = FnModel.find_armature_object(root_object)
+        armature_object = FnCore.find_armature_object(root_object)
         if armature_object is None:
             return False
 
@@ -442,10 +442,10 @@ class AddJoint(bpy.types.Operator):
 
     def execute(self, context):
         active_object = context.active_object
-        root_object = cast(bpy.types.Object, FnModel.find_root_object(active_object))
-        armature_object = cast(bpy.types.Object, FnModel.find_armature_object(root_object))
+        root_object = cast(bpy.types.Object, FnCore.find_root_object(active_object))
+        armature_object = cast(bpy.types.Object, FnCore.find_armature_object(root_object))
         bones = cast(bpy.types.Armature, armature_object.data).bones
-        bone_map: Dict[bpy.types.Object, Optional[bpy.types.Bone]] = {r: bones.get(r.mmd_rigid.bone, None) for r in FnModel.iterate_rigid_body_objects(root_object) if r.select_get()}
+        bone_map: Dict[bpy.types.Object, Optional[bpy.types.Bone]] = {r: bones.get(r.mmd_rigid.bone, None) for r in FnCore.iterate_rigid_body_objects(root_object) if r.select_get()}
 
         if len(bone_map) < 2:
             self.report({"ERROR"}, "Please select two or more mmd rigid objects")
@@ -474,11 +474,11 @@ class RemoveJoint(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return FnModel.is_joint_object(context.active_object)
+        return FnCore.is_joint_object(context.active_object)
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         utils.selectAObject(obj)  # ensure this is the only one object select
         bpy.ops.object.delete(use_global=True)
         if root:
@@ -493,9 +493,9 @@ class UpdateRigidBodyWorld(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     @staticmethod
-    def __get_rigid_body_world_objects():
-        rigid_body.setRigidBodyWorldEnabled(True)
-        rbw = bpy.context.scene.rigidbody_world
+    def __get_rigid_body_world_objects(context: bpy.types.Context):
+        FnRigidBody.get_and_set_rigid_body_world_enabled(True, context=context)
+        rbw = context.scene.rigidbody_world
         if not rbw.collection:
             rbw.collection = bpy.data.collections.new("RigidBodyWorld")
             rbw.collection.use_fake_user = True
@@ -503,8 +503,8 @@ class UpdateRigidBodyWorld(bpy.types.Operator):
             rbw.constraints = bpy.data.collections.new("RigidBodyConstraints")
             rbw.constraints.use_fake_user = True
 
-        bpy.context.scene.rigidbody_world.substeps_per_frame = 6
-        bpy.context.scene.rigidbody_world.solver_iterations = 10
+        context.scene.rigidbody_world.substeps_per_frame = 6
+        context.scene.rigidbody_world.solver_iterations = 10
 
         return rbw.collection.objects, rbw.constraints.objects
 
@@ -530,7 +530,7 @@ class UpdateRigidBodyWorld(bpy.types.Operator):
                 yield from _references(obj.override_library.reference)
 
         need_rebuild_physics = scene.rigidbody_world is None or scene.rigidbody_world.collection is None or scene.rigidbody_world.constraints is None
-        rb_objs, rbc_objs = self.__get_rigid_body_world_objects()
+        rb_objs, rbc_objs = self.__get_rigid_body_world_objects(context)
         objects = bpy.data.objects
         table = {}
 
@@ -543,7 +543,7 @@ class UpdateRigidBodyWorld(bpy.types.Operator):
             if not _update_group(i, rb_objs):
                 continue
 
-            rb_map = table.setdefault(FnModel.find_root_object(i), {})
+            rb_map = table.setdefault(FnCore.find_root_object(i), {})
             if i in rb_map:  # means rb_map[i] will replace i
                 rb_objs.unlink(i)
                 continue
@@ -557,7 +557,7 @@ class UpdateRigidBodyWorld(bpy.types.Operator):
             if not _update_group(i, rbc_objs):
                 continue
 
-            rbc, root_object = i.rigid_body_constraint, FnModel.find_root_object(i)
+            rbc, root_object = i.rigid_body_constraint, FnCore.find_root_object(i)
             rb_map = table.get(root_object, {})
             rbc.object1 = rb_map.get(rbc.object1, rbc.object1)
             rbc.object2 = rb_map.get(rbc.object2, rbc.object2)
@@ -569,7 +569,7 @@ class UpdateRigidBodyWorld(bpy.types.Operator):
                 if not root_object.mmd_root.is_built:
                     continue
                 with FnContext.temp_override_active_layer_collection(context, root_object):
-                    Model(root_object).build()
+                    MMDModel(root_object).build()
                     # After rebuild. First play. Will be crash!
                     # But saved it before. Reload after crash. The play can be work.
 

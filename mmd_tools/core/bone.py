@@ -3,7 +3,7 @@
 # This file is part of MMD Tools.
 
 import math
-from typing import TYPE_CHECKING, Iterable, Optional, Set
+from typing import TYPE_CHECKING, Iterable, Optional, Set, cast
 
 import bpy
 from mathutils import Vector
@@ -13,8 +13,8 @@ from ..bpyutils import TransformConstraintOp
 from ..utils import ItemOp
 
 if TYPE_CHECKING:
-    from ..properties.root import MMDRoot, MMDDisplayItemFrame
     from ..properties.pose_bone import MMDBone
+    from ..properties.root import MMDDisplayItemFrame, MMDRoot
 
 
 def remove_constraint(constraints, name):
@@ -70,7 +70,7 @@ class FnBone:
     @staticmethod
     def __get_selected_pose_bones(armature_object: bpy.types.Object) -> Iterable[bpy.types.PoseBone]:
         if armature_object.mode == "EDIT":
-            bpy.ops.object.mode_set(mode="OBJECT") # update selected bones
+            bpy.ops.object.mode_set(mode="OBJECT")  # update selected bones
             bpy.ops.object.mode_set(mode="EDIT")  # back to edit mode
         context_selected_bones = bpy.context.selected_pose_bones or bpy.context.selected_bones or []
         bones = armature_object.pose.bones
@@ -95,7 +95,7 @@ class FnBone:
 
     @staticmethod
     def setup_special_bone_collections(armature_object: bpy.types.Object) -> bpy.types.Object:
-        armature: bpy.types.Armature = armature_object.data
+        armature = cast(bpy.types.Armature, armature_object.data)
         bone_collections = armature.collections
         for bone_collection_name in SPECIAL_BONE_COLLECTION_NAMES:
             if bone_collection_name in bone_collections:
@@ -148,15 +148,9 @@ class FnBone:
         return edit_bone
 
     @staticmethod
-    def sync_bone_collections_from_display_item_frames(armature_object: bpy.types.Object):
-        armature: bpy.types.Armature = armature_object.data
+    def sync_bone_collections_from_mmd_root(armature_object: bpy.types.Object, mmd_root: "MMDRoot"):
+        armature = cast(bpy.types.Armature, armature_object.data)
         bone_collections = armature.collections
-
-        from .model import FnModel
-
-        root_object: bpy.types.Object = FnModel.find_root_object(armature_object)
-        mmd_root: MMDRoot = root_object.mmd_root
-
         bones = armature.bones
         used_groups = set()
         unassigned_bone_names = {b.name for b in bones}
@@ -192,14 +186,10 @@ class FnBone:
             bone_collections.remove(bone_collection)
 
     @staticmethod
-    def sync_display_item_frames_from_bone_collections(armature_object: bpy.types.Object):
-        armature: bpy.types.Armature = armature_object.data
+    def sync_mmd_root_from_bone_collections(mmd_root: "MMDRoot", armature_object: bpy.types.Object):
+        armature = cast(bpy.types.Armature, armature_object.data)
         bone_collections: bpy.types.BoneCollections = armature.collections
 
-        from .model import FnModel
-
-        root_object: bpy.types.Object = FnModel.find_root_object(armature_object)
-        mmd_root: MMDRoot = root_object.mmd_root
         display_item_frames = mmd_root.display_item_frames
 
         used_frame_index: Set[int] = set()
@@ -471,6 +461,12 @@ class FnBone:
         TransformConstraintOp.update_min_max(c, math.pi, influence)
         c = constraints.get("mmd_additional_location", None)
         TransformConstraintOp.update_min_max(c, 100, influence)
+
+    @staticmethod
+    def rename(pose_bone: bpy.types.PoseBone, new_bone_name: str) -> bpy.types.PoseBone:
+        pose_bone.name = new_bone_name
+        pose_bone.bone.name = new_bone_name
+        return pose_bone
 
 
 class MigrationFnBone:

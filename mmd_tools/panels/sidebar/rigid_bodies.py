@@ -4,7 +4,7 @@
 
 import bpy
 
-from ...core.model import FnModel
+from ...core import FnCore
 from . import PT_ProductionPanelBase, UL_ObjectsMixIn
 
 
@@ -16,7 +16,7 @@ class MMDRigidbodySelectorPanel(PT_ProductionPanelBase, bpy.types.Panel):
 
     def draw(self, context):
         active_obj = context.active_object
-        root = FnModel.find_root_object(active_obj)
+        root = FnCore.find_root_object(active_obj)
         if root is None:
             self.layout.label(text="Select a MMD Model")
             return
