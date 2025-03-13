@@ -289,8 +289,10 @@ class FnBone:
             mmd_bone.enabled_local_axes = enable
             if enable:
                 axes = b.bone.matrix_local.to_3x3().transposed()
-                mmd_bone.local_axis_x = axes[0].xzy
-                mmd_bone.local_axis_z = axes[2].xzy
+
+                # Blender is Z up. MMD is Y up.
+                mmd_bone.local_axis_x = axes[2].xzy
+                mmd_bone.local_axis_z = axes[1].xzy
 
     @staticmethod
     def apply_bone_local_axes(armature_object: bpy.types.Object):
