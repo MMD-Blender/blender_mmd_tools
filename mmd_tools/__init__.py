@@ -28,6 +28,7 @@ with open(os.path.join(PACKAGE_PATH, "blender_manifest.toml"), "rb") as f:
 
 
 from . import auto_load
+from . import auto_export
 
 auto_load.init(PACKAGE_NAME)
 
@@ -48,6 +49,8 @@ def register():
 
     handlers.MMDHanders.register()
     
+    auto_export.register()
+    
     # Register keymap
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
@@ -61,6 +64,8 @@ def unregister():
     import bpy
 
     from . import handlers
+    
+    auto_export.unregister()
     
     # Unregister keymap
     for km, kmi in addon_keymaps:
