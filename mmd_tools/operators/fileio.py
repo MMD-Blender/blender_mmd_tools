@@ -565,6 +565,20 @@ class ExportPmx(Operator, ExportHelper):
 
         temp_meshes = []
         try:
+            # Save export settings for quick export
+            context.scene["mmd_tools_export_pmx_last_filepath"] = self.filepath
+            context.scene["mmd_tools_export_pmx_last_scale"] = self.scale
+            context.scene["mmd_tools_export_pmx_last_copy_textures"] = self.copy_textures
+            context.scene["mmd_tools_export_pmx_last_sort_materials"] = self.sort_materials
+            context.scene["mmd_tools_export_pmx_last_disable_specular"] = self.disable_specular
+            context.scene["mmd_tools_export_pmx_last_visible_meshes_only"] = self.visible_meshes_only
+            context.scene["mmd_tools_export_pmx_last_overwrite_bone_morphs"] = self.overwrite_bone_morphs_from_action_pose
+            context.scene["mmd_tools_export_pmx_last_translate_in_presets"] = self.translate_in_presets
+            context.scene["mmd_tools_export_pmx_last_sort_vertices"] = self.sort_vertices
+            context.scene["mmd_tools_export_pmx_last_log_level"] = self.log_level
+            context.scene["mmd_tools_export_pmx_last_save_log"] = self.save_log
+            context.scene["mmd_tools_export_pmx_last_export_curves"] = self.export_curves
+            
             # Get meshes and optionally convert curves
             meshes = list(FnModel.iterate_mesh_objects(root))
             
@@ -688,6 +702,115 @@ class ExportVmd(Operator, ExportHelper):
             self.report({"ERROR"}, err_msg)
 
         return {"FINISHED"}
+
+
+class ExportPmxQuick(Operator):
+    bl_idname = "mmd_tools.export_pmx_quick"
+    bl_label = "Quick Export PMX"
+    bl_description = "Export selected MMD model using last export settings"
+    bl_options = {"REGISTER"}
+
+    @classmethod
+    def poll(cls, context):
+        obj = context.active_object
+        return obj in context.selected_objects and FnModel.find_root_object(obj)
+
+    def execute(self, context):
+        # Get export settings from addon preferences
+        last_filepath = context.scene.get("mmd_tools_export_pmx_last_filepath", "")
+        if not last_filepath:
+            self.report({"ERROR"}, "No previous PMX export. Please use the regular export once first.")
+            return {"CANCELLED"}
+            
+        try:
+            root = FnModel.find_root_object(context.active_object)
+            if root is None:
+                self.report({"ERROR"}, "No MMD model found")
+                return {"CANCELLED"}
+                
+            # Get last export settings from scene properties
+            scene = context.scene
+            scale = scene.get("mmd_tools_export_pmx_last_scale", 12.5)
+            copy_textures = scene.get("mmd_tools_export_pmx_last_copy_textures", True)
+            sort_materials = scene.get("mmd_tools_export_pmx_last_sort_materials", False)
+            disable_specular = scene.get("mmd_tools_export_pmx_last_disable_specular", False)
+            visible_meshes_only = scene.get("mmd_tools_export_pmx_last_visible_meshes_only", False)
+            overwrite_bone_morphs_from_action_pose = scene.get("mmd_tools_export_pmx_last_overwrite_bone_morphs", False)
+            translate_in_presets = scene.get("mmd_tools_export_pmx_last_translate_in_presets", False)
+            sort_vertices = scene.get("mmd_tools_export_pmx_last_sort_vertices", "NONE")
+            log_level = scene.get("mmd_tools_export_pmx_last_log_level", "DEBUG")
+            save_log = scene.get("mmd_tools_export_pmx_last_save_log", False)
+            export_curves = scene.get("mmd_tools_export_pmx_last_export_curves", True)
+            
+            # Setup logging
+            logger = logging.getLogger()
+            logger.setLevel(log_level)
+            handler = None
+            if save_log:
+                handler = log_handler(log_level, filepath=last_filepath + ".mmd_tools.export.log")
+                logger.addHandler(handler)
+                
+            arm = FnModel.find_armature_object(root)
+            if arm is None:
+                self.report({"ERROR"}, 'The armature object of MMD model "%s" can\'t be found' % root.name)
+                return {"CANCELLED"}
+                
+            orig_pose_position = None
+            if not root.mmd_root.is_built:  # use 'REST' pose when the model is not built
+                orig_pose_position = arm.data.pose_position
+                arm.data.pose_position = "REST"
+                arm.update_tag()
+                context.scene.frame_set(context.scene.frame_current)
+
+            temp_meshes = []
+            try:
+                # Get meshes and optionally convert curves
+                meshes = list(FnModel.iterate_mesh_objects(root))
+                
+                if export_curves:
+                    from ..operators.export_cvt import convert_curves_to_meshes
+                    temp_meshes, _ = convert_curves_to_meshes(context, root)
+                    if temp_meshes:
+                        meshes.extend(temp_meshes)
+                
+                if visible_meshes_only:
+                    meshes = [x for x in meshes if x in context.visible_objects]
+                
+                pmx_exporter.export(
+                    filepath=last_filepath,
+                    scale=scale,
+                    root=root,
+                    armature=FnModel.find_armature_object(root),
+                    meshes=meshes,
+                    rigid_bodies=FnModel.iterate_rigid_body_objects(root),
+                    joints=FnModel.iterate_joint_objects(root),
+                    copy_textures=copy_textures,
+                    overwrite_bone_morphs_from_action_pose=overwrite_bone_morphs_from_action_pose,
+                    translate_in_presets=translate_in_presets,
+                    sort_materials=sort_materials,
+                    sort_vertices=sort_vertices,
+                    disable_specular=disable_specular,
+                )
+                self.report({"INFO"}, 'Exported MMD model "%s" to "%s"' % (root.name, last_filepath))
+            except:
+                err_msg = traceback.format_exc()
+                logging.error(err_msg)
+                raise
+            finally:
+                # Clean up temporary meshes
+                for mesh in temp_meshes:
+                    bpy.data.objects.remove(mesh)
+                    
+                if orig_pose_position:
+                    arm.data.pose_position = orig_pose_position
+                if save_log and handler:
+                    logger.removeHandler(handler)
+                    
+            return {"FINISHED"}
+        except Exception as e:
+            err_msg = traceback.format_exc()
+            self.report({"ERROR"}, err_msg)
+            return {"CANCELLED"}
 
 
 class ExportVpd(Operator, ExportHelper):

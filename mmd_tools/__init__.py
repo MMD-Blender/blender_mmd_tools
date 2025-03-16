@@ -31,6 +31,8 @@ from . import auto_load
 
 auto_load.init(PACKAGE_NAME)
 
+# Store keymap items to remove them when unregistering
+addon_keymaps = []
 
 def register():
     import bpy
@@ -45,12 +47,25 @@ def register():
     bpy.app.translations.register(PACKAGE_NAME, translation_dict)
 
     handlers.MMDHanders.register()
+    
+    # Register keymap
+    wm = bpy.context.window_manager
+    kc = wm.keyconfigs.addon
+    if kc:
+        km = kc.keymaps.new(name='Object Mode', space_type='EMPTY')
+        kmi = km.keymap_items.new("mmd_tools.export_pmx_quick", 'E', 'PRESS', ctrl=True, alt=False)
+        addon_keymaps.append((km, kmi))
 
 
 def unregister():
     import bpy
 
     from . import handlers
+    
+    # Unregister keymap
+    for km, kmi in addon_keymaps:
+        km.keymap_items.remove(kmi)
+    addon_keymaps.clear()
 
     handlers.MMDHanders.unregister()
 
