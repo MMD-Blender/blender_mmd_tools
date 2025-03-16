@@ -497,16 +497,12 @@ class MMDRoot(bpy.types.PropertyGroup):
     # *************************
     # Custom Tool
     # *************************
-    custom_tool_checkbox: bpy.props.BoolProperty(
-        name="Custom Tool Checkbox",
-        description="Example checkbox for custom tool",
-        default=False,
-    )
+ 
 
     auto_export_enabled: bpy.props.BoolProperty(
         name="Auto Export",
         description="Automatically export PMX when the model is modified",
-        default=True,
+        default=False,
     )
 
     @staticmethod

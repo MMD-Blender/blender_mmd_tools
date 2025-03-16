@@ -4,6 +4,8 @@ import time
 from mathutils import Matrix, Vector
 from . operators.fileio import ExportPmxQuick
 from . core.model import FnModel
+import json
+import os
 
 # Time threshold between auto-exports (in seconds)
 MIN_EXPORT_INTERVAL = 0.5
@@ -107,6 +109,102 @@ def export_model(root):
                     bpy.ops.object.mode_set(mode=prev_mode)
                 except Exception as e:
                     print(f"Could not restore previous mode: {str(e)}")
+
+# Add this function to export mesh data for C++ consumption
+def export_mesh_data_for_cpp(root):
+    """Export mesh data to a JSON file that can be easily read by C++ applications"""
+    print(f"Exporting mesh data for C++ for {root.name}")
+    
+    try:
+        # Find the export path used for the PMX
+        export_path = bpy.context.scene.get("mmd_tools_export_pmx_last_filepath", "")
+        
+        if not export_path:
+            # Use a default path if no previous export
+            export_path = bpy.path.abspath("//") or os.path.join(os.path.expanduser("~"), "Documents")
+            export_path = os.path.join(export_path, f"{root.name}_mesh_data.json")
+        else:
+            # Use the same directory but with .json extension
+            export_path = os.path.splitext(export_path)[0] + "_mesh_data.json"
+        
+        # Get all mesh objects
+        meshes = list(FnModel.iterate_mesh_objects(root))
+        
+        # Prepare data structure
+        mesh_data = {
+            "model_name": root.name,
+            "meshes": []
+        }
+        
+        # For each mesh, extract data
+        for mesh_obj in meshes:
+            if not mesh_obj or not hasattr(mesh_obj, 'data'):
+                continue
+                
+            # Ensure we're working with evaluated mesh data
+            depsgraph = bpy.context.evaluated_depsgraph_get()
+            eval_mesh_obj = mesh_obj.evaluated_get(depsgraph)
+            mesh = eval_mesh_obj.data
+            
+            # Get transform
+            world_matrix = mesh_obj.matrix_world
+            
+            # Extract basic mesh data
+            mesh_info = {
+                "name": mesh_obj.name,
+                "vertices": [],
+                "faces": [],
+                "normals": [],
+                "uvs": [],
+            }
+            
+            # Get vertex data
+            for vertex in mesh.vertices:
+                # Transform vertex to world space
+                world_pos = world_matrix @ vertex.co
+                mesh_info["vertices"].append([world_pos.x, world_pos.y, world_pos.z])
+                
+                # Transform normal to world space (ignoring translation)
+                world_normal = (world_matrix.to_3x3() @ vertex.normal).normalized()
+                mesh_info["normals"].append([world_normal.x, world_normal.y, world_normal.z])
+            
+            # Get face data
+            for poly in mesh.polygons:
+                mesh_info["faces"].append(list(poly.vertices))
+            
+            # Get UV data if available
+            if mesh.uv_layers.active:
+                uv_layer = mesh.uv_layers.active.data
+                per_vertex_uvs = {}
+                
+                # First collect UV per loop
+                for poly in mesh.polygons:
+                    for loop_idx in range(poly.loop_start, poly.loop_start + poly.loop_total):
+                        vertex_idx = mesh.loops[loop_idx].vertex_index
+                        uv = uv_layer[loop_idx].uv
+                        if vertex_idx not in per_vertex_uvs:
+                            per_vertex_uvs[vertex_idx] = []
+                        per_vertex_uvs[vertex_idx].append([uv.x, uv.y])
+                
+                # Then average the UVs for each vertex
+                for v_idx, uvs in per_vertex_uvs.items():
+                    avg_u = sum(uv[0] for uv in uvs) / len(uvs)
+                    avg_v = sum(uv[1] for uv in uvs) / len(uvs)
+                    mesh_info["uvs"].append([avg_u, avg_v])
+            
+            # Add this mesh to the collection
+            mesh_data["meshes"].append(mesh_info)
+        
+        # Write to file
+        with open(export_path, 'w') as f:
+            json.dump(mesh_data, f, indent=2)
+            
+        print(f"Mesh data for C++ written to {export_path}")
+        return export_path
+        
+    except Exception as e:
+        print(f"Error exporting mesh data for C++: {str(e)}")
+        return None
 
 # Stability check timer function
 def check_stability_timeout():
@@ -340,7 +438,7 @@ def track_mmd_changes(scene):
                 if active_obj in meshes:
                     changed = True
                     any_moving = True
-            
+ 
             # If this is the first detection of changes, record the time and root
             if changed:
                 last_change_time = current_time
