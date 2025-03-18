@@ -28,9 +28,12 @@ with open(os.path.join(PACKAGE_PATH, "blender_manifest.toml"), "rb") as f:
 
 
 from . import auto_load
+from . import auto_export
 
 auto_load.init(PACKAGE_NAME)
 
+# Store keymap items to remove them when unregistering
+addon_keymaps = []
 
 def register():
     import bpy
@@ -45,12 +48,31 @@ def register():
     bpy.app.translations.register(PACKAGE_NAME, translation_dict)
 
     handlers.MMDHanders.register()
-
+    
+    auto_export.register()
+    
+    # Register keymap
+    wm = bpy.context.window_manager
+    kc = wm.keyconfigs.addon
+    if kc:
+        km = kc.keymaps.new(name='Object Mode', space_type='EMPTY')
+        kmi = km.keymap_items.new("mmd_tools.export_pmx_quick", 'E', 'PRESS', ctrl=True, alt=False)
+        addon_keymaps.append((km, kmi))
+        km1 = kc.keymaps.new(name='Curve', space_type='EMPTY')
+        kmi1 = km1.keymap_items.new("mmd_tools.export_pmx_quick", 'E', 'PRESS', ctrl=True, alt=True)
+        addon_keymaps.append((km1, kmi1))
 
 def unregister():
     import bpy
 
     from . import handlers
+    
+    auto_export.unregister()
+    
+    # Unregister keymap
+    for km, kmi in addon_keymaps:
+        km.keymap_items.remove(kmi)
+    addon_keymaps.clear()
 
     handlers.MMDHanders.unregister()
 

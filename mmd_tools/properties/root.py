@@ -493,6 +493,17 @@ class MMDRoot(bpy.types.PropertyGroup):
         name="Translation",
         type=MMDTranslation,
     )
+    
+    # *************************
+    # Custom Tool
+    # *************************
+ 
+
+    auto_export_enabled: bpy.props.BoolProperty(
+        name="Auto Export",
+        description="Automatically export PMX when the model is modified",
+        default=False,
+    )
 
     @staticmethod
     def __get_select(prop: bpy.types.Object) -> bool:
