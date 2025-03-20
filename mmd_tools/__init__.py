@@ -17,6 +17,8 @@
 
 import os
 
+from . import auto_load
+
 PACKAGE_NAME = __package__
 PACKAGE_PATH = os.path.dirname(__file__)
 
@@ -26,8 +28,6 @@ with open(os.path.join(PACKAGE_PATH, "blender_manifest.toml"), "rb") as f:
     manifest = tomllib.load(f)
     MMD_TOOLS_VERSION = manifest["version"]
 
-
-from . import auto_load
 
 auto_load.init(PACKAGE_NAME)
 

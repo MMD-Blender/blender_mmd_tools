@@ -7,8 +7,8 @@ from typing import Optional, cast
 import bpy
 from mathutils import Quaternion, Vector
 
-from ..core.model import FnModel
 from .. import bpyutils, utils
+from ..core import FnCore
 from ..core.exceptions import MaterialNotFoundError
 from ..core.material import FnMaterial
 from ..core.morph import FnMorph
@@ -57,7 +57,7 @@ class AddMorph(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         mmd_root = root.mmd_root
         morph_type = mmd_root.active_morph_type
         morphs = getattr(mmd_root, morph_type)
@@ -83,7 +83,7 @@ class RemoveMorph(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         mmd_root = root.mmd_root
 
         morph_type = mmd_root.active_morph_type
@@ -110,7 +110,7 @@ class MoveMorph(bpy.types.Operator, ItemMoveOp):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         mmd_root = root.mmd_root
         mmd_root.active_morph = self.move(
             getattr(mmd_root, mmd_root.active_morph_type),
@@ -128,7 +128,7 @@ class CopyMorph(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         assert root is not None
         mmd_root = root.mmd_root
 
@@ -141,13 +141,13 @@ class CopyMorph(bpy.types.Operator):
         name_orig, name_tmp = morph.name, "_tmp%s" % str(morph.as_pointer())
 
         if morph_type.startswith("vertex"):
-            for obj in FnModel.iterate_mesh_objects(root):
+            for obj in FnCore.iterate_mesh_objects(root):
                 FnMorph.copy_shape_key(obj, name_orig, name_tmp)
 
         elif morph_type.startswith("uv"):
             if morph.data_type == "VERTEX_GROUP":
-                for obj in FnModel.iterate_mesh_objects(root):
-                    FnMorph.copy_uv_morph_vertex_groups(obj, name_orig, name_tmp)
+                for obj in FnCore.iterate_mesh_objects(root):
+                    FnMorph.copy_uv_morph_vertex_groups(context, obj, name_orig, name_tmp)
 
         morph_new, mmd_root.active_morph = ItemOp.add_after(morphs, mmd_root.active_morph)
         for k, v in morph.items():
@@ -163,15 +163,15 @@ class OverwriteBoneMorphsFromActionPose(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        root = FnModel.find_root_object(context.active_object)
+        root = FnCore.find_root_object(context.active_object)
         if root is None:
             return False
 
         return root.mmd_root.active_morph_type == "bone_morphs"
 
     def execute(self, context):
-        root = FnModel.find_root_object(context.active_object)
-        FnMorph.overwrite_bone_morphs_from_action_pose(FnModel.find_armature_object(root))
+        root = FnCore.find_root_object(context.active_object)
+        FnMorph.overwrite_bone_morphs_from_pose_library(FnCore.find_armature_object(root))
 
         return {"FINISHED"}
 
@@ -184,7 +184,7 @@ class AddMorphOffset(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         mmd_root = root.mmd_root
         morph_type = mmd_root.active_morph_type
         morph = ItemOp.get_by_index(getattr(mmd_root, morph_type), mmd_root.active_morph)
@@ -225,7 +225,7 @@ class RemoveMorphOffset(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         assert root is not None
         mmd_root = root.mmd_root
         morph_type = mmd_root.active_morph_type
@@ -238,12 +238,12 @@ class RemoveMorphOffset(bpy.types.Operator):
 
         if self.all:
             if morph_type.startswith("vertex"):
-                for obj in FnModel.iterate_mesh_objects(root):
-                    FnMorph.remove_shape_key(obj, morph.name)
+                for obj in FnCore.iterate_mesh_objects(root):
+                    FnMorph.remove_shape_key_by_name(obj, morph.name)
                 return {"FINISHED"}
             elif morph_type.startswith("uv"):
                 if morph.data_type == "VERTEX_GROUP":
-                    for obj in FnModel.iterate_mesh_objects(root):
+                    for obj in FnCore.iterate_mesh_objects(root):
                         FnMorph.store_uv_morph_data(obj, morph)
                     return {"FINISHED"}
             morph.data.clear()
@@ -268,7 +268,7 @@ class InitMaterialOffset(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         mmd_root = root.mmd_root
         morph = mmd_root.material_morphs[mmd_root.active_morph]
         mat_data = morph.data[morph.active_data]
@@ -289,7 +289,7 @@ class ApplyMaterialOffset(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         mmd_root = root.mmd_root
         morph = mmd_root.material_morphs[mmd_root.active_morph]
         mat_data = morph.data[morph.active_data]
@@ -297,10 +297,12 @@ class ApplyMaterialOffset(bpy.types.Operator):
         if not mat_data.related_mesh:
             self.report({"ERROR"}, "You need to choose a Related Mesh first")
             return {"CANCELLED"}
-        meshObj = FnModel.find_mesh_object_by_name(morph.id_data, mat_data.related_mesh)
+
+        meshObj = FnCore.find_mesh_object_by_name(mat_data.related_mesh)
         if meshObj is None:
             self.report({"ERROR"}, "The model mesh can't be found")
             return {"CANCELLED"}
+
         try:
             work_mat_name = mat_data.material + "_temp"
             work_mat, base_mat = FnMaterial.swap_materials(meshObj, work_mat_name, mat_data.material)
@@ -353,7 +355,7 @@ class CreateWorkMaterial(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         mmd_root = root.mmd_root
         morph = mmd_root.material_morphs[mmd_root.active_morph]
         mat_data = morph.data[morph.active_data]
@@ -361,7 +363,8 @@ class CreateWorkMaterial(bpy.types.Operator):
         if not mat_data.related_mesh:
             self.report({"ERROR"}, "You need to choose a Related Mesh first")
             return {"CANCELLED"}
-        meshObj = FnModel.find_mesh_object_by_name(morph.id_data, mat_data.related_mesh)
+
+        meshObj = FnCore.find_mesh_object_by_name(mat_data.related_mesh)
         if meshObj is None:
             self.report({"ERROR"}, "The model mesh can't be found")
             return {"CANCELLED"}
@@ -421,9 +424,9 @@ class ClearTempMaterials(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         assert root is not None
-        for meshObj in FnModel.iterate_mesh_objects(root):
+        for meshObj in FnCore.iterate_mesh_objects(root):
 
             def __pre_remove(m):
                 if m and "_temp" in m.name:
@@ -447,10 +450,10 @@ class ViewBoneMorph(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         assert root is not None
         mmd_root = root.mmd_root
-        armature = FnModel.find_armature_object(root)
+        armature = FnCore.find_armature_object(root)
         utils.selectSingleBone(context, armature, None, True)
         morph = mmd_root.bone_morphs[mmd_root.active_morph]
         for morph_data in morph.data:
@@ -471,9 +474,9 @@ class ClearBoneMorphView(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         assert root is not None
-        armature = FnModel.find_armature_object(root)
+        armature = FnCore.find_armature_object(root)
         for p_bone in armature.pose.bones:
             p_bone.matrix_basis.identity()
         return {"FINISHED"}
@@ -487,9 +490,9 @@ class ApplyBoneMorph(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         assert root is not None
-        armature = FnModel.find_armature_object(root)
+        armature = FnCore.find_armature_object(root)
         mmd_root = root.mmd_root
         morph = mmd_root.bone_morphs[mmd_root.active_morph]
         morph.data.clear()
@@ -514,10 +517,10 @@ class SelectRelatedBone(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         assert root is not None
         mmd_root = root.mmd_root
-        armature = FnModel.find_armature_object(root)
+        armature = FnCore.find_armature_object(root)
         morph = mmd_root.bone_morphs[mmd_root.active_morph]
         morph_data = morph.data[morph.active_data]
         utils.selectSingleBone(context, armature, morph_data.bone)
@@ -532,10 +535,10 @@ class EditBoneOffset(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         assert root is not None
         mmd_root = root.mmd_root
-        armature = FnModel.find_armature_object(root)
+        armature = FnCore.find_armature_object(root)
         morph = mmd_root.bone_morphs[mmd_root.active_morph]
         morph_data = morph.data[morph.active_data]
         p_bone = armature.pose.bones[morph_data.bone]
@@ -554,10 +557,10 @@ class ApplyBoneOffset(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         assert root is not None
         mmd_root = root.mmd_root
-        armature = FnModel.find_armature_object(root)
+        armature = FnCore.find_armature_object(root)
         assert armature is not None
         morph = mmd_root.bone_morphs[mmd_root.active_morph]
         morph_data = morph.data[morph.active_data]
@@ -575,11 +578,11 @@ class ViewUVMorph(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         assert root is not None
         mmd_root = root.mmd_root
 
-        meshes = tuple(FnModel.iterate_mesh_objects(root))
+        meshes = tuple(FnCore.iterate_mesh_objects(root))
         if len(meshes) == 1:
             obj = meshes[0]
         elif obj not in meshes:
@@ -635,9 +638,9 @@ class ClearUVMorphView(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         assert root is not None
-        for m in FnModel.iterate_mesh_objects(root):
+        for m in FnCore.iterate_mesh_objects(root):
             mesh = m.data
             uv_textures = getattr(mesh, "uv_textures", mesh.uv_layers)
             for t in uv_textures:
@@ -720,7 +723,7 @@ class ApplyUVMorph(bpy.types.Operator):
 
     def execute(self, context):
         obj = context.active_object
-        root = FnModel.find_root_object(obj)
+        root = FnCore.find_root_object(obj)
         mmd_root = root.mmd_root
         meshObj = obj
 
@@ -764,10 +767,10 @@ class CleanDuplicatedMaterialMorphs(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return FnModel.find_root_object(context.active_object) is not None
+        return FnCore.find_root_object(context.active_object) is not None
 
     def execute(self, context: bpy.types.Context):
-        mmd_root_object = FnModel.find_root_object(context.active_object)
+        mmd_root_object = FnCore.find_root_object(context.active_object)
         FnMorph.clean_duplicated_material_morphs(mmd_root_object)
 
         return {"FINISHED"}

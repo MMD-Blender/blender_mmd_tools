@@ -4,7 +4,7 @@
 
 import bpy
 
-from ...core.model import FnModel, Model
+from ...core.model import FnModel, MMDModel
 from . import FnDraw, PT_ProductionPanelBase
 from ...properties.morph import MaterialMorph
 from ...utils import ItemOp
@@ -19,12 +19,12 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
 
     def draw(self, context):
         active_obj = context.active_object
-        root = FnModel.find_root_object(active_obj)
+        root = FnCore.find_root_object(active_obj)
         if root is None:
             self.layout.label(text="Select a MMD Model")
             return
 
-        rig = Model(root)
+        rig = MMDModel(root)
         mmd_root = root.mmd_root
         col = self.layout.column()
         row = col.row()
@@ -289,7 +289,7 @@ class MMD_TOOLS_UL_BoneMorphOffsets(bpy.types.UIList):
     def draw_item(self, _context, layout, _data, item, icon, _active_data, _active_propname, _index):
         if self.layout_type in {"DEFAULT"}:
             layout.prop(item, "bone", text="", emboss=False, icon="BONE_DATA")
-            FnDraw.draw_bone_special(layout, FnModel.find_armature_object(item.id_data), item.bone)
+            FnDraw.draw_bone_special(layout, FnCore.find_armature_object(item.id_data), item.bone)
         elif self.layout_type in {"COMPACT"}:
             pass
         elif self.layout_type in {"GRID"}:

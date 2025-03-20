@@ -2,10 +2,11 @@
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
+from io import BufferedReader, BufferedWriter
 import logging
 import os
 import struct
-
+from typing import Optional
 
 class InvalidFileError(Exception):
     pass
@@ -13,7 +14,7 @@ class UnsupportedVersionError(Exception):
     pass
 
 class FileStream:
-    def __init__(self, path, file_obj, pmx_header):
+    def __init__(self, path: str, file_obj: BufferedReader | BufferedWriter, pmx_header: Optional["Header"]):
         self.__path = path
         self.__file_obj = file_obj
         self.__header = pmx_header
@@ -24,15 +25,15 @@ class FileStream:
     def __exit__(self, exc_type, exc_value, traceback):
         self.close()
 
-    def path(self):
+    def path(self) -> str:
         return self.__path
 
-    def header(self):
+    def header(self) -> "Header":
         if self.__header is None:
             raise Exception
         return self.__header
 
-    def setHeader(self, pmx_header):
+    def setHeader(self, pmx_header: "Header"):
         self.__header = pmx_header
 
     def close(self):
@@ -46,73 +47,73 @@ class FileReadStream(FileStream):
         self.__fin = open(path, 'rb')
         FileStream.__init__(self, path, self.__fin, pmx_header)
 
-    def __readIndex(self, size, typedict):
+    def __readIndex(self, size, typedict) -> int:
         index = None
-        if size in typedict :
+        if size in typedict:
             index, = struct.unpack(typedict[size], self.__fin.read(size))
         else:
             raise ValueError('invalid data size %s'%str(size))
         return index
 
-    def __readSignedIndex(self, size):
+    def __readSignedIndex(self, size) -> int:
         return self.__readIndex(size, { 1 :"<b", 2 :"<h", 4 :"<i"})
 
-    def __readUnsignedIndex(self, size):
+    def __readUnsignedIndex(self, size) -> int:
         return self.__readIndex(size, { 1 :"<B", 2 :"<H", 4 :"<I"})
 
 
     # READ methods for indexes
-    def readVertexIndex(self):
+    def readVertexIndex(self) -> int:
         return self.__readUnsignedIndex(self.header().vertex_index_size)
 
-    def readBoneIndex(self):
+    def readBoneIndex(self) -> int:
         return self.__readSignedIndex(self.header().bone_index_size)
 
-    def readTextureIndex(self):
+    def readTextureIndex(self) -> int:
         return self.__readSignedIndex(self.header().texture_index_size)
 
-    def readMorphIndex(self):
+    def readMorphIndex(self) -> int:
         return self.__readSignedIndex(self.header().morph_index_size)
 
-    def readRigidIndex(self):
+    def readRigidIndex(self) -> int:
         return self.__readSignedIndex(self.header().rigid_index_size)
 
-    def readMaterialIndex(self):
+    def readMaterialIndex(self) -> int:
         return self.__readSignedIndex(self.header().material_index_size)
 
     # READ / WRITE methods for general types
-    def readInt(self):
+    def readInt(self) -> int:
         v, = struct.unpack('<i', self.__fin.read(4))
         return v
 
-    def readShort(self):
+    def readShort(self) -> int:
         v, = struct.unpack('<h', self.__fin.read(2))
         return v
 
-    def readUnsignedShort(self):
+    def readUnsignedShort(self) -> int:
         v, = struct.unpack('<H', self.__fin.read(2))
         return v
 
-    def readStr(self):
+    def readStr(self) -> str:
         length = self.readInt()
         buf, = struct.unpack('<%ds'%length, self.__fin.read(length))
         return str(buf, self.header().encoding.charset, errors='replace')
 
-    def readFloat(self):
+    def readFloat(self) -> float:
         v, = struct.unpack('<f', self.__fin.read(4))
         return v
 
-    def readVector(self, size):
+    def readVector(self, size) -> tuple[float, ...]:
         return struct.unpack('<'+'f'*size, self.__fin.read(4*size))
 
-    def readByte(self):
+    def readByte(self) -> int:
         v, = struct.unpack('<B', self.__fin.read(1))
         return v
 
-    def readBytes(self, length):
+    def readBytes(self, length) -> bytes:
         return self.__fin.read(length)
 
-    def readSignedByte(self):
+    def readSignedByte(self) -> int:
         v, = struct.unpack('<b', self.__fin.read(1))
         return v
 
@@ -121,67 +122,64 @@ class FileWriteStream(FileStream):
         self.__fout = open(path, 'wb')
         FileStream.__init__(self, path, self.__fout, pmx_header)
 
-    def __writeIndex(self, index, size, typedict):
+    def __writeIndex(self, index: int, size: int, typedict: dict[int, str]) -> int:
         if size in typedict :
-            self.__fout.write(struct.pack(typedict[size], int(index)))
-        else:
-            raise ValueError('invalid data size %s'%str(size))
-        return
+            return self.__fout.write(struct.pack(typedict[size], int(index)))
+        raise ValueError('invalid data size %s'%str(size))
 
-    def __writeSignedIndex(self, index, size):
+    def __writeSignedIndex(self, index: int, size: int) -> int:
         return self.__writeIndex(index, size, { 1 :"<b", 2 :"<h", 4 :"<i"})
 
-    def __writeUnsignedIndex(self, index, size):
+    def __writeUnsignedIndex(self, index: int, size: int) -> int:
         return self.__writeIndex(index, size, { 1 :"<B", 2 :"<H", 4 :"<I"})
 
     # WRITE methods for indexes
-    def writeVertexIndex(self, index):
+    def writeVertexIndex(self, index: int) -> int:
         return self.__writeUnsignedIndex(index, self.header().vertex_index_size)
 
-    def writeBoneIndex(self, index):
+    def writeBoneIndex(self, index: int) -> int:
         return self.__writeSignedIndex(index, self.header().bone_index_size)
 
-    def writeTextureIndex(self, index):
+    def writeTextureIndex(self, index: int) -> int:
         return self.__writeSignedIndex(index, self.header().texture_index_size)
 
-    def writeMorphIndex(self, index):
+    def writeMorphIndex(self, index: int) -> int:
         return self.__writeSignedIndex(index, self.header().morph_index_size)
 
-    def writeRigidIndex(self, index):
+    def writeRigidIndex(self, index: int) -> int:
         return self.__writeSignedIndex(index, self.header().rigid_index_size)
 
-    def writeMaterialIndex(self, index):
+    def writeMaterialIndex(self, index) -> int:
         return self.__writeSignedIndex(index, self.header().material_index_size)
 
 
-    def writeInt(self, v):
-        self.__fout.write(struct.pack('<i', int(v)))
+    def writeInt(self, v: int) -> int:
+        return self.__fout.write(struct.pack('<i', int(v)))
 
-    def writeShort(self, v):
-        self.__fout.write(struct.pack('<h', int(v)))
+    def writeShort(self, v: int) -> int:
+        return self.__fout.write(struct.pack('<h', int(v)))
 
-    def writeUnsignedShort(self, v):
-        self.__fout.write(struct.pack('<H', int(v)))
+    def writeUnsignedShort(self, v: int) -> int:
+        return self.__fout.write(struct.pack('<H', int(v)))
 
-    def writeStr(self, v):
+    def writeStr(self, v: str) -> int:
         data = v.encode(self.header().encoding.charset)
-        self.writeInt(len(data))
-        self.__fout.write(data)
+        return self.writeInt(len(data)) + self.__fout.write(data)
 
-    def writeFloat(self, v):
-        self.__fout.write(struct.pack('<f', float(v)))
+    def writeFloat(self, v: float) -> int:
+        return self.__fout.write(struct.pack('<f', float(v)))
 
-    def writeVector(self, v):
-        self.__fout.write(struct.pack('<'+'f'*len(v), *v))
+    def writeVector(self, v: tuple[float, ...] | list[float]) -> int:
+        return self.__fout.write(struct.pack('<'+'f'*len(v), *v))
 
-    def writeByte(self, v):
-        self.__fout.write(struct.pack('<B', int(v)))
+    def writeByte(self, v: int) -> int:
+        return self.__fout.write(struct.pack('<B', int(v)))
 
-    def writeBytes(self, v):
-        self.__fout.write(v)
+    def writeBytes(self, v: bytes) -> int:
+        return self.__fout.write(v)
 
-    def writeSignedByte(self, v):
-        self.__fout.write(struct.pack('<b', int(v)))
+    def writeSignedByte(self, v: int) -> int:
+        return self.__fout.write(struct.pack('<b', int(v)))
 
 class Encoding:
     _MAP = [
@@ -980,7 +978,7 @@ class Bone:
         self.rotationConstraint = 0.03
 
         # IKLinkオブジェクトの配列
-        self.ik_links = []
+        self.ik_links: list[IKLink] = []
 
     def __repr__(self):
         return '<Bone name %s, name_e %s>'%(
@@ -1106,14 +1104,14 @@ class Bone:
 
 class IKLink:
     def __init__(self):
-        self.target = None
-        self.maximumAngle = None
-        self.minimumAngle = None
+        self.target: Optional[int] = None
+        self.maximumAngle: Optional[tuple[float, ...]] = None
+        self.minimumAngle: Optional[tuple[float, ...]] = None
 
     def __repr__(self):
         return '<IKLink target %s>'%(str(self.target))
 
-    def load(self, fs):
+    def load(self, fs: FileReadStream):
         self.target = fs.readBoneIndex()
         flag = fs.readByte()
         if flag == 1:
@@ -1123,7 +1121,7 @@ class IKLink:
             self.minimumAngle = None
             self.maximumAngle = None
 
-    def save(self, fs):
+    def save(self, fs: FileWriteStream):
         fs.writeBoneIndex(self.target)
         if isinstance(self.minimumAngle, (tuple, list)) and isinstance(self.maximumAngle, (tuple, list)):
             fs.writeByte(1)

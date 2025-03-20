@@ -282,10 +282,12 @@ class FnObject:
         key: bpy.types.Key = shape_key.id_data
         assert key == mesh_object.data.shape_keys
 
+        shape_key_path = shape_key.path_from_id()
+
         if mesh_object.animation_data is not None:
             fc_curve: bpy.types.FCurve
             for fc_curve in mesh_object.animation_data.drivers:
-                if not fc_curve.data_path.startswith(shape_key.path_from_id()):
+                if not fc_curve.data_path.startswith(shape_key_path):
                     continue
                 mesh_object.driver_remove(fc_curve.data_path)
 
@@ -524,3 +526,30 @@ class FnContext:
             keywords["selected_editable_objects"] = selected_objects
 
         return context.temp_override(window=window, area=area, region=region, **keywords)
+
+    @staticmethod
+    def viewlayer_update(context: bpy.types.Context):
+        """
+        Update the view layer.
+
+        Sometimes you want to modify values from Python and immediately access the updated values, e.g: Once changing the objects `bpy.types.Object.location` you may want to access its transformation right after from `bpy.types.Object.matrix_world`, but this doesn’t work as you might expect.
+        There are similar issues with changes to the UI, that are covered in the next section.
+
+        Consider the calculations that might contribute to the object’s final transformation, this includes:
+        - Animation function curves.
+        - Drivers and their Python expressions.
+        - Constraints
+        - Parent objects and all of their F-Curves, constraints, etc.
+
+        To avoid expensive recalculations every time a property is modified, Blender defers the evaluation until the results are needed.
+        However, while the script runs you may want to access the updated values.
+        In this case you need to call `bpy.types.ViewLayer.update` after modifying values, for example:
+
+        ```python
+        bpy.context.object.location = 1, 2, 3
+        bpy.context.view_layer.update()
+        ```
+
+        Now all dependent data (child objects, modifiers, drivers, etc.) have been recalculated and are available to the script within the active view layer.
+        """
+        context.view_layer.update()

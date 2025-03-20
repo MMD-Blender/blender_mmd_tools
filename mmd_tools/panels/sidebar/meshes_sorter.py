@@ -4,7 +4,7 @@
 
 import bpy
 
-from ...core.model import FnModel
+from ...core import FnCore
 from . import PT_ProductionPanelBase
 
 
@@ -17,7 +17,7 @@ class MMDMeshSorter(PT_ProductionPanelBase, bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         active_obj = context.active_object
-        root = FnModel.find_root_object(active_obj)
+        root = FnCore.find_root_object(active_obj)
         if root is None:
             layout.label(text="Select a MMD Model")
             return
@@ -53,7 +53,7 @@ class MMD_TOOLS_UL_ModelMeshes(bpy.types.UIList):
         flt_flags = [~self.bitflag_filter_item] * len(objects)
         flt_neworder = list(range(len(objects)))
 
-        armature = FnModel.find_armature_object(FnModel.find_root_object(context.active_object))
+        armature = FnCore.find_armature_object(FnCore.find_root_object(context.active_object))
         __is_child_of_armature = lambda x: x.parent and (x.parent == armature or __is_child_of_armature(x.parent))
 
         name_dict = {}
