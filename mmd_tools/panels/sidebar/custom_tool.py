@@ -33,6 +33,10 @@ class MMDToolsCustomToolPanel(PT_PanelBase, bpy.types.Panel):
         auto_export_box.label(text="Export Settings:", icon="EXPORT")
         auto_export_box.prop(mmd_root, "auto_export_enabled", text="Enable Auto-Export")
 
+        # --- Custom: Add mesh for selected rigid body ---
+        layout.separator()
+        layout.operator("mmd_tools.add_mesh_for_rigidbody", text="Add Mesh for Selected Rigid Body", icon="MESH_CUBE")
+
 
 
 
