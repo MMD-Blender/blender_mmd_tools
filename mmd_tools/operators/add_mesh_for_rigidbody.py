@@ -87,9 +87,10 @@ class AddMeshForRigidbodyOperator(bpy.types.Operator):
             
             # Bind mesh to the bone of the rigid body
             bone_name = obj.mmd_rigid.bone
+            root = FnModel.find_root_object(obj)
             if bone_name:
                 # Find the armature that has this bone
-                root = FnModel.find_root_object(obj)
+                
                 if root:
                     armature_obj = FnModel.find_armature_object(root)
                     if armature_obj and bone_name in armature_obj.data.bones:
@@ -111,9 +112,15 @@ class AddMeshForRigidbodyOperator(bpy.types.Operator):
                             arm_mod = mesh_obj.modifiers.new(name="Armature", type='ARMATURE')
                             arm_mod.object = armature_obj
                             arm_mod.use_vertex_groups = True
-            
+                            
             mesh_obj.select_set(True)
             context.view_layer.objects.active = mesh_obj
+            
+            # Automatically attach the mesh to the MMD model
+            if root:
+                # Use the FnModel.attach_mesh_objects function to connect the mesh to the model
+                # This is the same function used by the "Attach Meshes to Model" operator
+                FnModel.attach_mesh_objects(root, [mesh_obj], True)
 
         return {'FINISHED'}
 
