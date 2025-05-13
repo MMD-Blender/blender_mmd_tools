@@ -59,7 +59,7 @@ def register():
         kmi = km.keymap_items.new("mmd_tools.export_pmx_quick", 'E', 'PRESS', ctrl=True, alt=False)
         addon_keymaps.append((km, kmi))
         km1 = kc.keymaps.new(name='Curve', space_type='EMPTY')
-        kmi1 = km1.keymap_items.new("mmd_tools.export_pmx_quick", 'E', 'PRESS', ctrl=True, alt=True)
+        kmi1 = km1.keymap_items.new("mmd_tools.export_pmx_quick", 'E', 'PRESS', ctrl=True, alt=False)
         addon_keymaps.append((km1, kmi1))
 
 def unregister():
