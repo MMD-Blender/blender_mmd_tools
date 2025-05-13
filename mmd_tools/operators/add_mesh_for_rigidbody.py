@@ -46,23 +46,47 @@ class AddMeshForRigidbodyOperator(bpy.types.Operator):
             radius = size.x
             height = max(size.z, size.y)
             # Cylinder
-            bpy.ops.mesh.primitive_cylinder_add(radius=radius, depth=height , location=obj.location)
+            bpy.ops.mesh.primitive_cylinder_add(radius=radius, depth=height, location=obj.location)
             mesh_obj = context.active_object
             mesh_obj.name = name
 
-            # Top sphere
+            # Top half sphere
             top_loc = obj.location.copy()
-            top_loc.z += (height ) / 2
+            top_loc.z += height / 2
             bpy.ops.mesh.primitive_uv_sphere_add(radius=radius, location=top_loc)
             top_sphere = context.active_object
             top_sphere.name = name + "_top"
+            # Delete lower half
+            bpy.ops.object.mode_set(mode='EDIT')
+            bpy.ops.mesh.select_all(action='DESELECT')
+            bpy.ops.object.mode_set(mode='OBJECT')
+            # Select vertices in lower half
+            for v in top_sphere.data.vertices:
+                if v.co.z < 0:
+                    v.select = True
+            # Delete selected vertices
+            bpy.ops.object.mode_set(mode='EDIT')
+            bpy.ops.mesh.delete(type='VERT')
+            bpy.ops.object.mode_set(mode='OBJECT')
 
-            # Bottom sphere
+            # Bottom half sphere
             bottom_loc = obj.location.copy()
-            bottom_loc.z -= (height ) / 2
+            bottom_loc.z -= height / 2
             bpy.ops.mesh.primitive_uv_sphere_add(radius=radius, location=bottom_loc)
             bottom_sphere = context.active_object
             bottom_sphere.name = name + "_bottom"
+            # Delete upper half
+            bpy.ops.object.mode_set(mode='EDIT')
+            bpy.ops.mesh.select_all(action='DESELECT')
+            bpy.ops.object.mode_set(mode='OBJECT')
+            # Select vertices in upper half
+            for v in bottom_sphere.data.vertices:
+                if v.co.z > 0:
+                    v.select = True
+            # Delete selected vertices
+            bpy.ops.object.mode_set(mode='EDIT')
+            bpy.ops.mesh.delete(type='VERT')
+            bpy.ops.object.mode_set(mode='OBJECT')
 
             # Join all parts into one mesh
             bpy.ops.object.select_all(action='DESELECT')
