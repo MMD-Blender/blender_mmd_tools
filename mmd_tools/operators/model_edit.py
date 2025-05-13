@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2022 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -9,7 +8,7 @@ from typing import Dict, List, Optional, Set
 import bmesh
 import bpy
 
-from ..bpyutils import FnContext
+from ..bpyutils import FnContext, select_object
 from ..core.model import FnModel, Model
 
 
@@ -71,8 +70,19 @@ class ModelJoinByBonesOperator(bpy.types.Operator):
         if parent_root_object is None or len(child_root_objects) == 0:
             raise MessageException("No MMD Models selected")
 
-        with FnContext.temp_override_active_layer_collection(context, parent_root_object):
-            FnModel.join_models(parent_root_object, child_root_objects)
+        # Save original active_layer_collection
+        orig_active_layer_collection = context.view_layer.active_layer_collection
+        
+        # Find layer collection containing parent_root_object and set it as active
+        layer_collection = FnContext.find_user_layer_collection_by_object(context, parent_root_object)
+        if layer_collection:
+            context.view_layer.active_layer_collection = layer_collection
+        
+        # Execute the join operation
+        FnModel.join_models(parent_root_object, child_root_objects)
+        
+        # Restore original active_layer_collection
+        context.view_layer.active_layer_collection = orig_active_layer_collection
 
         bpy.ops.object.mode_set(mode="EDIT")
         bpy.ops.armature.parent_set(type="OFFSET")
@@ -147,9 +157,12 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         root_bones: Set[bpy.types.EditBone] = set(context.selected_bones)
 
         if self.include_descendant_bones:
+            original_active_bone = context.active_bone
             for edit_bone in root_bones:
-                with context.temp_override(active_bone=edit_bone):
-                    bpy.ops.armature.select_similar(type="CHILDREN", threshold=0.1)
+                context.object.data.edit_bones.active = edit_bone
+                bpy.ops.armature.select_similar(type="CHILDREN", threshold=0.1)
+            if original_active_bone:
+                context.object.data.edit_bones.active = original_active_bone
 
         separate_bones: Dict[str, bpy.types.EditBone] = {b.name: b for b in context.selected_bones}
         deform_bones: Dict[str, bpy.types.EditBone] = {b.name: b for b in target_armature_object.data.edit_bones if b.use_deform}
@@ -213,37 +226,24 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         separate_model_armature_object = separate_model.armature()
 
         if self.separate_armature:
-            with context.temp_override(
-                active_object=separate_model_armature_object,
-                selected_editable_objects=[separate_model_armature_object, separate_armature_object],
-            ):
+            with select_object(separate_model_armature_object, objects=[separate_model_armature_object, separate_armature_object]):
                 bpy.ops.object.join()
 
-        # add mesh
-        with context.temp_override(
-            object=separate_model_armature_object,
-            selected_editable_objects=[separate_model_armature_object, *separate_mesh_objects],
-        ):
+        with select_object(separate_model_armature_object, objects=[separate_model_armature_object] + list(separate_mesh_objects)):
             bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
         # replace mesh armature modifier.object
         for separate_mesh in separate_mesh_objects:
             armature_modifier: Optional[bpy.types.ArmatureModifier] = next(iter([m for m in separate_mesh.modifiers if m.type == "ARMATURE"]), None)
             if armature_modifier is None:
-                armature_modifier: bpy.types.ArmatureModifier = separate_mesh.modifiers.new("mmd_bone_order_override", "ARMATURE")
+                armature_modifier: bpy.types.ArmatureModifier = separate_mesh.modifiers.new("mmd_armature", "ARMATURE")
 
             armature_modifier.object = separate_model_armature_object
 
-        with context.temp_override(
-            object=separate_model.rigidGroupObject(),
-            selected_editable_objects=[separate_model.rigidGroupObject(), *separate_rigid_bodies],
-        ):
+        with select_object(separate_model.rigidGroupObject(), objects=[separate_model.rigidGroupObject()] + list(separate_rigid_bodies)):
             bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
-        with context.temp_override(
-            object=separate_model.jointGroupObject(),
-            selected_editable_objects=[separate_model.jointGroupObject(), *separate_joints],
-        ):
+        with select_object(separate_model.jointGroupObject(), objects=[separate_model.jointGroupObject()] + list(separate_joints)):
             bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
         # move separate objects to new collection
@@ -267,6 +267,8 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
                 "related_mesh": {m.data.name: s.data.name for m, s in model2separate_mesh_objects.items()}
             },
         )
+
+        FnContext.set_active_and_select_single_object(context, separate_root_object)
 
     def select_weighted_vertices(self, mmd_model_mesh_objects: List[bpy.types.Object], separate_bones: Dict[str, bpy.types.EditBone], deform_bones: Dict[str, bpy.types.EditBone], weight_threshold: float) -> Dict[bpy.types.Object, int]:
         mesh2selected_vertex_count: Dict[bpy.types.Object, int] = dict()

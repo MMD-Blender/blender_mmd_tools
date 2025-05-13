@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -12,7 +11,10 @@ import bpy
 from bpy.types import Operator, OperatorFileListElement
 from bpy_extras.io_utils import ExportHelper, ImportHelper
 
-from ..core.model import Model, FnModel
+from .. import auto_scene_setup
+from ..core.camera import MMDCamera
+from ..core.lamp import MMDLamp
+from ..core.model import FnModel, Model
 from ..core.pmd import importer as pmd_importer
 from ..core.pmx import exporter as pmx_exporter
 from ..core.pmx import importer as pmx_importer
@@ -20,9 +22,6 @@ from ..core.vmd import exporter as vmd_exporter
 from ..core.vmd import importer as vmd_importer
 from ..core.vpd import exporter as vpd_exporter
 from ..core.vpd import importer as vpd_importer
-from .. import auto_scene_setup
-from ..core.camera import MMDCamera
-from ..core.lamp import MMDLamp
 from ..translations import DictionaryEnum
 from ..utils import makePmxBoneMap
 

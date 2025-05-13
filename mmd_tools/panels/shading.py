@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2023 MMD Tools authors
 # This file is part of MMD Tools.
 

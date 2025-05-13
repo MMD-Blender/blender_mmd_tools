@@ -3,7 +3,6 @@ import shutil
 import unittest
 
 import bpy
-
 from bl_ext.user_default.mmd_tools.core import pmx
 from bl_ext.user_default.mmd_tools.core.model import Model
 
@@ -65,7 +64,7 @@ class TestFileIoOperators(unittest.TestCase):
             self.assertTrue(os.path.isfile(output_pmx), "File was not created")  # Is this a race condition?
             # Check if the texture was properly copied
             tex_path = os.path.join(os.path.dirname(output_pmx), 'textures', 'blush.png')
-            self.assertTrue(os.path.isfile(tex_path), "Texture not copied properly")
+            self.assertTrue(os.path.isfile(tex_path), f"Texture not copied properly. Expected file at: {tex_path}")
             # Load the resultant pmx file and check the material order is the expected
             result_model = pmx.load(output_pmx)
             result_material_names = [mat.name for mat in result_model.materials]

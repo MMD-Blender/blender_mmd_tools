@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2015 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -7,10 +6,10 @@ from typing import Optional, cast
 import bpy
 from mathutils import Quaternion, Vector
 
-from ..core.model import FnModel
 from .. import bpyutils, utils
 from ..core.exceptions import MaterialNotFoundError
 from ..core.material import FnMaterial
+from ..core.model import FnModel
 from ..core.morph import FnMorph
 from ..utils import ItemMoveOp, ItemOp
 
@@ -770,4 +769,155 @@ class CleanDuplicatedMaterialMorphs(bpy.types.Operator):
         mmd_root_object = FnModel.find_root_object(context.active_object)
         FnMorph.clean_duplicated_material_morphs(mmd_root_object)
 
+        return {"FINISHED"}
+
+
+class ConvertGroupMorphToVertexMorph(bpy.types.Operator):
+    bl_idname = "mmd_tools.convert_group_morph_to_vertex_morph"
+    bl_label = "Convert To Vertex Morph"
+    bl_description = "Convert a group morph into a single vertex morph by merging only the vertex morphs within the group.\nIf a corresponding vertex morph already exists, it will be updated."
+    bl_options = {"REGISTER", "UNDO", "INTERNAL"}
+
+    @classmethod
+    def poll(cls, context):
+        obj = context.active_object
+        root = FnModel.find_root_object(obj)
+        if root is None:
+            return False
+        mmd_root = root.mmd_root
+        if mmd_root.active_morph_type != "group_morphs":
+            return False
+        morph = ItemOp.get_by_index(mmd_root.group_morphs, mmd_root.active_morph)
+        return morph is not None and len(morph.data) > 0
+
+    def execute(self, context):
+        bpy.ops.mmd_tools.morph_slider_setup(type="UNBIND")
+
+        obj = context.active_object
+        root = FnModel.find_root_object(obj)
+        mmd_root = root.mmd_root
+
+        # Get the active group morph
+        group_morph = ItemOp.get_by_index(mmd_root.group_morphs, mmd_root.active_morph)
+        if group_morph is None:
+            self.report({"ERROR"}, "No active group morph")
+            return {"CANCELLED"}
+
+        # Check if the group morph contains any vertex morphs to convert
+        has_vertex_morphs = False
+        for offset in group_morph.data:
+            if offset.morph_type == "vertex_morphs":
+                has_vertex_morphs = True
+                break
+
+        if not has_vertex_morphs:
+            self.report({"ERROR"}, "The group morph does not contain any vertex morphs to convert")
+            return {"CANCELLED"}
+
+        original_name = group_morph.name
+        target_name = original_name
+
+        # Add 'G' suffix if necessary
+        if not original_name.endswith("G"):
+            group_morph.name = original_name + "G"
+            target_name = original_name
+        else:
+            # If already has G suffix, use name without G
+            target_name = original_name[:-1]
+
+        # First, reset all shape keys to zero
+        for obj in FnModel.iterate_mesh_objects(root):
+            if obj.data.shape_keys:
+                for kb in obj.data.shape_keys.key_blocks:
+                    kb.value = 0
+
+        # Apply only the vertex morphs from the group morph
+        for offset in group_morph.data:
+            if offset.morph_type == "vertex_morphs":
+                # Find the vertex morph by name
+                vertex_morph = getattr(root.mmd_root, offset.morph_type).get(offset.name)
+                if vertex_morph:
+                    # Apply this morph at the specified factor
+                    for obj in FnModel.iterate_mesh_objects(root):
+                        if obj.data.shape_keys:
+                            kb = obj.data.shape_keys.key_blocks.get(offset.name)
+                            if kb:
+                                kb.value = offset.factor
+
+        # Now add a new shape key from mix for each mesh
+        for obj in FnModel.iterate_mesh_objects(root):
+            if obj.data.shape_keys:
+                # Make this the active object
+                context.view_layer.objects.active = obj
+
+                # Remove existing shape key if it exists
+                if target_name in obj.data.shape_keys.key_blocks:
+                    idx = obj.data.shape_keys.key_blocks.find(target_name)
+                    if idx >= 0:
+                        obj.active_shape_key_index = idx
+                        bpy.ops.object.shape_key_remove()
+
+                # Add shape key from mix
+                bpy.ops.object.shape_key_add(from_mix=True)
+
+                # Rename the newly created shape key
+                new_key = obj.data.shape_keys.key_blocks[-1]
+                new_key.name = target_name
+
+        # Check if a vertex morph with the target name already exists
+        vertex_morph_exists = False
+        for i, morph in enumerate(mmd_root.vertex_morphs):
+            if morph.name == target_name:
+                vertex_morph_exists = True
+                mmd_root.active_morph_type = "vertex_morphs"
+                mmd_root.active_morph = i
+                break
+
+        # If not, create a new vertex morph
+        if not vertex_morph_exists:
+            # Switch to vertex morphs panel
+            mmd_root.active_morph_type = "vertex_morphs"
+
+            # Add new vertex morph
+            morph, mmd_root.active_morph = ItemOp.add_after(mmd_root.vertex_morphs, mmd_root.active_morph)
+            morph.name = target_name
+
+        # Add the new vertex morph to the facial display frame
+        facial_frame = None
+        for frame in mmd_root.display_item_frames:
+            if frame.name == "表情":  # This is the facial display frame
+                facial_frame = frame
+                break
+
+        if facial_frame:
+            # Check if this morph is already in the facial frame
+            morph_exists_in_frame = False
+            for item in facial_frame.data:
+                if item.type == "MORPH" and item.name == target_name and item.morph_type == "vertex_morphs":
+                    morph_exists_in_frame = True
+                    break
+
+            # If not, add it
+            if not morph_exists_in_frame:
+                new_item = facial_frame.data.add()
+                new_item.type = "MORPH"
+                new_item.morph_type = "vertex_morphs"
+                new_item.name = target_name
+
+                # Make this the active item in the facial frame
+                facial_frame.active_item = len(facial_frame.data) - 1
+
+                # Set the facial frame as active
+                for i, frame in enumerate(mmd_root.display_item_frames):
+                    if frame.name == "表情":
+                        mmd_root.active_display_item_frame = i
+                        break
+
+        # Reset all shape keys
+        for obj in FnModel.iterate_mesh_objects(root):
+            if obj.data.shape_keys:
+                for kb in obj.data.shape_keys.key_blocks:
+                    kb.value = 0
+
+        self.report({"INFO"}, f"Successfully converted vertex morphs in group to vertex morph '{target_name}' and added to facial display frame")
         return {"FINISHED"}

@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
 from typing import cast
+
 import bpy
 
 from ..core.bone import FnBone
@@ -11,6 +11,7 @@ from . import patch_library_overridable
 
 def _mmd_bone_update_additional_transform(prop: "MMDBone", context: bpy.types.Context):
     prop["is_additional_transform_dirty"] = True
+    # Apply additional transformation (Assembly -> Bone button) (Very Slow)
     p_bone = context.active_pose_bone
     if p_bone and p_bone.mmd_bone.as_pointer() == prop.as_pointer():
         FnBone.apply_additional_transformation(prop.id_data)
@@ -43,6 +44,26 @@ def _mmd_bone_set_additional_transform_bone(prop: "MMDBone", value: str):
         return
     pose_bone = arm.pose.bones[value]
     prop["additional_transform_bone_id"] = FnBone.get_or_assign_bone_id(pose_bone)
+
+
+def _mmd_bone_get_display_connection_bone(prop: "MMDBone"):
+    arm = prop.id_data
+    bone_id = prop.get("display_connection_bone_id", -1)
+    if bone_id < 0:
+        return ""
+    pose_bone = FnBone.find_pose_bone_by_bone_id(arm, bone_id)
+    if pose_bone is None:
+        return ""
+    return pose_bone.name
+
+
+def _mmd_bone_set_display_connection_bone(prop: "MMDBone", value: str):
+    arm = prop.id_data
+    if value not in arm.pose.bones.keys():
+        prop["display_connection_bone_id"] = -1
+        return
+    pose_bone = arm.pose.bones[value]
+    prop["display_connection_bone_id"] = FnBone.get_or_assign_bone_id(pose_bone)
 
 
 class MMDBone(bpy.types.PropertyGroup):
@@ -180,6 +201,29 @@ class MMDBone(bpy.types.PropertyGroup):
     )
 
     is_additional_transform_dirty: bpy.props.BoolProperty(name="", default=True)
+
+    display_connection_bone: bpy.props.StringProperty(
+        name="Display Connection Bone",
+        description="Target bone for display connection",
+        set=_mmd_bone_set_display_connection_bone,
+        get=_mmd_bone_get_display_connection_bone,
+    )
+
+    display_connection_bone_id: bpy.props.IntProperty(
+        name="Display Connection Bone ID",
+        description="Bone ID for display connection (PMX displayConnection)",
+        default=-1,
+    )
+
+    display_connection_type: bpy.props.EnumProperty(
+        name="Display Connection Type",
+        description="Type of display connection",
+        items=[
+            ("BONE", "Bone", "Connected to a bone"),
+            ("OFFSET", "Offset", "Connected to an offset position"),
+        ],
+        default="OFFSET",
+    )
 
     def is_id_unique(self):
         return self.bone_id < 0 or not next((b for b in self.id_data.pose.bones if b.mmd_bone != self and b.mmd_bone.bone_id == self.bone_id), None)

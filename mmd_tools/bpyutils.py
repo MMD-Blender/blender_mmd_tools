@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2013 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -65,7 +64,11 @@ class __SelectObjects:
 
     def __exit__(self, type, value, traceback):
         for i, j in zip(self.__selected_objects, self.__hides):
-            i.hide_set(j)
+            try:
+                i.hide_set(j)
+            except ReferenceError:
+                # Object may no longer exist, so skip restoring hidden state.
+                pass
 
 
 def setParent(obj, parent):
@@ -312,6 +315,10 @@ class FnContext:
 
     @staticmethod
     def get_active_object(context: bpy.types.Context) -> Optional[bpy.types.Object]:
+        # Added defensive programming for get methods
+        # Related to: https://github.com/MMD-Blender/blender_mmd_tools/issues/176
+        if context is None or not hasattr(context, 'active_object'):
+            return None
         return context.active_object
 
     @staticmethod
@@ -325,6 +332,10 @@ class FnContext:
 
     @staticmethod
     def get_scene_objects(context: bpy.types.Context) -> bpy.types.SceneObjects:
+        # Added defensive programming for get methods
+        # Added for consistency with get_active_object
+        if context is None or not hasattr(context, 'scene') or not hasattr(context.scene, 'objects'):
+            return []
         return context.scene.objects
 
     @staticmethod

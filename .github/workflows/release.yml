@@ -1,28 +1,48 @@
 on:
   push:
-    branches:
-      - "!*"
     tags:
-      - "v*"
+      - "v[0-9]+.[0-9]+.[0-9]+"
 
 name: Release
 
 jobs:
-  build:
+  release:
+    # Note: `github.event.base_ref` is equal to `refs/heads/main` when the workflow is triggered
+    # by a branch, or a lightweight tag (_not_ an annotated tag), placed on the last commit of the `main` branch
+    if: github.event.base_ref == 'refs/heads/main'
+
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Generate zip filename
+        run: |
+          declare -A tag_prefix_to_blender_version=(
+            ["v2"]="bl3.6"
+            ["v4"]="bl4.2"
+          )
+          blender_version=${tag_prefix_to_blender_version[${GITHUB_REF_NAME%%.*}]}
+          if [ -z "$blender_version" ]; then
+            echo "Error: No Blender version mapping found for tag ${GITHUB_REF_NAME}"
+            exit 1
+          fi
+          echo "zip_filename=mmd_tools-${GITHUB_REF_NAME}-${blender_version}.zip" >> $GITHUB_ENV
+
       - name: Copy LICENSE file
         run: cp -p LICENSE mmd_tools/
 
-      - name: Remove typings for development
+      - name: Remove development-only files
         run: rm -rf mmd_tools/typings
 
       - name: Create a zip
-        run: (cd mmd_tools && find . -type f ! -path "*/.*" ! -path "*/__pycache__/*" -print | zip -9r "../mmd_tools-${GITHUB_REF_NAME}.zip" -@)
+        run: |
+          (
+            cd mmd_tools &&
+            find . -type f ! -path "*/.*" ! -path "*/__pycache__/*" -print |
+            zip -9r "../${{ env.zip_filename }}" -@
+          )
 
       - name: Create a Release
         id: create_release
@@ -30,8 +50,7 @@ jobs:
         with:
           name: Release ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
-          files: |
-            mmd_tools-${{ github.ref_name }}.zip
+          files: ${{ env.zip_filename }}
           draft: true
           generate_release_notes: true
           prerelease: false

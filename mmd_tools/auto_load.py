@@ -1,11 +1,12 @@
+import importlib
+import inspect
 import os
-import bpy
+import pkgutil
 import sys
 import typing
-import inspect
-import pkgutil
-import importlib
 from pathlib import Path
+
+import bpy
 
 __all__ = (
     "init",

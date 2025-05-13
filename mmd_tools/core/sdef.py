@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -35,7 +34,7 @@ class FnSDEF:
     def __init_cache(cls, obj, shapekey):
         key = _hash(obj)
         obj = getattr(obj, "original", obj)
-        mod = obj.modifiers.get("mmd_bone_order_override")
+        mod = obj.modifiers.get("mmd_armature")
         key_armature = _hash(mod.object.pose) if mod and mod.type == "ARMATURE" and mod.object else None
         if key not in cls.g_verts or cls.__g_armature_check.get(key) != key_armature:
             cls.g_verts[key] = cls.__find_vertices(obj)
@@ -68,7 +67,7 @@ class FnSDEF:
     def __sdef_muted(cls, obj, shapekey):
         mute = shapekey.mute
         if mute != cls.g_bone_check[_hash(obj)].get("sdef_mute"):
-            mod = obj.modifiers.get("mmd_bone_order_override")
+            mod = obj.modifiers.get("mmd_armature")
             if mod and mod.type == "ARMATURE":
                 if not mute and cls.MASK_NAME not in obj.vertex_groups and obj.mode != "EDIT":
                     mask = tuple(i for v in cls.g_verts[_hash(obj)].values() for i in v[3])
@@ -81,7 +80,7 @@ class FnSDEF:
 
     @staticmethod
     def has_sdef_data(obj):
-        mod = obj.modifiers.get("mmd_bone_order_override")
+        mod = obj.modifiers.get("mmd_armature")
         if mod and mod.type == "ARMATURE" and mod.object:
             kb = getattr(obj.data.shape_keys, "key_blocks", None)
             return kb and "mmd_sdef_c" in kb and "mmd_sdef_r0" in kb and "mmd_sdef_r1" in kb
@@ -93,7 +92,7 @@ class FnSDEF:
             return {}
 
         vertices = {}
-        pose_bones = obj.modifiers.get("mmd_bone_order_override").object.pose.bones
+        pose_bones = obj.modifiers.get("mmd_armature").object.pose.bones
         bone_map = {g.index: pose_bones[g.name] for g in obj.vertex_groups if g.name in pose_bones}
         sdef_c = obj.data.shape_keys.key_blocks["mmd_sdef_c"].data
         sdef_r0 = obj.data.shape_keys.key_blocks["mmd_sdef_r0"].data
@@ -142,7 +141,7 @@ class FnSDEF:
         if cls.__sdef_muted(obj, shapekey):
             return 0.0
 
-        pose_bones = obj.modifiers.get("mmd_bone_order_override").object.pose.bones
+        pose_bones = obj.modifiers.get("mmd_armature").object.pose.bones
         if not bulk_update:
             shapekey_data = shapekey.data
             if use_scale:
@@ -281,7 +280,7 @@ class FnSDEF:
         ov.targets[0].data_path = "name"
         if not bulk_update and use_skip:  # FIXME: force disable use_skip=True for bulk_update=False on 2.8
             use_skip = False
-        mod = obj.modifiers.get("mmd_bone_order_override")
+        mod = obj.modifiers.get("mmd_armature")
         variables = f.driver.variables
         for name in set(data[i].name for data in cls.g_verts[_hash(obj)].values() for i in range(2)):  # add required bones for dependency graph
             var = variables.new()

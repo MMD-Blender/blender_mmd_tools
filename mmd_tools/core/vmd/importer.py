@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -507,11 +506,29 @@ class VMDImporter:
         mirror_map = _MirrorMapper(meshObj.data.shape_keys.key_blocks) if self.__mirror else {}
         shapeKeyDict = {k: mirror_map.get(k, v) for k, v in meshObj.data.shape_keys.key_blocks.items()}
 
+        from ...core.model import FnModel
+
+        # Get all available morph names from the model
+        root_object = FnModel.find_root_object(meshObj)
+        model_morph_names = set()
+        if root_object:
+            mmd_root = root_object.mmd_root
+            # Check all types of morphs in the model
+            for morph_type in ["vertex_morphs", "uv_morphs", "bone_morphs", "material_morphs", "group_morphs"]:
+                for morph in getattr(mmd_root, morph_type, []):
+                    model_morph_names.add(morph.name)
+
         from math import ceil, floor
 
         for name, keyFrames in shapeKeyAnim.items():
             if name not in shapeKeyDict:
-                logging.warning("WARNING: not found shape key %s (%d frames)", name, len(keyFrames))
+                # Check if model has this morph registered but not set up
+                if name in model_morph_names:
+                    # Model has the morph but it's not assembled
+                    logging.warning("WARNING: not found shape key %s (%d frames) - model has this morph but needs assembly", name, len(keyFrames))
+                else:
+                    # Model doesn't have this morph at all
+                    logging.warning("WARNING: not found shape key %s (%d frames) - model doesn't have this morph", name, len(keyFrames))
                 continue
             logging.info("(mesh) frames:%5d  name: %s", len(keyFrames), name)
             shapeKey = shapeKeyDict[name]

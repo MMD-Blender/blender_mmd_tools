@@ -1,0 +1,3664 @@
+# Blender's translation file (po format).
+# Copyright (C) 2024 The Blender Authors.
+# This file is distributed under the same license as the Blender package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr "Project-Id-Version: MMD Tools 4.3.3 (0)"
+
+#. :src: bpy.types.MMDToolsAddonPreferences.base_texture_folder
+msgid "Base Texture Folder"
+msgstr "ベーステクスチャフォルダ"
+
+#. :src: bpy.types.MMDToolsAddonPreferences.base_texture_folder
+msgid "Path for textures shared between models"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.dictionary_folder
+msgid "Dictionary Folder"
+msgstr "辞書フォルダ"
+
+#. :src: bpy.types.MMDToolsAddonPreferences.dictionary_folder
+msgid "Path for searching csv dictionaries"
+msgstr ""
+
+#. :src: bpy.types.MMDToolsAddonPreferences.enable_mmd_model_production_features
+msgid "Enable MMD Model Production Features"
+msgstr "MMDモデル製作機能を有効化"
+
+#. :src: bpy.types.MMDToolsAddonPreferences.shared_toon_folder
+msgid "Shared Toon Texture Folder"
+msgstr "共有トゥーンテクスチャフォルダ"
+
+#. :src: bpy.types.MMDToolsAddonPreferences.shared_toon_folder
+msgid "Directory path to toon textures. This is normally the \"Data\" directory within of your MikuMikuDance directory"
+msgstr ""
+
+#. :src: bpy.types.Object.mmd_type
+msgid "Internal MMD type of this object (DO NOT CHANGE IT DIRECTLY)"
+msgstr ""
+
+#. :src: bpy.types.Object.mmd_type:'RIGID_GRP_OBJ'
+msgid "Rigid Body Grp Empty"
+msgstr ""
+
+#. :src: bpy.types.Object.mmd_type:'JOINT_GRP_OBJ'
+msgid "Joint Grp Empty"
+msgstr ""
+
+#. :src: bpy.types.Object.mmd_type:'TEMPORARY_GRP_OBJ'
+msgid "Temporary Grp Empty"
+msgstr ""
+
+#. :src: bpy.types.Object.mmd_type:'PLACEHOLDER'
+msgid "Place Holder"
+msgstr ""
+
+#. :src: bpy.types.Object.mmd_type:'JOINT'
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:53
+msgid "Joint"
+msgstr "ジョイント"
+
+#. :src: bpy.types.Object.mmd_type:'RIGID_BODY'
+msgid "Rigid body"
+msgstr ""
+
+#. :src: bpy.types.Object.mmd_type:'TRACK_TARGET'
+msgid "Track Target"
+msgstr ""
+
+#. :src: bpy.types.Object.mmd_type:'NON_COLLISION_CONSTRAINT'
+msgid "Non Collision Constraint"
+msgstr ""
+
+#. :src: bpy.types.Object.mmd_type:'SPRING_CONSTRAINT'
+msgid "Spring Constraint"
+msgstr ""
+
+#. :src: bpy.types.Object.mmd_type:'SPRING_GOAL'
+msgid "Spring Goal"
+msgstr ""
+
+#. :src: bpy.types.OBJECT_MT_mmd_tools_bone_order_menu
+#, fuzzy
+msgid "Bone Order Menu"
+msgstr "ボーン順序"
+
+#. :src: bpy.types.OBJECT_MT_mmd_tools_display_item_frame_menu
+#, fuzzy
+msgid "Display Item Frame Menu"
+msgstr "表示項目フレームを追加"
+
+#. :src: bpy.types.OBJECT_MT_mmd_tools_display_item_menu
+msgid "Display Item Menu"
+msgstr ""
+
+#. :src: bpy.types.OBJECT_MT_mmd_tools_joint_menu
+msgid "Joint Menu"
+msgstr ""
+
+#. :src: bpy.types.OBJECT_MT_mmd_tools_morph_menu
+msgid "Morph Menu"
+msgstr ""
+
+#. :src: bpy.types.OBJECT_MT_mmd_tools_rigidbody_menu
+msgid "Rigidbody Menu"
+msgstr ""
+
+#. :src: bpy.types.OBJECT_MT_mmd_tools_rigidbody_select_menu
+msgid "Rigidbody Select Menu"
+msgstr ""
+
+#. :src: bpy.types.TOPBAR_MT_mmd_file_export
+#. :src: bpy.types.TOPBAR_MT_mmd_file_import
+#. :src: bpy.types.VIEW3D_MT_mmd_armature_add
+#. :src: bpy.types.VIEW3D_MT_mmd_object
+#. :src: bpy.types.VIEW3D_MT_mmd_pose
+#. :src: bpy.types.VIEW3D_MT_mmd_select_object
+#. :src: bpy.types.VIEW3D_PT_mmd_shading
+msgid "MMD UuuNyaa"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_add_missing_vertex_groups_from_bones
+msgctxt "Operator"
+msgid "Add Missing Vertex Groups from Bones"
+msgstr "ボーンから不足している頂点グループを追加"
+
+#. :src: bpy.types.MMD_TOOLS_OT_add_missing_vertex_groups_from_bones
+msgid "Add the missing vertex groups to the selected mesh"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_add_missing_vertex_groups_from_bones.search_in_all_meshes
+msgid "Search in all meshes"
+msgstr "全てのメッシュで検索"
+
+#. :src: bpy.types.MMD_TOOLS_OT_add_missing_vertex_groups_from_bones.search_in_all_meshes
+msgid "Search for vertex groups in all meshes"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_apply_additional_transform
+msgctxt "Operator"
+msgid "Apply Additional Transform"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_apply_additional_transform
+msgid "Translate appended bones of selected object for Blender"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_apply_bone_morph
+msgctxt "Operator"
+msgid "Apply Bone Morph"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_apply_bone_morph
+msgid "Apply current pose to active bone morph"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_apply_bone_morph_offset
+msgctxt "Operator"
+msgid "Apply Bone Morph Offset"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_apply_bone_morph_offset
+msgid "Stores the current bone location and rotation into this offset"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_apply_material_morph_offset
+msgctxt "Operator"
+msgid "Apply Material Offset"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_apply_material_morph_offset
+msgid "Calculates the offsets and apply them, then the temporary material is removed"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_apply_uv_morph
+msgctxt "Operator"
+msgid "Apply UV Morph"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_apply_uv_morph
+msgid "Calculate the UV offsets of selected vertices and apply to active UV morph"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_assemble_all
+msgctxt "Operator"
+msgid "Assemble All"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_attach_meshes
+msgctxt "Operator"
+msgid "Attach Meshes to Model"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_attach_meshes
+msgid "Finds existing meshes and attaches them to the selected MMD model"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_fixed_axis_setup
+#, fuzzy
+msgctxt "Operator"
+msgid "Setup Bone Fixed Axis"
+msgstr "ボーン修正回転軸を適用"
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_fixed_axis_setup
+msgid "Setup fixed axis of selected bones"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_fixed_axis_setup.type
+#. :src: bpy.types.MMD_TOOLS_OT_bone_local_axes_setup.type
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup.type
+#. :src: bpy.types.MMD_TOOLS_OT_morph_slider_setup.type
+msgid "Select type"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_fixed_axis_setup.type:'DISABLE'
+msgid "Disable MMD fixed axis of selected bones"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_fixed_axis_setup.type:'LOAD'
+#. :src: bpy.types.MMD_TOOLS_OT_bone_local_axes_setup.type:'LOAD'
+msgid "Load"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_fixed_axis_setup.type:'LOAD'
+msgid "Load/Enable MMD fixed axis of selected bones from their Y-axis or the only rotatable axis"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_fixed_axis_setup.type:'APPLY'
+msgid "Align bone axes to MMD fixed axis of each bone"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_id_move_bottom
+msgctxt "Operator"
+msgid "Move Bone ID to Bottom"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_id_move_bottom
+msgid "Move active bone to the bottom of bone order"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_id_move_down
+msgctxt "Operator"
+msgid "Move Bone ID Down"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_id_move_down
+msgid "Move active bone down in bone order"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_id_move_top
+msgctxt "Operator"
+msgid "Move Bone ID to Top"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_id_move_top
+msgid "Move active bone to the top of bone order"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_id_move_up
+msgctxt "Operator"
+msgid "Move Bone ID Up"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_id_move_up
+msgid "Move active bone up in bone order"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_local_axes_setup
+msgctxt "Operator"
+msgid "Setup Bone Local Axes"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_local_axes_setup
+msgid "Setup local axes of each bone"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_local_axes_setup.type:'DISABLE'
+msgid "Disable MMD local axes of selected bones"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_local_axes_setup.type:'LOAD'
+msgid "Load/Enable MMD local axes of selected bones from their bone axes"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_bone_local_axes_setup.type:'APPLY'
+msgid "Align bone axes to MMD local axes of each bone"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_build_rig
+msgctxt "Operator"
+msgid "Build Rig"
+msgstr "ビルドリグ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_build_rig
+msgid "Translate physics of selected object into format usable by Blender"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_build_rig.collision_margin
+msgid "The collision margin between rigid bodies. If 0, the default value for each shape is adopted."
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_build_rig.non_collision_distance_scale
+msgid "Non-Collision Distance Scale"
+msgstr "非衝突距離スケール"
+
+#. :src: bpy.types.MMD_TOOLS_OT_build_rig.non_collision_distance_scale
+msgid "The distance scale for creating extra non-collision constraints while building physics"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_change_mmd_ik_loop_factor
+#: extensions/user_default/mmd_tools/panels/prop_object.py:34
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:161
+msgctxt "Operator"
+msgid "Change MMD IK Loop Factor"
+msgstr "MMD IK反復係数を変更"
+
+#. :src: bpy.types.MMD_TOOLS_OT_change_mmd_ik_loop_factor
+msgid "Multiplier for all bones' IK iterations in Blender"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_change_mmd_ik_loop_factor.mmd_ik_loop_factor
+#. :src: bpy.types.MMDRoot.ik_loop_factor
+msgid "MMD IK Loop Factor"
+msgstr "MMD IK反復係数"
+
+#. :src: bpy.types.MMD_TOOLS_OT_change_mmd_ik_loop_factor.mmd_ik_loop_factor
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.ik_loop_factor
+#. :src: bpy.types.MMDRoot.ik_loop_factor
+msgid "Scaling factor of MMD IK loop"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_clean_additional_transform
+msgctxt "Operator"
+msgid "Clean Additional Transform"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_clean_additional_transform
+msgid "Delete shadow bones of selected object and revert bones to default MMD state"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_clean_duplicated_material_morphs
+msgctxt "Operator"
+msgid "Clean Duplicated Material Morphs"
+msgstr "重複マテリアルモーフを掃除"
+
+#. :src: bpy.types.MMD_TOOLS_OT_clean_duplicated_material_morphs
+msgid "Clean duplicated material morphs"
+msgstr "重複マテリアルモーフを掃除"
+
+#. :src: bpy.types.MMD_TOOLS_OT_clean_rig
+msgctxt "Operator"
+msgid "Clean Rig"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_clean_rig
+msgid "Delete temporary physics objects of selected object and revert physics to default MMD state"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_clean_shape_keys
+#: extensions/user_default/mmd_tools/menus.py:87
+msgctxt "Operator"
+msgid "Clean Shape Keys"
+msgstr "シェイプキーをクリーン"
+
+#. :src: bpy.types.MMD_TOOLS_OT_clean_shape_keys
+msgid "Remove unused shape keys of selected mesh objects"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_clear_bone_morph_view
+msgctxt "Operator"
+msgid "Clear Bone Morph View"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_clear_bone_morph_view
+msgid "Reset transforms of all bones to their default values"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_clear_temp_materials
+msgctxt "Operator"
+msgid "Clear Temp Materials"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_clear_temp_materials
+msgid "Clears all the temporary materials"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_clear_uv_morph_view
+msgctxt "Operator"
+msgid "Clear UV Morph View"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_clear_uv_morph_view
+msgid "Clear all temporary data of UV morphs"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_bsdf_materials
+#, fuzzy
+msgctxt "Operator"
+msgid "Convert Blender Materials"
+msgstr "マテリアルノードを変換"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_bsdf_materials
+#. :src: bpy.types.MMD_TOOLS_OT_convert_materials
+msgid "Convert materials of selected objects."
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_materials
+#, fuzzy
+msgctxt "Operator"
+msgid "Convert Materials"
+msgstr "マテリアルノードを変換"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_materials.clean_nodes
+#. :src: bpy.types.MMD_TOOLS_OT_convert_materials_for_cycles.clean_nodes
+msgid "Clean Nodes"
+msgstr "ノードをクリーン"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_materials.clean_nodes
+#. :src: bpy.types.MMD_TOOLS_OT_convert_materials_for_cycles.clean_nodes
+msgid "Remove redundant nodes as well if enabled. Disable it to keep node data."
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_materials.subsurface
+msgid "Subsurface"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_materials.use_principled
+#. :src: bpy.types.MMD_TOOLS_OT_convert_materials_for_cycles.use_principled
+msgid "Convert to Principled BSDF"
+msgstr "プリンシプルBSDFへ変換"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_materials.use_principled
+#. :src: bpy.types.MMD_TOOLS_OT_convert_materials_for_cycles.use_principled
+msgid "Convert MMD shader nodes to Principled BSDF as well if enabled"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_materials_for_cycles
+#, fuzzy
+msgctxt "Operator"
+msgid "Convert Materials For Cycles"
+msgstr "マテリアルノードを変換"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_materials_for_cycles
+msgid "Convert materials of selected objects for Cycles."
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera
+msgctxt "Operator"
+msgid "Convert to MMD Camera"
+msgstr "MMDライトへ変換"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera
+msgid "Create a camera rig for MMD"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation
+msgid "Bake Animation"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.bake_animation
+msgid "Bake camera animation to a new MMD camera rig"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.camera_source
+msgid "Camera Source"
+msgstr "カメラソース"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.camera_source
+msgid "Select camera source to bake animation (camera target is the selected or DoF object)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.camera_source:'CURRENT'
+msgid "Current active camera object"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.camera_source:'SCENE'
+msgid "Scene camera object"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.min_distance
+msgid "Min Distance"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.min_distance
+msgid "Minimum distance to camera target when baking animation"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_camera.scale
+msgid "Scaling factor for initializing the camera"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp
+msgctxt "Operator"
+msgid "Convert to MMD Light"
+msgstr "MMDライトへ変換"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp
+msgid "Create a light rig for MMD"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp.scale
+msgid "Scaling factor for initializing the light"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model
+msgctxt "Operator"
+msgid "Convert to a MMD Model"
+msgstr "MMDモデルへ変換"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model
+msgid "Convert active armature with its meshes to a MMD model (experimental)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.ambient_color_source
+msgid "Ambient Color Source"
+msgstr "アンビエントカラーソース"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.ambient_color_source
+msgid "Select ambient color source"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.ambient_color_source:'DIFFUSE'
+#. :src: bpy.types.MMDMaterial.diffuse_color
+#. :src: bpy.types.MaterialMorphData.diffuse_color
+msgid "Diffuse color"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.ambient_color_source:'MIRROR'
+msgid "Mirror color (if property \"mirror_color\" is available)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.convert_material_nodes
+msgid "Convert Material Nodes"
+msgstr "マテリアルノードを変換"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.edge_alpha_min
+msgid "Minimum Edge Alpha"
+msgstr "最小輪郭アルファ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.edge_alpha_min
+msgid "Minimum alpha of MMD toon edge color"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.edge_threshold
+msgid "Edge Threshold"
+msgstr "輪郭しきい値"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.edge_threshold
+msgid "MMD toon edge will not be enabled if freestyle line color alpha less than this value"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.middle_joint_bones_lock
+msgid "Middle Joint Bones Lock"
+msgstr "中間関節ボーンをロック"
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.middle_joint_bones_lock
+msgid "Lock specific bones for backward compatibility."
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_model.scale
+msgid "Scaling factor for converting the model"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_create_mmd_model_root_object
+msgctxt "Operator"
+msgid "Create a MMD Model Root Object"
+msgstr "MMDモデルルートオブジェクトを作成"
+
+#. :src: bpy.types.MMD_TOOLS_OT_create_mmd_model_root_object
+msgid "Create a MMD model root object with a basic armature"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_create_mmd_model_root_object.name_e
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.name_e
+#. :src: bpy.types.BoneMorph.name_e
+#. :src: bpy.types.GroupMorph.name_e
+#. :src: bpy.types.MMDBone.name_e
+#. :src: bpy.types.MMDDisplayItemFrame.name_e
+#. :src: bpy.types.MMDJoint.name_e
+#. :src: bpy.types.MMDMaterial.name_e
+#. :src: bpy.types.MMDRigidBody.name_e
+#. :src: bpy.types.MaterialMorph.name_e
+#. :src: bpy.types.UVMorph.name_e
+#. :src: bpy.types.VertexMorph.name_e
+msgid "Name(Eng)"
+msgstr "名前(英語)"
+
+#. :src: bpy.types.MMD_TOOLS_OT_create_mmd_model_root_object.name_e
+#. :src: bpy.types.MMDRoot.name_e
+msgid "The english name of the MMD model"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_create_mmd_model_root_object.name_j
+#. :src: bpy.types.MMDRoot.name
+msgid "The name of the MMD model"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_create_work_material
+msgctxt "Operator"
+msgid "Create Work Material"
+msgstr "ワークマテリアルを生成"
+
+#. :src: bpy.types.MMD_TOOLS_OT_create_work_material
+msgid "Creates a temporary material to edit this offset"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_disassemble_all
+msgctxt "Operator"
+msgid "Disassemble All"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_add
+msgctxt "Operator"
+msgid "Add Display Item"
+msgstr "表示項目を追加"
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_add
+msgid "Add a display item to the list"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_find
+msgctxt "Operator"
+msgid "Find Display Item"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_find
+msgid "Find the display item of active bone or morph"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_find.type
+msgid "Find type"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_find.type:'BONE'
+msgid "Find Bone Item"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_find.type:'BONE'
+msgid "Find active bone in Display Panel"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_find.type:'MORPH'
+msgid "Find Morph Item"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_find.type:'MORPH'
+msgid "Find active morph of Morph Tools Panel in Display Panel"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_add
+msgctxt "Operator"
+msgid "Add Display Item Frame"
+msgstr "表示項目フレームを追加"
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_add
+msgid "Add a display item frame to the list"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_move
+msgctxt "Operator"
+msgid "Move Display Item Frame"
+msgstr "表示項目フレームを移動"
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_move
+msgid "Move active display item frame up/down in the list"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_move.type
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_move.type
+#. :src: bpy.types.MMD_TOOLS_OT_morph_move.type
+#. :src: bpy.types.MMD_TOOLS_OT_object_move.type
+msgid "Move type"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_remove
+msgctxt "Operator"
+msgid "Remove Display Item Frame"
+msgstr "表示項目フレームを削除"
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_frame_remove
+msgid "Remove active display item frame from the list"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_move
+msgctxt "Operator"
+msgid "Move Display Item"
+msgstr "表示項目を移動"
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_move
+msgid "Move active display item up/dowm in the list"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup
+msgctxt "Operator"
+msgid "Display Item Quick Setup"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup
+msgid "Quick setup display items"
+msgstr "表示項目のクイックセットアップ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup.type:'RESET'
+msgid "Clear all items and frames, reset to default"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup.type:'FACIAL'
+msgid "Load Facial Items"
+msgstr "表情項目をロード"
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup.type:'FACIAL'
+msgid "Load all morphs to faical frame"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup.type:'GROUP_LOAD'
+msgid "Sync from Bone Collections"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup.type:'GROUP_LOAD'
+msgid "Sync armature's bone collections to display item frames"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup.type:'GROUP_APPLY'
+msgid "Sync to Bone Collections"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_quick_setup.type:'GROUP_APPLY'
+msgid "Sync display item frames to armature's bone collections"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_remove
+msgctxt "Operator"
+msgid "Remove Display Item"
+msgstr "表示項目を削除"
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_remove
+msgid "Remove display item(s) from the list"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_remove.all
+msgid "Delete all display items"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_select_current
+msgctxt "Operator"
+msgid "Select Current Display Item"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_display_item_select_current
+msgid "Select the bone or morph assigned to the display item"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_edge_preview_setup
+#, fuzzy
+msgctxt "Operator"
+msgid "Edge Preview Setup"
+msgstr "輪郭プレビュー"
+
+#. :src: bpy.types.MMD_TOOLS_OT_edge_preview_setup
+msgid "Preview toon edge settings of active model using \"Solidify\" modifier"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_edge_preview_setup.action
+msgid "Select action"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_edge_preview_setup.action:'CREATE'
+#. :src: bpy.types.MMD_TOOLS_OT_morph_slider_setup.type:'CREATE'
+msgid "Create"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_edge_preview_setup.action:'CREATE'
+msgid "Create toon edge"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_edge_preview_setup.action:'CLEAN'
+msgid "Clean"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_edge_preview_setup.action:'CLEAN'
+msgid "Clear toon edge"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_edit_bone_morph_offset
+msgctxt "Operator"
+msgid "Edit Related Bone"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_edit_bone_morph_offset
+msgid "Applies the location and rotation of this offset to the bone"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_edit_uv_morph
+msgctxt "Operator"
+msgid "Edit UV Morph"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_edit_uv_morph
+msgid "Edit UV morph on a temporary UV layer (use UV Editor to edit the result)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_execute_translation_batch
+msgctxt "Operator"
+msgid "Execute Translation Batch"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx
+msgctxt "Operator"
+msgid "Export PMX File (.pmx)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx
+msgid "Export selected MMD model(s) to PMX file(s) (.pmx)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures
+msgid "Copy textures"
+msgstr "テクスチャをコピー"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.disable_specular
+msgid "Disable SPH/SPA"
+msgstr "SPH/SPAを無効化"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.disable_specular
+msgid "Disables all the Specular Map textures. It is required for some MME Shaders."
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.log_level
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.log_level
+msgid "Log level"
+msgstr "ログレベル"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.log_level
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.log_level
+msgid "Select log level"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.log_level:'DEBUG'
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.log_level:'DEBUG'
+msgid "4. DEBUG"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.log_level:'INFO'
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.log_level:'INFO'
+msgid "3. INFO"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.log_level:'WARNING'
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.log_level:'WARNING'
+msgid "2. WARNING"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.log_level:'ERROR'
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.log_level:'ERROR'
+msgid "1. ERROR"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.overwrite_bone_morphs_from_action_pose
+msgid "Overwrite Bone Morphs"
+msgstr "ボーンモーフを上書き"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.overwrite_bone_morphs_from_action_pose
+#, fuzzy
+msgid "Overwrite the bone morphs from active Action Pose before exporting."
+msgstr "エクスポート前にボーンモーフをアクティブなポーズライブラリから上書きします"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.save_log
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.save_log
+msgid "Create a log file"
+msgstr "ログファイルを作成"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.scale
+msgid "Scaling factor for exporting the model"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_materials
+msgid "Sort Materials"
+msgstr "マテリアルをソート"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_materials
+msgid "Sort materials for alpha blending. WARNING: Will not work if you have transparent meshes inside the model. E.g. blush meshes"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_vertices
+msgid "Sort Vertices"
+msgstr "頂点をソート"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_vertices
+msgid "Choose the method to sort vertices"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_vertices:'NONE'
+msgid "No sorting"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_vertices:'BLENDER'
+msgid "Use blender's internal vertex order"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_vertices:'CUSTOM'
+msgid "Use custom vertex weight of vertex group \"mmd_vertex_order\""
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.translate_in_presets
+msgid "(Experimental) Translate in Presets"
+msgstr "(実験的) プリセットで翻訳"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.translate_in_presets
+msgid "Translate in presets before exporting."
+msgstr "エクスポート前にプリセットで翻訳します"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.visible_meshes_only
+msgid "Visible Meshes Only"
+msgstr "可視メッシュのみ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.visible_meshes_only
+msgid "Export visible meshes only"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vmd
+msgctxt "Operator"
+msgid "Export VMD File (.vmd)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vmd
+msgid "Export motion data of active object to a VMD file (.vmd)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vmd.scale
+msgid "Scaling factor for exporting the motion"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vmd.use_frame_range
+msgid "Use Frame Range"
+msgstr "フレーム範囲を使用"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vmd.use_frame_range
+msgid "Export frames only in the frame range of context scene"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vmd.use_pose_mode
+#. :src: bpy.types.MMD_TOOLS_OT_export_vpd.use_pose_mode
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_pose_mode
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd.use_pose_mode
+msgid "Treat Current Pose as Rest Pose"
+msgstr "現在のポーズをレストポーズとして処理"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vmd.use_pose_mode
+msgid "You can pose the model to export a motion data to different pose base, such as T-Pose or A-Pose"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vpd
+msgctxt "Operator"
+msgid "Export VPD File (.vpd)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vpd
+msgid "Export active rig's Action Pose to VPD file(s) (.vpd)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vpd.pose_type
+msgid "Pose Type"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vpd.pose_type
+msgid "Choose the pose type to export"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vpd.pose_type:'CURRENT'
+msgid "Current Pose"
+msgstr "現在のポーズ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vpd.pose_type:'CURRENT'
+msgid "Current pose of the rig"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vpd.pose_type:'ACTIVE'
+msgid "Active Pose"
+msgstr "アクティブなポーズ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vpd.pose_type:'ACTIVE'
+msgid "Active pose of the rig's Action Pose"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vpd.pose_type:'ALL'
+msgid "All Poses"
+msgstr "全てのポーズ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vpd.pose_type:'ALL'
+msgid "All poses of the rig's Action Pose (the pose name will be the file name)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vpd.scale
+msgid "Scaling factor for exporting the pose"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_vpd.use_pose_mode
+msgid "You can pose the model to export a pose data to different pose base, such as T-Pose or A-Pose"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_fix_bone_order
+msgctxt "Operator"
+msgid "Realign Bone IDs"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_fix_bone_order
+msgid "Realign bone IDs to be sequential without gaps and apply additional transforms"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_flip_pose
+#, fuzzy
+msgctxt "Operator"
+msgid "Flip Pose"
+msgstr "MMDポーズを反転"
+
+#. :src: bpy.types.MMD_TOOLS_OT_flip_pose
+msgid "Apply the current pose of selected bones to matching bone on opposite side of X-Axis."
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_global_translation_popup
+msgctxt "Operator"
+msgid "Global Translation Popup"
+msgstr "全体翻訳ポップアップ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model
+msgctxt "Operator"
+msgid "Import Model File (.pmd, .pmx)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model
+msgid "Import model file(s) (.pmd, .pmx)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.apply_bone_fixed_axis
+msgid "Apply Bone Fixed Axis"
+msgstr "ボーン修正回転軸を適用"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.apply_bone_fixed_axis
+msgid "Apply bone's fixed axis to be blender suitable"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.clean_model
+msgid "Clean Model"
+msgstr "モデルをクリーン"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.clean_model
+msgid "Remove unused vertices and duplicated/invalid faces"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.dictionary
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.dictionary
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd.dictionary
+msgid "Rename Bones To English"
+msgstr "ボーンを英語にリネーム"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.dictionary
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.dictionary
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd.dictionary
+msgid "Translate bone names from Japanese to English using selected dictionary"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_IK_links
+msgid "Fix IK Links"
+msgstr "IKリンクを修正"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_IK_links
+msgid "Fix IK links to be blender suitable"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.ik_loop_factor
+msgid "IK Loop Factor"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.remove_doubles
+msgid "Remove Doubles"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.remove_doubles
+msgid "Merge duplicated vertices and faces"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.rename_bones
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.rename_bones
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd.rename_bones
+msgid "Rename Bones - L / R Suffix"
+msgstr "ボーンをリネーム - L / R接尾辞"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.rename_bones
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.rename_bones
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd.rename_bones
+msgid "Use Blender naming conventions for Left / Right paired bones"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.scale
+msgid "Scaling factor for importing the model"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.spa_blend_factor
+msgid "influence of .spa textures"
+msgstr ".spaテクスチャの影響度"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.spa_blend_factor
+msgid "The diffuse color factor of texture slot for .spa textures"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.sph_blend_factor
+msgid "influence of .sph textures"
+msgstr ".sphテクスチャの影響度"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.sph_blend_factor
+msgid "The diffuse color factor of texture slot for .sph textures"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.types
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.types
+msgid "Types"
+msgstr "タイプ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.types
+msgid "Select which parts will be imported"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.types:'PHYSICS'
+msgid "Rigidbodies and joints (include Armature)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.types:'DISPLAY'
+msgid "Display frames (include Armature)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.types:'MORPHS'
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.types:'MORPH'
+#. :src: bpy.types.MMDTranslation.filter_types:'MORPH'
+#. :src: bpy.types.MMDTranslationElement.type:'MORPH'
+msgid "Morphs"
+msgstr "モーフ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.types:'MORPHS'
+msgid "Morphs (include Armature and Mesh)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.use_mipmap
+msgid "use MIP maps for UV textures"
+msgstr "UVテクスチャへミップマップを使用"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.use_mipmap
+msgid "Specify if mipmaps will be generated"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.use_underscore
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_underscore
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd.use_underscore
+msgid "Rename Bones - Use Underscore"
+msgstr "ボーンをリネーム - アンダースコア使用"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.use_underscore
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_underscore
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd.use_underscore
+msgid "Will not use dot, e.g. if renaming bones, will use _R instead of .R"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd
+msgctxt "Operator"
+msgid "Import VMD File (.vmd)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd
+msgid "Import a VMD file to selected objects (.vmd)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.bone_mapper
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd.bone_mapper
+msgid "Bone Mapper"
+msgstr "ボーンマッパー"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.bone_mapper
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd.bone_mapper
+msgid "Select bone mapper"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.bone_mapper:'BLENDER'
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd.bone_mapper:'BLENDER'
+msgid "Use blender bone name"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.bone_mapper:'PMX'
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd.bone_mapper:'PMX'
+msgid "Use japanese name of MMD bone"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.bone_mapper:'RENAMED_BONES'
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd.bone_mapper:'RENAMED_BONES'
+msgid "Renamed bones"
+msgstr "リネームしたボーン"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.bone_mapper:'RENAMED_BONES'
+msgid "Rename the bone of motion data to be blender suitable"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.margin
+msgid "How many frames added before motion starting"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.scale
+msgid "Scaling factor for importing the motion"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.update_scene_settings
+msgid "Update scene settings"
+msgstr "シーン設定を更新"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.update_scene_settings
+msgid "Update frame range and frame rate (30 fps)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_NLA
+msgid "Use NLA"
+msgstr "NLAを使用"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_NLA
+msgid "Import the motion as NLA strips"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_mirror
+msgid "Mirror Motion"
+msgstr "モーションをミラー"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_mirror
+msgid "Import the motion by using X-Axis mirror"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.use_pose_mode
+msgid "You can pose the model to fit the original pose of a motion data, such as T-Pose or A-Pose"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd
+msgctxt "Operator"
+msgid "Import VPD File (.vpd)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd
+msgid "Import VPD file(s) to selected rig's Action Pose (.vpd)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd.bone_mapper:'RENAMED_BONES'
+msgid "Rename the bone of pose data to be blender suitable"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd.scale
+msgid "Scaling factor for importing the pose"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_vpd.use_pose_mode
+msgid "You can pose the model to fit the original pose of a pose data, such as T-Pose or A-Pose"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_join_meshes
+msgctxt "Operator"
+msgid "Join Meshes"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_join_meshes
+msgid "Join the Model meshes into a single one"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_join_meshes.sort_shape_keys
+msgid "Sort Shape Keys"
+msgstr "シェイプキーをソート"
+
+#. :src: bpy.types.MMD_TOOLS_OT_join_meshes.sort_shape_keys
+msgid "Sort shape keys in the order of vertex morph"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_add
+msgctxt "Operator"
+msgid "Add Joint"
+msgstr "ジョイントを追加"
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_add
+msgid "Add Joint(s) to selected rigidbody objects"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_add.limit_angular_lower
+msgid "Limit Angular Lower"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_add.limit_angular_lower
+msgid "Lower limit of rotation"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_add.limit_angular_upper
+msgid "Limit Angular Upper"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_add.limit_angular_upper
+msgid "Upper limit of rotation"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_add.limit_linear_lower
+msgid "Limit Linear Lower"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_add.limit_linear_lower
+msgid "Lower limit of translation"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_add.limit_linear_upper
+msgid "Limit Linear Upper"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_add.limit_linear_upper
+msgid "Upper limit of translation"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_add.spring_angular
+#. :src: bpy.types.MMDJoint.spring_angular
+msgid "Spring(Angular)"
+msgstr "スプリング(角度)"
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_add.spring_angular
+#. :src: bpy.types.MMDJoint.spring_angular
+msgid "Spring constant of rotation"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_add.spring_linear
+#. :src: bpy.types.MMDJoint.spring_linear
+msgid "Spring(Linear)"
+msgstr "スプリング(リニア)"
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_add.spring_linear
+#. :src: bpy.types.MMDJoint.spring_linear
+msgid "Spring constant of movement"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_add.use_bone_rotation
+msgid "Use Bone Rotation"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_add.use_bone_rotation
+msgid "Match joint orientation to bone orientation if enabled"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_remove
+msgctxt "Operator"
+msgid "Remove Joint"
+msgstr "ジョイントを削除"
+
+#. :src: bpy.types.MMD_TOOLS_OT_joint_remove
+msgid "Deletes the currently selected Joint"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_material_morph_offset_init
+msgctxt "Operator"
+msgid "Init Material Offset"
+msgstr "マテリアルオフセットを初期化"
+
+#. :src: bpy.types.MMD_TOOLS_OT_material_morph_offset_init
+msgid "Set all offset values to target value"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_material_morph_offset_init.target_value
+msgid "Target Value"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_material_morph_offset_init.target_value
+msgid "Target value"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_material_open_sphere_texture
+#, fuzzy
+msgctxt "Operator"
+msgid "Open Sphere Texture"
+msgstr "スフィアテクスチャ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_material_open_sphere_texture
+msgid "Create sphere texture of active material"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_material_open_texture
+#, fuzzy
+msgctxt "Operator"
+msgid "Open Texture"
+msgstr "スフィアテクスチャ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_material_open_texture
+msgid "Create main texture of active material"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_material_remove_sphere_texture
+#, fuzzy
+msgctxt "Operator"
+msgid "Remove Sphere Texture"
+msgstr "スフィアテクスチャ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_material_remove_sphere_texture
+msgid "Remove sphere texture of active material"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_material_remove_texture
+msgctxt "Operator"
+msgid "Remove Texture"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_material_remove_texture
+msgid "Remove main texture of active material"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_model_join_by_bones
+msgctxt "Operator"
+msgid "Model Join by Bones"
+msgstr "モデルをボーンで統合"
+
+#. :src: bpy.types.MMD_TOOLS_OT_model_join_by_bones.join_type
+msgid "Join Type"
+msgstr "接続タイプ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_model_separate_by_bones
+msgctxt "Operator"
+msgid "Model Separate by Bones"
+msgstr "モデルをボーンで分離"
+
+#. :src: bpy.types.MMD_TOOLS_OT_model_separate_by_bones.boundary_joint_owner
+msgid "Boundary Joint Owner"
+msgstr "境界ジョイントオーナー"
+
+#. :src: bpy.types.MMD_TOOLS_OT_model_separate_by_bones.boundary_joint_owner:'SOURCE'
+msgid "Source Model"
+msgstr "分離元モデル"
+
+#. :src: bpy.types.MMD_TOOLS_OT_model_separate_by_bones.boundary_joint_owner:'DESTINATION'
+msgid "Destination Model"
+msgstr "分離先モデル"
+
+#. :src: bpy.types.MMD_TOOLS_OT_model_separate_by_bones.include_descendant_bones
+msgid "Include Descendant Bones"
+msgstr "子孫ボーンを含む"
+
+#. :src: bpy.types.MMD_TOOLS_OT_model_separate_by_bones.separate_armature
+msgid "Separate Armature"
+msgstr "アーマチュアを分離する"
+
+#. :src: bpy.types.MMD_TOOLS_OT_model_separate_by_bones.weight_threshold
+msgid "Weight Threshold"
+msgstr "ウェイトしきい値"
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_add
+msgctxt "Operator"
+msgid "Add Morph"
+msgstr "モーフを追加"
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_add
+msgid "Add a morph item to active morph list"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_copy
+msgctxt "Operator"
+msgid "Copy Morph"
+msgstr "モーフをコピー"
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_copy
+msgid "Make a copy of active morph in the list"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_move
+msgctxt "Operator"
+msgid "Move Morph"
+msgstr "モーフを移動"
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_move
+msgid "Move active morph item up/down in the list"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_offset_add
+msgctxt "Operator"
+msgid "Add Morph Offset"
+msgstr "モーフオフセットを追加"
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_offset_add
+msgid "Add a morph offset item to the list"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_offset_remove
+msgctxt "Operator"
+msgid "Remove Morph Offset"
+msgstr "モーフオフセットを削除"
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_offset_remove
+msgid "Remove morph offset item(s) from the list"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_offset_remove.all
+msgid "Delete all morph offset items"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_overwrite_from_active_action_pose
+msgctxt "Operator"
+msgid "Overwrite Bone Morphs from active Action Pose"
+msgstr "ボーンモーフをアクティブなポーズライブラリから上書き"
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_remove
+msgctxt "Operator"
+msgid "Remove Morph"
+msgstr "モーフを削除"
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_remove
+msgid "Remove morph item(s) from the list"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_remove.all
+msgid "Delete all morph items"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_slider_setup
+msgctxt "Operator"
+msgid "Morph Slider Setup"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_slider_setup
+msgid "Translate MMD morphs of selected object into format usable by Blender"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_slider_setup.type:'CREATE'
+msgid "Create placeholder object for morph sliders"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_slider_setup.type:'BIND'
+msgid "Bind"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_slider_setup.type:'BIND'
+msgid "Bind morph sliders"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_slider_setup.type:'UNBIND'
+msgid "Unbind"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_morph_slider_setup.type:'UNBIND'
+msgid "Unbind morph sliders"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_move_material_down
+msgctxt "Operator"
+msgid "Move Material Down"
+msgstr "マテリアルを移動"
+
+#. :src: bpy.types.MMD_TOOLS_OT_move_material_down
+msgid "Moves the selected material one slot down"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_move_material_up
+msgctxt "Operator"
+msgid "Move Material Up"
+msgstr "マテリアルを移動"
+
+#. :src: bpy.types.MMD_TOOLS_OT_move_material_up
+msgid "Moves selected material one slot up"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_object_move
+msgctxt "Operator"
+msgid "Move Object"
+msgstr "オブジェクトを移動"
+
+#. :src: bpy.types.MMD_TOOLS_OT_object_move
+msgid "Move active object up/down in the list"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_object_select
+msgctxt "Operator"
+msgid "Select Object"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_object_select
+#, fuzzy
+msgid "Select the object"
+msgstr "メッシュを選択してください"
+
+#. :src: bpy.types.MMD_TOOLS_OT_object_select.name
+msgid "The object name"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_ptcache_rigid_body_delete_bake
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:76
+msgctxt "Operator"
+msgid "Delete Bake"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_recalculate_bone_roll
+#: extensions/user_default/mmd_tools/panels/prop_object.py:35
+msgctxt "Operator"
+msgid "Recalculate bone roll"
+msgstr "ボーンロールを再計算"
+
+#. :src: bpy.types.MMD_TOOLS_OT_recalculate_bone_roll
+msgid "Recalculate bone roll for arm related bones"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_reset_object_visibility
+msgctxt "Operator"
+msgid "Reset Object Visivility"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_reset_shading
+msgid "Reset to default Blender shading"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_restore_mmd_translation_element_name
+msgctxt "Operator"
+msgid "Restore this Name"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add
+msgid "Add Rigid Bodies to selected bones"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.collision_group_mask
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select.properties:'collision_group_mask'
+#. :src: bpy.types.MMDRigidBody.collision_group_mask
+msgid "Collision Group Mask"
+msgstr "コリジョングループマスク"
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.collision_group_mask
+#. :src: bpy.types.MMDRigidBody.collision_group_mask
+msgid "The groups the object can not collide with"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.collision_group_number
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select.properties:'collision_group_number'
+#. :src: bpy.types.MMDRigidBody.collision_group_number
+msgid "Collision Group"
+msgstr "コリジョングループ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.collision_group_number
+#. :src: bpy.types.MMDRigidBody.collision_group_number
+msgid "The collision group of the object"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.mass
+msgid "How much the object 'weights' irrespective of gravity"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.name_e
+msgid "The english name of rigid body ($name_e means use the english name of target bone)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.name_j
+msgid "The name of rigid body ($name_j means use the japanese name of target bone)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.rigid_shape
+#. :src: bpy.types.MMDRigidBody.shape
+msgid "Select the collision shape"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.rigid_type
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select.properties:'type'
+#. :src: bpy.types.MMDRigidBody.type
+msgid "Rigid Type"
+msgstr "リジッドタイプ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.rigid_type
+#. :src: bpy.types.MMDRigidBody.type
+msgid "Select rigid type"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.rigid_type:'0'
+#. :src: bpy.types.MMDRigidBody.type:'0'
+msgid "Rigid body's orientation completely determined by attached bone"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.rigid_type:'1'
+#. :src: bpy.types.MMDRigidBody.type:'1'
+msgid "Attached bone's orientation completely determined by rigid body"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.rigid_type:'2'
+#. :src: bpy.types.MMDRigidBody.type:'2'
+msgid "Physics + Bone"
+msgstr "物理演算 + ボーン"
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.rigid_type:'2'
+#. :src: bpy.types.MMDRigidBody.type:'2'
+msgid "Bone determined by combination of parent and attached rigid body"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_add.size
+msgid "Size of the object, the values will multiply the length of target bone"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_remove
+msgid "Deletes the currently selected Rigid Body"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select
+#, fuzzy
+msgctxt "Operator"
+msgid "Select Rigid Body"
+msgstr "MMDリジッドボディ選択"
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select
+msgid "Select similar rigidbody objects which have the same property values with active rigidbody object"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select.hide_others
+msgid "Hide Others"
+msgstr "他を隠す"
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select.hide_others
+msgid "Hide the rigidbody object which does not have the same property values with active rigidbody object"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select.properties
+msgid "Select the properties to be compared"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select.properties:'collision_group_number'
+msgid "Collision group"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select.properties:'collision_group_mask'
+msgid "Collision group mask"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select.properties:'type'
+msgid "Rigid type"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select.properties:'shape'
+msgid "Collision shape"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_select.properties:'bone'
+#. :src: bpy.types.BoneMorphData.bone
+#. :src: bpy.types.MMDRigidBody.bone
+msgid "Target bone"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_world_update
+msgctxt "Operator"
+msgid "Update Rigid Body World"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_rigid_body_world_update
+msgid "Update rigid body world and references of rigid body constraint according to current scene objects (experimental)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_sdef_bind
+msgctxt "Operator"
+msgid "Bind SDEF Driver"
+msgstr "SDEFドライバーをバインド"
+
+#. :src: bpy.types.MMD_TOOLS_OT_sdef_bind
+msgid "Bind MMD SDEF data of selected objects"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_sdef_bind.mode:'2'
+msgid "Bulk"
+msgstr "バルク"
+
+#. :src: bpy.types.MMD_TOOLS_OT_sdef_bind.mode:'2'
+msgid "Speed up with numpy (may be slower in some cases)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_sdef_bind.mode:'1'
+msgid "Normal mode"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_sdef_bind.mode:'0'
+msgid "- Auto -"
+msgstr "自動"
+
+#. :src: bpy.types.MMD_TOOLS_OT_sdef_bind.mode:'0'
+msgid "Select best mode by benchmark result"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_sdef_bind.use_scale
+msgid "Support bone scaling (slow)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_sdef_bind.use_skip
+msgid "Skip"
+msgstr "スキップ"
+
+#. :src: bpy.types.MMD_TOOLS_OT_sdef_bind.use_skip
+msgid "Skip when the bones are not moving"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_sdef_cache_reset
+msgctxt "Operator"
+msgid "Reset MMD SDEF cache"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_sdef_cache_reset
+msgid "Reset MMD SDEF cache of selected objects and clean unused cache"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_sdef_unbind
+msgctxt "Operator"
+msgid "Unbind SDEF Driver"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_sdef_unbind
+msgid "Unbind MMD SDEF data of selected objects"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_select_bone_morph_offset_bone
+msgctxt "Operator"
+msgid "Select Related Bone"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_select_bone_morph_offset_bone
+msgid "Select the bone assigned to this offset in the armature"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials
+#, fuzzy
+msgctxt "Operator"
+msgid "Separate By Materials"
+msgstr "マテリアルで分解"
+
+#. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials.clean_shape_keys
+msgid "Clean Shape Keys"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials.clean_shape_keys
+msgid "Remove unused shape keys of separated objects"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_set_frame_range
+#, fuzzy
+msgctxt "Operator"
+msgid "Set Frame Range"
+msgstr "フレーム範囲を使用"
+
+#. :src: bpy.types.MMD_TOOLS_OT_set_frame_range
+msgid "Set the frame range to best values to play the animation from start to finish. And set the frame rate to 30.0."
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_set_glsl_shading
+msgctxt "Operator"
+msgid "GLSL View"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_set_glsl_shading
+msgid "Use GLSL shading with additional lighting"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_set_shadeless_glsl_shading
+msgctxt "Operator"
+msgid "Shadeless GLSL View"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_set_shadeless_glsl_shading
+msgid "Use only toon shading"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model
+msgctxt "Operator"
+msgid "Translate a MMD Model"
+msgstr "MMDモデルを翻訳"
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model
+msgid "Translate Japanese names of a MMD model"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.allow_fails
+msgid "Allow Fails"
+msgstr "失敗を許可"
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.allow_fails
+msgid "Allow incompletely translated names"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.dictionary
+#. :src: bpy.types.MMDTranslation.dictionary
+msgid "Dictionary"
+msgstr "辞書"
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.dictionary
+msgid "Translate names from Japanese to English using selected dictionary"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.modes
+msgid "Select translation mode"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.modes:'MMD'
+msgid "MMD Names"
+msgstr "MMD名"
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.modes:'MMD'
+msgid "Fill MMD English names"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.modes:'BLENDER'
+msgid "Translate blender names (experimental)"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.overwrite
+msgid "Overwrite a translated English name"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.types
+msgid "Select which parts will be translated"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.types:'DISPLAY'
+#. :src: bpy.types.MMDTranslation.filter_types:'DISPLAY'
+#. :src: bpy.types.MMDTranslationElement.type:'DISPLAY'
+msgid "Display frames"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.types:'PHYSICS'
+#. :src: bpy.types.MMDTranslation.filter_types:'PHYSICS'
+#. :src: bpy.types.MMDTranslationElement.type:'PHYSICS'
+msgid "Rigidbodies and joints"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.types:'INFO'
+#. :src: bpy.types.MMDTranslation.filter_types:'INFO'
+#. :src: bpy.types.MMDTranslationElement.type:'INFO'
+msgid "Model name and comments"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.use_morph_prefix
+msgid "Use Morph Prefix"
+msgstr "モーフ接頭辞を使用"
+
+#. :src: bpy.types.MMD_TOOLS_OT_translate_mmd_model.use_morph_prefix
+msgid "Add/remove prefix to English name of morph"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_view_bone_morph
+msgctxt "Operator"
+msgid "View Bone Morph"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_view_bone_morph
+msgid "View the result of active bone morph"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_view_uv_morph
+msgctxt "Operator"
+msgid "View UV Morph"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_view_uv_morph
+msgid "View the result of active UV morph on current mesh object"
+msgstr ""
+
+#. :src: bpy.types.BONE_PT_mmd_tools_bone
+#, fuzzy
+msgid "MMD Bone Tools"
+msgstr "MMDボーンツール"
+
+#. :src: bpy.types.JOINT_PT_mmd_tools_bone
+msgid "MMD Joint"
+msgstr ""
+
+#. :src: bpy.types.MATERIAL_PT_mmd_tools_material
+#, fuzzy
+msgid "MMD Material"
+msgstr "マテリアル:"
+
+#. :src: bpy.types.MATERIAL_PT_mmd_tools_texture
+msgid "MMD Texture"
+msgstr ""
+
+#. :src: bpy.types.OBJECT_PT_mmd_tools_bone_order
+#. :src: bpy.types.OBJECT_PT_mmd_tools_display_items
+#. :src: bpy.types.OBJECT_PT_mmd_tools_joint_list
+#. :src: bpy.types.OBJECT_PT_mmd_tools_material_sorter
+#. :src: bpy.types.OBJECT_PT_mmd_tools_meshes_sorter
+#. :src: bpy.types.OBJECT_PT_mmd_tools_model_production
+#. :src: bpy.types.OBJECT_PT_mmd_tools_model_setup
+#. :src: bpy.types.OBJECT_PT_mmd_tools_morph_tools
+#. :src: bpy.types.OBJECT_PT_mmd_tools_rigidbody_list
+#. :src: bpy.types.OBJECT_PT_mmd_tools_scene_setup
+msgid "MMD"
+msgstr ""
+
+#. :src: bpy.types.OBJECT_PT_mmd_tools_bone_order
+msgid "Bone Order"
+msgstr "ボーン順序"
+
+#. :src: bpy.types.OBJECT_PT_mmd_tools_camera
+msgid "MMD Camera Tools"
+msgstr ""
+
+#. :src: bpy.types.OBJECT_PT_mmd_tools_display_items
+msgid "Display Panel"
+msgstr "表示パネル"
+
+#. :src: bpy.types.OBJECT_PT_mmd_tools_joint_list
+#, fuzzy
+msgid "Joints"
+msgstr "ジョイント"
+
+#. :src: bpy.types.OBJECT_PT_mmd_tools_light
+#, fuzzy
+msgid "MMD Light Tools"
+msgstr "MMDボーンツール"
+
+#. :src: bpy.types.OBJECT_PT_mmd_tools_material_sorter
+msgid "Material Sorter"
+msgstr "マテリアル順序"
+
+#. :src: bpy.types.OBJECT_PT_mmd_tools_meshes_sorter
+msgid "Meshes Sorter"
+msgstr "メッシュ順序"
+
+#. :src: bpy.types.OBJECT_PT_mmd_tools_model_production
+msgid "Model Production"
+msgstr "モデル製作"
+
+#. :src: bpy.types.OBJECT_PT_mmd_tools_model_setup
+msgid "Model Setup"
+msgstr "モデル設定"
+
+#. :src: bpy.types.OBJECT_PT_mmd_tools_morph_tools
+msgid "Morph Tools"
+msgstr "モーフツール"
+
+#. :src: bpy.types.OBJECT_PT_mmd_tools_rigidbody_list
+msgid "Rigid Bodies"
+msgstr "リジッドボディ"
+
+#. :src: bpy.types.OBJECT_PT_mmd_tools_root_object
+msgid "MMD Model Information"
+msgstr ""
+
+#. :src: bpy.types.RIGID_PT_mmd_tools_bone
+#, fuzzy
+msgid "MMD Rigid Body"
+msgstr "MMDリジッドボディ選択"
+
+#. :src: bpy.types.PoseBone.mmd_ik_toggle
+msgid "MMD IK Toggle"
+msgstr ""
+
+#. :src: bpy.types.PoseBone.mmd_ik_toggle
+msgid "MMD IK toggle is used to import/export animation of IK on-off"
+msgstr ""
+
+#. :src: bpy.types.BoneMorph
+msgid "Bone Morph"
+msgstr ""
+
+#. :src: bpy.types.BoneMorph.active_data
+msgid "Active Bone Data"
+msgstr ""
+
+#. :src: bpy.types.BoneMorph.category
+#. :src: bpy.types.GroupMorph.category
+#. :src: bpy.types.MaterialMorph.category
+#. :src: bpy.types.UVMorph.category
+#. :src: bpy.types.VertexMorph.category
+msgid "Select category"
+msgstr ""
+
+#. :src: bpy.types.BoneMorph.category:'EYEBROW'
+#. :src: bpy.types.GroupMorph.category:'EYEBROW'
+#. :src: bpy.types.MaterialMorph.category:'EYEBROW'
+#. :src: bpy.types.UVMorph.category:'EYEBROW'
+#. :src: bpy.types.VertexMorph.category:'EYEBROW'
+#. :src: bpy.types.MMD_ROOT_UL_display_items.morph_filter:'EYEBROW'
+msgid "Eye Brow"
+msgstr "眉毛"
+
+#. :src: bpy.types.BoneMorph.category:'EYE'
+#. :src: bpy.types.GroupMorph.category:'EYE'
+#. :src: bpy.types.MaterialMorph.category:'EYE'
+#. :src: bpy.types.UVMorph.category:'EYE'
+#. :src: bpy.types.VertexMorph.category:'EYE'
+#. :src: bpy.types.MMD_ROOT_UL_display_items.morph_filter:'EYE'
+msgid "Eye"
+msgstr "目"
+
+#. :src: bpy.types.BoneMorph.category:'MOUTH'
+#. :src: bpy.types.GroupMorph.category:'MOUTH'
+#. :src: bpy.types.MaterialMorph.category:'MOUTH'
+#. :src: bpy.types.UVMorph.category:'MOUTH'
+#. :src: bpy.types.VertexMorph.category:'MOUTH'
+#. :src: bpy.types.MMD_ROOT_UL_display_items.morph_filter:'MOUTH'
+msgid "Mouth"
+msgstr "口"
+
+#. :src: bpy.types.BoneMorph.data
+#. :src: bpy.types.GroupMorph.data
+#. :src: bpy.types.MaterialMorph.data
+#. :src: bpy.types.UVMorph.data
+msgid "Morph Data"
+msgstr ""
+
+#. :src: bpy.types.BoneMorph.name
+#. :src: bpy.types.GroupMorph.name
+#. :src: bpy.types.MMDBone.name_j
+#. :src: bpy.types.MMDJoint.name_j
+#. :src: bpy.types.MMDMaterial.name_j
+#. :src: bpy.types.MMDRigidBody.name_j
+#. :src: bpy.types.MaterialMorph.name
+#. :src: bpy.types.UVMorph.name
+#. :src: bpy.types.VertexMorph.name
+msgid "Japanese Name"
+msgstr ""
+
+#. :src: bpy.types.BoneMorph.name_e
+#. :src: bpy.types.GroupMorph.name_e
+#. :src: bpy.types.MMDBone.name_e
+#. :src: bpy.types.MMDDisplayItemFrame.name_e
+#. :src: bpy.types.MMDJoint.name_e
+#. :src: bpy.types.MMDMaterial.name_e
+#. :src: bpy.types.MMDRigidBody.name_e
+#. :src: bpy.types.MaterialMorph.name_e
+#. :src: bpy.types.UVMorph.name_e
+#. :src: bpy.types.VertexMorph.name_e
+msgid "English Name"
+msgstr ""
+
+#. :src: bpy.types.BoneMorphData.bone_id
+#. :src: bpy.types.MMDBone.bone_id
+msgid "Bone ID"
+msgstr ""
+
+#. :src: bpy.types.BoneMorphData.rotation
+msgid "Rotation in quaternions"
+msgstr ""
+
+#. :src: bpy.types.GroupMorph
+msgid "Group Morph"
+msgstr ""
+
+#. :src: bpy.types.GroupMorph.active_data
+msgid "Active Group Data"
+msgstr ""
+
+#. :src: bpy.types.GroupMorphOffset
+msgid "Group Morph Offset"
+msgstr ""
+
+#. :src: bpy.types.GroupMorphOffset.morph_type
+#. :src: bpy.types.MMDDisplayItem.morph_type
+msgid "Morph Type"
+msgstr ""
+
+#. :src: bpy.types.GroupMorphOffset.morph_type
+#. :src: bpy.types.MMDDisplayItem.morph_type
+msgid "Select morph type"
+msgstr ""
+
+#. :src: bpy.types.GroupMorphOffset.morph_type:'material_morphs'
+#. :src: bpy.types.MMDDisplayItem.morph_type:'material_morphs'
+#. :src: bpy.types.MMDRoot.active_morph_type:'material_morphs'
+#. :src: bpy.types.MMDRoot.material_morphs
+msgid "Material Morphs"
+msgstr ""
+
+#. :src: bpy.types.GroupMorphOffset.morph_type:'uv_morphs'
+#. :src: bpy.types.MMDDisplayItem.morph_type:'uv_morphs'
+#. :src: bpy.types.MMDRoot.active_morph_type:'uv_morphs'
+#. :src: bpy.types.MMDRoot.uv_morphs
+msgid "UV Morphs"
+msgstr ""
+
+#. :src: bpy.types.GroupMorphOffset.morph_type:'bone_morphs'
+#. :src: bpy.types.MMDDisplayItem.morph_type:'bone_morphs'
+#. :src: bpy.types.MMDRoot.active_morph_type:'bone_morphs'
+#. :src: bpy.types.MMDRoot.bone_morphs
+msgid "Bone Morphs"
+msgstr ""
+
+#. :src: bpy.types.GroupMorphOffset.morph_type:'vertex_morphs'
+#. :src: bpy.types.MMDDisplayItem.morph_type:'vertex_morphs'
+#. :src: bpy.types.MMDRoot.active_morph_type:'vertex_morphs'
+#. :src: bpy.types.MMDRoot.vertex_morphs
+msgid "Vertex Morphs"
+msgstr ""
+
+#. :src: bpy.types.GroupMorphOffset.morph_type:'group_morphs'
+#. :src: bpy.types.MMDDisplayItem.morph_type:'group_morphs'
+#. :src: bpy.types.MMDRoot.active_morph_type:'group_morphs'
+#. :src: bpy.types.MMDRoot.group_morphs
+msgid "Group Morphs"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.additional_transform_bone
+msgid "Additional Transform Bone"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.additional_transform_bone
+msgid "Additional transform bone"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.additional_transform_bone_id
+msgid "Additional Transform Bone ID"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.additional_transform_influence
+msgid "Additional Transform Influence"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.additional_transform_influence
+msgid "Additional transform influence"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.bone_id
+msgid "Unique ID for the reference of bone morph and rotate+/move+"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.display_connection_bone
+msgid "Display Connection Bone"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.display_connection_bone
+msgid "Target bone for display connection"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.display_connection_bone_id
+msgid "Display Connection Bone ID"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.display_connection_bone_id
+msgid "Bone ID for display connection (PMX displayConnection)"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.display_connection_offset
+msgid "Display Connection Offset"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.display_connection_offset
+msgid "Offset vector for display connection"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.display_connection_type
+msgid "Display Connection Type"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.display_connection_type
+msgid "Type of display connection"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.display_connection_type:'BONE'
+msgid "Connected to a bone"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.display_connection_type:'OFFSET'
+msgid "Connected to an offset position"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.display_connection_type:'NONE'
+msgid "No connection"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.enabled_fixed_axis
+#. :src: bpy.types.MMDBone.fixed_axis
+msgid "Fixed Axis"
+msgstr "軸制限"
+
+#. :src: bpy.types.MMDBone.enabled_fixed_axis
+msgid "Use fixed axis"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.enabled_local_axes
+msgid "Local Axes"
+msgstr "ローカル軸"
+
+#. :src: bpy.types.MMDBone.enabled_local_axes
+msgid "Use local axes"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.fixed_axis
+msgid "Fixed axis"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.has_additional_location
+msgid "Additional Location"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.has_additional_location
+msgid "Additional location"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.has_additional_rotation
+msgid "Additional Rotation"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.has_additional_rotation
+msgid "Additional rotation"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.ik_rotation_constraint
+msgid "IK Rotation Constraint"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.ik_rotation_constraint
+msgid "The unit angle of IK"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.is_controllable
+msgid "Controllable"
+msgstr "操作"
+
+#. :src: bpy.types.MMDBone.is_controllable
+msgid "Is controllable"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.is_tip
+msgid "Tip Bone"
+msgstr "ティップボーン"
+
+#. :src: bpy.types.MMDBone.is_tip
+msgid "Is zero length bone"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.local_axis_x
+msgid "Local X-Axis"
+msgstr "ローカルX軸"
+
+#. :src: bpy.types.MMDBone.local_axis_x
+msgid "Local x-axis"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.local_axis_z
+msgid "Local Z-Axis"
+msgstr "ローカルZ軸"
+
+#. :src: bpy.types.MMDBone.local_axis_z
+msgid "Local z-axis"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.transform_after_dynamics
+msgid "After Dynamics"
+msgstr "物理後"
+
+#. :src: bpy.types.MMDBone.transform_after_dynamics
+msgid "After physics"
+msgstr ""
+
+#. :src: bpy.types.MMDBone.transform_order
+msgid "Transform Order"
+msgstr "変形階層"
+
+#. :src: bpy.types.MMDBone.transform_order
+msgid "Deformation tier"
+msgstr ""
+
+#. :src: bpy.types.MMDCamera.is_perspective
+msgid "Is perspective"
+msgstr ""
+
+#. :src: bpy.types.MMDDisplayItem
+msgid "PMX 表示項目(表示枠内の1項目)"
+msgstr ""
+
+#. :src: bpy.types.MMDDisplayItem.type
+msgid "Select item type"
+msgstr ""
+
+#. :src: bpy.types.MMDDisplayItem.type:'MORPH'
+msgid "Morph"
+msgstr ""
+
+#. :src: bpy.types.MMDDisplayItemFrame
+msgid ""
+"PMX 表示枠\n"
+"\n"
+"    PMXファイル内では表示枠がリストで格納されています。\n"
+"    "
+msgstr ""
+
+#. :src: bpy.types.MMDDisplayItemFrame.active_item
+msgid "Active Display Item"
+msgstr ""
+
+#. :src: bpy.types.MMDDisplayItemFrame.data
+msgid "Display Items"
+msgstr ""
+
+#. :src: bpy.types.MMDDisplayItemFrame.is_special
+msgid "Special"
+msgstr ""
+
+#. :src: bpy.types.MMDDisplayItemFrame.is_special
+msgid "Is special"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial
+msgid "マテリアル"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.alpha
+msgid "Alpha transparency"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.ambient_color
+#. :src: bpy.types.MaterialMorphData.ambient_color
+msgid "Ambient color"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.edge_color
+#. :src: bpy.types.MaterialMorphData.edge_color
+msgid "Edge Color"
+msgstr "輪郭カラー"
+
+#. :src: bpy.types.MMDMaterial.edge_color
+msgid "Toon edge color"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.edge_weight
+#. :src: bpy.types.MaterialMorphData.edge_weight
+msgid "Edge Weight"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.edge_weight
+msgid "Toon edge size"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.enabled_drop_shadow
+msgid "Ground Shadow"
+msgstr "地面シャドウ"
+
+#. :src: bpy.types.MMDMaterial.enabled_drop_shadow
+msgid "Display ground shadow"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.enabled_self_shadow
+msgid "Self Shadow"
+msgstr "セルフシャドウ"
+
+#. :src: bpy.types.MMDMaterial.enabled_self_shadow
+msgid "Object can cast shadows"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.enabled_self_shadow_map
+msgid "Self Shadow Map"
+msgstr "セルフシャドウマップ"
+
+#. :src: bpy.types.MMDMaterial.enabled_self_shadow_map
+msgid "Object can become shadowed by other objects"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.enabled_toon_edge
+msgid "Toon Edge"
+msgstr "トゥーン輪郭"
+
+#. :src: bpy.types.MMDMaterial.enabled_toon_edge
+msgid "Use toon edge"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.is_double_sided
+msgid "Double Sided"
+msgstr "両面表示"
+
+#. :src: bpy.types.MMDMaterial.is_double_sided
+msgid "Both sides of mesh should be rendered"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.is_shared_toon_texture
+msgid "Use Shared Toon Texture"
+msgstr "共有トゥーンテクスチャを使用"
+
+#. :src: bpy.types.MMDMaterial.is_shared_toon_texture
+msgid "Use shared toon texture or custom toon texture"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.material_id
+#. :src: bpy.types.MaterialMorphData.material_id
+msgid "Material ID"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.material_id
+msgid "Unique ID for the reference of material morph"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.shared_toon_texture
+msgid "Shared Toon Texture"
+msgstr "共有トゥーンテクスチャ"
+
+#. :src: bpy.types.MMDMaterial.shared_toon_texture
+msgid "Shared toon texture id (toon01.bmp ~ toon10.bmp)"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.shininess
+#. :src: bpy.types.MaterialMorphData.shininess
+msgid "Reflect"
+msgstr "反射"
+
+#. :src: bpy.types.MMDMaterial.shininess
+msgid "Sharpness of reflected highlights"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.specular_color
+#. :src: bpy.types.MaterialMorphData.specular_color
+msgid "Specular color"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.sphere_texture_type
+msgid "Sphere Map Type"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.sphere_texture_type
+msgid "Choose sphere texture blend type"
+msgstr ""
+
+#. :src: bpy.types.MMDMaterial.sphere_texture_type:'3'
+msgid "SubTexture"
+msgstr "サブテクスチャ"
+
+#. :src: bpy.types.MMDMaterial.toon_texture
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:147
+msgid "Toon Texture"
+msgstr "トゥーンテクスチャ"
+
+#. :src: bpy.types.MMDMaterial.toon_texture
+msgid "The file path of custom toon texture"
+msgstr ""
+
+#. :src: bpy.types.MMDRigidBody.size
+msgid "Size of the object"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot
+msgid ""
+"MMDモデルデータ\n"
+"\n"
+"    モデルルート用に作成されたEmtpyオブジェクトで使用します\n"
+"    "
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.active_bone_index
+msgid "Active Bone Index"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.active_bone_index
+msgid "Index of the active bone in the armature"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.active_display_item_frame
+msgid "Active Display Item Frame"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.active_joint_index
+msgid "Active Joint Index"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.active_mesh_index
+msgid "Active Mesh"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.active_morph
+msgid "Active Morph"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.active_morph_type
+msgid "Active Morph Type"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.active_morph_type
+msgid "Select current morph type"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.active_rigidbody_index
+msgid "Active Rigidbody Index"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.comment_e_text
+msgid "Comment (English)"
+msgstr "コメント(英語)"
+
+#. :src: bpy.types.MMDRoot.comment_e_text
+msgid "The text datablock of the english comment"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.comment_text
+msgid "The text datablock of the comment"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.is_built
+msgid "Is Built"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.morph_panel_show_settings
+msgid "Morph Panel Show Settings"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.morph_panel_show_settings
+msgid "Show Morph Settings"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.name_e
+msgid "Name (English)"
+msgstr "名前(英語)"
+
+#. :src: bpy.types.MMDRoot.show_armature
+msgid "Show Armature"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.show_armature
+msgid "Show the armature object of the MMD model"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.show_joints
+msgid "Show Joints"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.show_joints
+msgid "Show all joints of the MMD model"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.show_meshes
+msgid "Show all meshes of the MMD model"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.show_names_of_joints
+msgid "Show Joint Names"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.show_names_of_joints
+msgid "Show joint names"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.show_names_of_rigid_bodies
+msgid "Show Rigid Body Names"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.show_names_of_rigid_bodies
+msgid "Show rigid body names"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.show_rigid_bodies
+msgid "Show Rigid Bodies"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.show_rigid_bodies
+msgid "Show all rigid bodies of the MMD model"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.show_temporary_objects
+msgid "Show Temps"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.show_temporary_objects
+msgid "Show all temporary objects of the MMD model"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.use_property_driver
+msgid "Use Property Driver"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.use_property_driver
+msgid "Setup drivers for MMD property animation (Visibility and IK toggles)"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.use_sdef
+msgid "Use SDEF"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.use_sphere_texture
+msgid "Use Sphere Texture"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.use_sphere_texture
+msgid "Use sphere texture"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.use_toon_texture
+msgid "Use Toon Texture"
+msgstr ""
+
+#. :src: bpy.types.MMDRoot.use_toon_texture
+msgid "Use toon texture"
+msgstr ""
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset
+msgid "Operation Script Preset"
+msgstr ""
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'CLEAR'
+msgid "\"\""
+msgstr ""
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'TO_ENGLISH'
+msgid "Translate to English"
+msgstr "英語へ翻訳"
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'TO_ENGLISH'
+msgid "to_english(name)"
+msgstr ""
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'TO_MMD_LR'
+msgid "Blender L/R to MMD L/R"
+msgstr "Blenderの左右をMMDの左右へ"
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'TO_MMD_LR'
+msgid "to_mmd_lr(name)"
+msgstr ""
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'TO_BLENDER_LR'
+msgid "MMD L/R to Blender L/R"
+msgstr "MMDの左右をBlenderの左右へ"
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'TO_BLENDER_LR'
+msgid "to_blender_lr(name_j)"
+msgstr ""
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'RESTORE_BLENDER'
+msgid "Restore Blender Names"
+msgstr "Blender名称を復元"
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'RESTORE_BLENDER'
+msgid "org_name"
+msgstr ""
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'RESTORE_JAPANESE'
+msgid "Restore Japanese MMD Names"
+msgstr "日本語MMD名称を復元"
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'RESTORE_JAPANESE'
+msgid "org_name_j"
+msgstr ""
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'RESTORE_ENGLISH'
+msgid "Restore English MMD Names"
+msgstr "英語MMD名称を復元"
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'RESTORE_ENGLISH'
+msgid "org_name_e"
+msgstr ""
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'ENGLISH_IF_EMPTY_JAPANESE'
+msgid "Copy English MMD Names, if empty copy Japanese MMD Name"
+msgstr "英語MMD名称をコピー、空なら日本語MMD名称をコピー"
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'ENGLISH_IF_EMPTY_JAPANESE'
+msgid "name_e if name_e else name_j"
+msgstr ""
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'JAPANESE_IF_EMPTY_ENGLISH'
+msgid "Copy Japanese MMD Names, if empty copy English MMD Name"
+msgstr "日本語MMD名称をコピー、空なら英語MMD名称をコピー"
+
+#. :src: bpy.types.MMDTranslation.batch_operation_script_preset:'JAPANESE_IF_EMPTY_ENGLISH'
+msgid "name_j if name_j else name_e"
+msgstr ""
+
+#. :src: bpy.types.MMDTranslation.batch_operation_target
+msgid "Operation Target"
+msgstr ""
+
+#. :src: bpy.types.MMDTranslation.batch_operation_target:'BLENDER'
+msgid "Blender Name (name)"
+msgstr "Blender名称 (name)"
+
+#. :src: bpy.types.MMDTranslation.batch_operation_target:'JAPANESE'
+msgid "Japanese MMD Name (name_j)"
+msgstr "日本語MMD名称 (name_j)"
+
+#. :src: bpy.types.MMDTranslation.batch_operation_target:'ENGLISH'
+msgid "English MMD Name (name_e)"
+msgstr "英語MMD名称 (name_e)"
+
+#. :src: bpy.types.MMDTranslation.filter_english_blank
+msgid "English Blank"
+msgstr ""
+
+#. :src: bpy.types.MMDTranslation.filter_japanese_blank
+msgid "Japanese Blank"
+msgstr ""
+
+#. :src: bpy.types.MMDTranslation.filter_restorable
+msgid "Restorable"
+msgstr ""
+
+#. :src: bpy.types.MaterialMorph
+msgid "Material Morph"
+msgstr ""
+
+#. :src: bpy.types.MaterialMorph.active_data
+msgid "Active Material Data"
+msgstr ""
+
+#. :src: bpy.types.MaterialMorphData.edge_color
+msgid "Edge color"
+msgstr ""
+
+#. :src: bpy.types.MaterialMorphData.edge_weight
+msgid "Edge weight"
+msgstr ""
+
+#. :src: bpy.types.MaterialMorphData.material
+msgid "Target material"
+msgstr ""
+
+#. :src: bpy.types.MaterialMorphData.material_data
+msgid "Material Data"
+msgstr ""
+
+#. :src: bpy.types.MaterialMorphData.offset_type
+msgid "Offset Type"
+msgstr ""
+
+#. :src: bpy.types.MaterialMorphData.offset_type
+msgid "Select offset type"
+msgstr ""
+
+#. :src: bpy.types.MaterialMorphData.related_mesh
+msgid "Related Mesh"
+msgstr "関連するメッシュ"
+
+#. :src: bpy.types.MaterialMorphData.related_mesh
+msgid "Stores a reference to the mesh where this morph data belongs to"
+msgstr ""
+
+#. :src: bpy.types.MaterialMorphData.related_mesh_data
+msgid "Related Mesh Data"
+msgstr ""
+
+#. :src: bpy.types.MaterialMorphData.sphere_texture_factor
+msgid "Sphere Texture factor"
+msgstr "スフィアテクスチャ係数"
+
+#. :src: bpy.types.MaterialMorphData.sphere_texture_factor
+msgid "Sphere texture factor"
+msgstr ""
+
+#. :src: bpy.types.MaterialMorphData.texture_factor
+msgid "Texture factor"
+msgstr "テクスチャ係数"
+
+#. :src: bpy.types.MaterialMorphData.toon_texture_factor
+msgid "Toon Texture factor"
+msgstr "トゥーンテクスチャ係数"
+
+#. :src: bpy.types.MaterialMorphData.toon_texture_factor
+msgid "Toon texture factor"
+msgstr ""
+
+#. :src: bpy.types.UVMorph
+msgid "UV Morph"
+msgstr ""
+
+#. :src: bpy.types.UVMorph.active_data
+msgid "Active UV Data"
+msgstr ""
+
+#. :src: bpy.types.UVMorph.data_type
+msgid "Select data type"
+msgstr ""
+
+#. :src: bpy.types.UVMorph.data_type:'DATA'
+msgid "Store offset data in root object (deprecated)"
+msgstr ""
+
+#. :src: bpy.types.UVMorph.data_type:'VERTEX_GROUP'
+msgid "Store offset data in vertex groups"
+msgstr ""
+
+#. :src: bpy.types.UVMorph.uv_index
+msgid "UV Index"
+msgstr ""
+
+#. :src: bpy.types.UVMorph.uv_index
+msgid "UV index (UV, UV1 ~ UV4)"
+msgstr ""
+
+#. :src: bpy.types.UVMorph.vertex_group_scale
+msgid "Vertex Group Scale"
+msgstr ""
+
+#. :src: bpy.types.UVMorph.vertex_group_scale
+msgid "The value scale of \"Vertex Group\" data type"
+msgstr ""
+
+#. :src: bpy.types.UVMorphOffset
+msgid "UV Morph Offset"
+msgstr ""
+
+#. :src: bpy.types.UVMorphOffset.index
+msgid "Vertex Index"
+msgstr ""
+
+#. :src: bpy.types.UVMorphOffset.offset
+msgid "UV offset"
+msgstr ""
+
+#. :src: bpy.types.VertexMorph
+msgid "Vertex Morph"
+msgstr ""
+
+#. :src: bpy.types.MMD_ROOT_UL_display_items.mmd_name
+msgid "MMD Name"
+msgstr ""
+
+#. :src: bpy.types.MMD_ROOT_UL_display_items.mmd_name
+msgid "Show JP or EN name of MMD bone"
+msgstr ""
+
+#. :src: bpy.types.MMD_ROOT_UL_display_items.mmd_name:'name_j'
+msgid "JP"
+msgstr ""
+
+#. :src: bpy.types.MMD_ROOT_UL_display_items.mmd_name:'name_e'
+msgid "EN"
+msgstr ""
+
+#. :src: bpy.types.MMD_ROOT_UL_display_items.morph_filter
+msgid "Morph Filter"
+msgstr ""
+
+#. :src: bpy.types.MMD_ROOT_UL_display_items.morph_filter
+msgid "Only show items matching this category"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_UL_joints.model_filter
+#. :src: bpy.types.MMD_TOOLS_UL_rigidbodies.model_filter
+msgid "Model Filter"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_UL_joints.model_filter
+#. :src: bpy.types.MMD_TOOLS_UL_rigidbodies.model_filter
+msgid "Show items of active model or all models"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_UL_joints.model_filter:'ACTIVE'
+#. :src: bpy.types.MMD_TOOLS_UL_rigidbodies.model_filter:'ACTIVE'
+msgid "Active Model"
+msgstr "選択中のモデル"
+
+#. :src: bpy.types.MMD_TOOLS_UL_joints.model_filter:'ALL'
+#. :src: bpy.types.MMD_TOOLS_UL_rigidbodies.model_filter:'ALL'
+msgid "All Models"
+msgstr "全てのモデル"
+
+#. :src: bpy.types.MMD_TOOLS_UL_joints.visible_only
+#. :src: bpy.types.MMD_TOOLS_UL_rigidbodies.visible_only
+msgid "Only show visible items"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/menus.py:22
+msgctxt "Operator"
+msgid "MikuMikuDance Model (.pmd, .pmx)"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/menus.py:23
+#: extensions/user_default/mmd_tools/menus.py:45
+msgctxt "Operator"
+msgid "MikuMikuDance Motion (.vmd)"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/menus.py:24
+#: extensions/user_default/mmd_tools/menus.py:46
+msgctxt "Operator"
+msgid "Vocaloid Pose Data (.vpd)"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/menus.py:44
+msgctxt "Operator"
+msgid "MikuMikuDance Model (.pmx)"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/menus.py:66
+msgctxt "Operator"
+msgid "Create MMD Model"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/menus.py:129
+msgctxt "Operator"
+msgid "MMD Flip Pose"
+msgstr "MMDポーズを反転"
+
+#: extensions/user_default/mmd_tools/menus.py:109
+msgctxt "Operator"
+msgid "Select MMD Rigid Body"
+msgstr "MMDリジッドボディ選択"
+
+#: extensions/user_default/mmd_tools/operators/fileio.py:210
+msgid "Imported MMD model from \"%s\""
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/fileio.py:552
+msgid "[Skipped] The armature object of MMD model \"%s\" can't be found"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/fileio.py:580
+msgid "Exported MMD model \"%s\" to \"%s\""
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/material.py:262
+#: extensions/user_default/mmd_tools/operators/misc.py:195
+#: extensions/user_default/mmd_tools/operators/misc.py:241
+msgid "Select a MMD model"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/material.py:273
+msgid "Created %d toon edge(s)"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/material.py:48
+msgid " * Failed to change to Cycles render engine."
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/material.py:209
+#: extensions/user_default/mmd_tools/operators/material.py:235
+msgid "Materials not found"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/misc.py:301
+msgid "This operation will break existing f-curve/action."
+msgstr "この操作は既存のFカーブ/アクションを破壊します"
+
+#: extensions/user_default/mmd_tools/operators/misc.py:302
+msgid "Click [OK] to run the operation."
+msgstr "[OK]をクリックして操作を実行してください"
+
+#: extensions/user_default/mmd_tools/operators/misc.py:67
+msgid "Can not move object \"%s\""
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/misc.py:205
+msgid "The model does not have any meshes"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/misc.py:246
+msgid "Model Armature not found"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/model.py:152
+#: extensions/user_default/mmd_tools/operators/model.py:183
+msgid "Active object is not an armature object"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/morph.py:298
+#: extensions/user_default/mmd_tools/operators/morph.py:362
+msgid "You need to choose a Related Mesh first"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/morph.py:302
+#: extensions/user_default/mmd_tools/operators/morph.py:366
+msgid "The model mesh can't be found"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/morph.py:371
+msgid "Material \"%s\" not found"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/morph.py:376
+msgid "Temporary material \"%s\" is in use"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/morph.py:308
+msgid "Material not found"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/morph.py:586
+msgid "Please select a mesh object"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/morph.py:600
+msgid "Invalid uv index: %d"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/morph.py:610
+msgid "Failed to create a temporary uv layer"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/morph.py:734
+msgid " * UV map \"%s\" not found"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/morph.py:329
+msgid "An unexpected error happened"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/morph.py:435
+msgid "Base material for %s was not found"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/rigid_body.py:55
+msgid "The model root can't be found"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/rigid_body.py:451
+msgid "Please select two or more mmd rigid objects"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/sdef.py:88
+msgid "Binded  of  selected mesh(es)"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/translations.py:238
+msgid "Filter"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/translations.py:242
+msgid "is Blank:"
+msgstr "空白のみ:"
+
+#: extensions/user_default/mmd_tools/operators/translations.py:244
+msgid "Japanese"
+msgstr "日本語"
+
+#: extensions/user_default/mmd_tools/operators/translations.py:245
+msgid "English"
+msgstr "英語"
+
+#: extensions/user_default/mmd_tools/operators/translations.py:255
+msgid "Select the target column for Batch Operations:"
+msgstr "一括操作の対象列を選択:"
+
+#: extensions/user_default/mmd_tools/operators/translations.py:276
+msgid "Batch Operation:"
+msgstr "一括操作:"
+
+#: extensions/user_default/mmd_tools/operators/translations.py:281
+msgid "Preset"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/translations.py:282
+msgctxt "Operator"
+msgid "Execute"
+msgstr "実行"
+
+#: extensions/user_default/mmd_tools/operators/translations.py:286
+msgid "Dictionaries:"
+msgstr "辞書:"
+
+#: extensions/user_default/mmd_tools/operators/translations.py:288
+msgid "to_english"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/translations.py:293
+msgid "replace"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/translations.py:104
+#: extensions/user_default/mmd_tools/operators/translations.py:331
+msgid "Failed to translate %d names, see '%s' in text editor"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/operators/translations.py:87
+msgid "Failed to load dictionary: %s"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:46
+#: extensions/user_default/mmd_tools/panels/prop_material.py:31
+msgid "Information:"
+msgstr "情報:"
+
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:49
+#: extensions/user_default/mmd_tools/panels/prop_material.py:34
+msgid "ID"
+msgstr "ID"
+
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:87
+msgid "Rotate +"
+msgstr "回転 +"
+
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:88
+msgid "Move +"
+msgstr "移動 +"
+
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:92
+msgid "Influence"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:95
+msgid "Display Connection (Bone Target):"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:96
+#, fuzzy
+msgid "Type"
+msgstr "タイプ"
+
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:38
+msgid "MMD Shadow Bone!"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:68
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:78
+msgctxt "Operator"
+msgid "Load"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:69
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:79
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:183
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:210
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:153
+msgctxt "Operator"
+msgid "Apply"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:99
+msgid "Target Bone"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:27
+msgid "IK Angle {%s}"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/prop_bone.py:29
+msgid "IK Angle (%s)"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/prop_camera.py:36
+msgid "Distance"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/prop_camera.py:44
+#: extensions/user_default/mmd_tools/panels/prop_lamp.py:36
+msgctxt "Operator"
+msgid "Convert"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/prop_lamp.py:34
+msgid "Light Source"
+msgstr "光源"
+
+#: extensions/user_default/mmd_tools/panels/prop_material.py:41
+msgid "Color:"
+msgstr "カラー:"
+
+#: extensions/user_default/mmd_tools/panels/prop_material.py:53
+msgid "Shadow:"
+msgstr "シャドウ:"
+
+#: extensions/user_default/mmd_tools/panels/prop_material.py:91
+msgid "Texture:"
+msgstr "テクスチャ:"
+
+#: extensions/user_default/mmd_tools/panels/prop_material.py:105
+msgid "Sphere Texture:"
+msgstr "スフィアテクスチャ:"
+
+#: extensions/user_default/mmd_tools/panels/prop_material.py:102
+#: extensions/user_default/mmd_tools/panels/prop_material.py:116
+msgctxt "Operator"
+msgid "Add"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/prop_material.py:99
+#: extensions/user_default/mmd_tools/panels/prop_material.py:113
+msgctxt "Operator"
+msgid "Remove"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/prop_physics.py:73
+msgid "Collision Group Mask:"
+msgstr "コリジョングループマスク:"
+
+#: extensions/user_default/mmd_tools/panels/prop_physics.py:82
+msgid "Damping"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/prop_physics.py:118
+#: extensions/user_default/mmd_tools/panels/prop_physics.py:134
+msgid "X-Axis:"
+msgstr "X軸:"
+
+#: extensions/user_default/mmd_tools/panels/prop_physics.py:119
+#: extensions/user_default/mmd_tools/panels/prop_physics.py:135
+msgid "Y-Axis:"
+msgstr "Y軸:"
+
+#: extensions/user_default/mmd_tools/panels/prop_physics.py:120
+#: extensions/user_default/mmd_tools/panels/prop_physics.py:136
+msgid "Z-Axis:"
+msgstr "Z軸:"
+
+#: extensions/user_default/mmd_tools/panels/shading.py:23
+msgid "MMD Shading Presets"
+msgstr "MMDシェーディングプリセット"
+
+#: extensions/user_default/mmd_tools/panels/shading.py:25
+msgctxt "Operator"
+msgid "GLSL"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/shading.py:26
+msgctxt "Operator"
+msgid "Shadeless"
+msgstr "影なし"
+
+#: extensions/user_default/mmd_tools/panels/shading.py:28
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:41
+msgctxt "Operator"
+msgid "Reset"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/bone_order.py:254
+msgid "Migrating from old vertex group ordering to bone_id system"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/bone_order.py:279
+msgid "Successfully migrated  bones from vertex groups to bone_id system"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/bone_order.py:518
+#: extensions/user_default/mmd_tools/panels/sidebar/bone_order.py:565
+#, fuzzy
+msgctxt "Operator"
+msgid "Fix Bone Order"
+msgstr "ボーン順序"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/bone_order.py:564
+msgid "Total Bones: %d"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/bone_order.py:229
+msgid "Converting layer collections to MMD collections"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/bone_order.py:532
+#: extensions/user_default/mmd_tools/panels/sidebar/display_panel.py:23
+#: extensions/user_default/mmd_tools/panels/sidebar/joints.py:21
+#: extensions/user_default/mmd_tools/panels/sidebar/meshes_sorter.py:22
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:24
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:24
+#: extensions/user_default/mmd_tools/panels/sidebar/rigid_bodies.py:21
+msgid "Select a MMD Model"
+msgstr "MMDモデルを選択してください"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/bone_order.py:537
+msgid "The armature object of active MMD model can't be found"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/display_panel.py:75
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:195
+msgctxt "Operator"
+msgid "Select"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/display_panel.py:73
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:74
+msgctxt "Operator"
+msgid "Bone"
+msgstr "ボーン"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/display_panel.py:74
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:78
+msgctxt "Operator"
+msgid "Morph"
+msgstr "モーフ"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/display_panel.py:176
+#: extensions/user_default/mmd_tools/panels/sidebar/display_panel.py:188
+#: extensions/user_default/mmd_tools/panels/sidebar/joints.py:70
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:333
+#: extensions/user_default/mmd_tools/panels/sidebar/rigid_bodies.py:82
+msgctxt "Operator"
+msgid "Move To Top"
+msgstr "最初へ移動"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/display_panel.py:177
+#: extensions/user_default/mmd_tools/panels/sidebar/display_panel.py:189
+#: extensions/user_default/mmd_tools/panels/sidebar/joints.py:71
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:334
+#: extensions/user_default/mmd_tools/panels/sidebar/rigid_bodies.py:83
+msgctxt "Operator"
+msgid "Move To Bottom"
+msgstr "最後へ移動"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/display_panel.py:186
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:324
+msgctxt "Operator"
+msgid "Delete All"
+msgstr "全て削除"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/material_sorter.py:49
+#: extensions/user_default/mmd_tools/panels/sidebar/meshes_sorter.py:48
+msgid "Use the arrows to sort"
+msgstr "矢印を使って並べ替えてください"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/material_sorter.py:20
+msgid "Select a mesh object"
+msgstr "メッシュを選択してください"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_production.py:23
+msgctxt "Operator"
+msgid "Create Model"
+msgstr "モデルを作成"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_production.py:24
+msgctxt "Operator"
+msgid "Convert Model"
+msgstr "モデルを変換"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_production.py:29
+msgctxt "Operator"
+msgid "Attach Meshes"
+msgstr "メッシュを取付"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_production.py:32
+msgctxt "Operator"
+msgid "Translate"
+msgstr "翻訳"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_production.py:39
+msgid "Model Surgery:"
+msgstr "モデル手術"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_production.py:45
+msgctxt "Operator"
+msgid "Chop"
+msgstr "切断"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_production.py:56
+msgctxt "Operator"
+msgid "Peel"
+msgstr "はがす"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_production.py:63
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:139
+msgctxt "Operator"
+msgid "Join"
+msgstr "統合"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:40
+msgid "Visibility:"
+msgstr "可視性:"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:46
+msgid "Mesh"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:47
+msgid "Armature"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:48
+msgid "Temporary Object"
+msgstr "テンポラリオブジェクト"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:50
+msgid "Rigid Body"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:59
+msgid "Assembly:"
+msgstr "組み立て:"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:64
+msgctxt "Operator"
+msgid "All"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:68
+msgctxt "Operator"
+msgid "SDEF"
+msgstr "SDEF"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:91
+msgid "Property"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:128
+msgid "IK Toggle:"
+msgstr "IK切替え:"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:136
+msgid "Mesh:"
+msgstr "メッシュ:"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:138
+msgctxt "Operator"
+msgid "Separate by Materials"
+msgstr "マテリアルで分解"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:143
+msgid "Material:"
+msgstr "マテリアル:"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:148
+msgid "Sphere Texture"
+msgstr "スフィアテクスチャ"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:153
+msgctxt "Operator"
+msgid "Convert to Blender"
+msgstr "Blender用に変換"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:154
+msgctxt "Operator"
+msgid "Convert to MMD"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:158
+msgid "Misc:"
+msgstr "その他:"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:160
+msgctxt "Operator"
+msgid "(Experimental) Global Translation"
+msgstr "(実験的) 全体翻訳"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:86
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:88
+msgctxt "Operator"
+msgid "Physics"
+msgstr "物理演算"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/model_setup.py:150
+msgctxt "Operator"
+msgid "Edge Preview"
+msgstr "輪郭プレビュー"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:103
+msgid "Material Offsets (%d)"
+msgstr "マテリアルオフセット (%d)"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:182
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:206
+msgctxt "Operator"
+msgid "View"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:184
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:207
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:154
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:128
+msgctxt "Operator"
+msgid "Clear"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:186
+msgid "Bone Offsets (%d)"
+msgstr "ボーンオフセット (%d)"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:209
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:196
+msgctxt "Operator"
+msgid "Edit"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:226
+msgid "Group Offsets (%d)"
+msgstr "グループオフセット (%d)"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:61
+msgid "Morph Settings"
+msgstr "モーフ設定"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:98
+msgid "Not found"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:116
+msgid "This is not a valid base material"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:178
+msgid "Armature not found"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:197
+msgctxt "Operator"
+msgid "Update"
+msgstr "更新"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:218
+msgid "Scale"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:220
+msgid "UV Offsets (%d)"
+msgstr "UVオフセット (%d)"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:326
+msgctxt "Operator"
+msgid "Bind morphs to .placeholder"
+msgstr "モーフを.placeholderへバインド"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:327
+msgctxt "Operator"
+msgid "Unbind morphs from .placeholder"
+msgstr "モーフを.placeholderからバインド解除"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/morph_tools.py:125
+msgid "This offset affects all materials"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/rigid_bodies.py:67
+msgctxt "Operator"
+msgid "Select Similar..."
+msgstr "類似を選択..."
+
+#: extensions/user_default/mmd_tools/panels/sidebar/rigid_bodies.py:80
+msgid "Select Similar"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:29
+msgid "Model:"
+msgstr "モデル:"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:30
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:35
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:40
+msgctxt "Operator"
+msgid "Import"
+msgstr "インポート"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:31
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:36
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:41
+msgctxt "Operator"
+msgid "Export"
+msgstr "エクスポート"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:34
+msgid "Motion:"
+msgstr "モーション:"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:39
+msgid "Pose:"
+msgstr "ポーズ:"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:46
+msgid "Timeline:"
+msgstr "タイムライン:"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:49
+msgid "Start"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:50
+msgid "End"
+msgstr ""
+
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:58
+msgid "Rigid Body Physics:"
+msgstr "リジッドボディ物理演算:"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:59
+msgctxt "Operator"
+msgid "Update World"
+msgstr "ワールドを更新"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:20
+msgctxt "Operator"
+msgid "MMD Tools/Manual"
+msgstr "MMD Tools/マニュアル"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:63
+msgid "Substeps"
+msgstr "サブステップ"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:64
+msgid "Iterations"
+msgstr "反復数"
+
+#: extensions/user_default/mmd_tools/panels/sidebar/scene_setup.py:78
+msgctxt "Operator"
+msgid "Bake"
+msgstr ""
+
+#: Add-on MMD Tools info: name
+#, fuzzy
+msgid "MMD Tools"
+msgstr "MMDボーンツール"
+
+#: Add-on MMD Tools info: description
+msgid "Utility tools for MMD model editing"
+msgstr ""
+

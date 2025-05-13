@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2017 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -7,9 +6,9 @@ import logging
 import bpy
 from mathutils import Matrix
 
-from ..vmd import importer
-from .. import vpd
 from ...bpyutils import FnContext
+from .. import vpd
+from ..vmd import importer
 
 
 class VPDImporter:

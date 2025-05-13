@@ -1,13 +1,9 @@
-# -*- coding: utf-8 -*-
 # Copyright 2023 MMD Tools authors
 # This file is part of MMD Tools.
 
 import bpy
-from .operators import fileio
-from .operators import model
-from .operators import misc
-from .operators import rigid_body
-from .operators import view
+
+from .operators import fileio, misc, model, rigid_body, view
 
 
 class MMDFileImportMenu(bpy.types.Menu):

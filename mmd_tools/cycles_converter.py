@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2012 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -6,8 +5,8 @@ from typing import Iterable, Optional
 
 import bpy
 
-from .core.shader import _NodeGroupUtils
 from .core.material import FnMaterial
+from .core.shader import _NodeGroupUtils
 
 
 def __switchToCyclesRenderEngine():

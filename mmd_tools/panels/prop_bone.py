@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2015 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -90,3 +89,12 @@ class MMDBonePanel(bpy.types.Panel):
             row.label(icon="ERROR")
         c.prop_search(mmd_bone, "additional_transform_bone", pose_bone.id_data.pose, "bones", icon="BONE_DATA", text="")
         c.prop(mmd_bone, "additional_transform_influence", text="Influence", slider=True)
+
+        c = layout.column(align=True)
+        c.label(text="Display Connection (Bone Target):")
+        c.row().prop(mmd_bone, "display_connection_type", text="Type")
+
+        if mmd_bone.display_connection_type == "BONE":
+            c.prop_search(mmd_bone, "display_connection_bone", pose_bone.id_data.pose, "bones", icon="BONE_DATA", text="Target Bone")
+        elif mmd_bone.display_connection_type == "OFFSET":
+            c.label(text="Offset is auto-calculated at export.")

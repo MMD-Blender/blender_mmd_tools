@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -433,6 +432,15 @@ class MMDRoot(bpy.types.PropertyGroup):
     active_display_item_frame: bpy.props.IntProperty(
         name="Active Display Item Frame",
         min=0,
+        default=0,
+    )
+
+    # *************************
+    # Bone
+    # *************************
+    active_bone_index: bpy.props.IntProperty(
+        name="Active Bone Index",
+        description="Index of the active bone in the armature",
         default=0,
     )
 

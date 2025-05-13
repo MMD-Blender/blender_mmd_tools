@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2015 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -13,8 +12,8 @@ from ..bpyutils import TransformConstraintOp
 from ..utils import ItemOp
 
 if TYPE_CHECKING:
-    from ..properties.root import MMDRoot, MMDDisplayItemFrame
     from ..properties.pose_bone import MMDBone
+    from ..properties.root import MMDDisplayItemFrame, MMDRoot
 
 
 def remove_constraint(constraints, name):

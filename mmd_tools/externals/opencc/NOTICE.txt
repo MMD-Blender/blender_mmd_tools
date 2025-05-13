@@ -1,0 +1,5 @@
+OpenCC-Python
+Copyright 2016
+
+This product includes dictionary data and configurations developed by
+[OpenCC](https://github.com/BYVoid/OpenCC).

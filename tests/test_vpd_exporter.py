@@ -1,15 +1,13 @@
-# -*- coding: utf-8 -*-
 
 import os
 import shutil
-import unittest
 import tempfile
+import unittest
 
 import bpy
-
-from mathutils import Vector, Matrix, Quaternion
 from bl_ext.user_default.mmd_tools.core.model import Model
 from bl_ext.user_default.mmd_tools.core.vpd.exporter import VPDExporter
+from mathutils import Matrix, Quaternion, Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
@@ -496,7 +494,7 @@ class TestVPDExporter(unittest.TestCase):
                                        f"VPD file empty for {pose_type}, use_pose_mode={use_pose_mode}")
                         
                         # Check content (without assuming Japanese characters work correctly)
-                        with open(output_path, 'r', encoding='utf-8', errors='replace') as f:
+                        with open(output_path, 'r', encoding='shift_jis', errors='replace') as f:
                             content = f.read()
                             # Check for markers that should be present in any VPD file
                             self.assertIn("Vocaloid Pose Data file", content, 
@@ -530,7 +528,7 @@ class TestVPDExporter(unittest.TestCase):
                 except Exception as e:
                     # For older Blender versions, pose_library might not be available
                     if "pose_library" in str(e) and pose_type in ["ACTIVE", "ALL"]:
-                        print(f"⚠️ Skipped pose_type={pose_type}, use_pose_mode={use_pose_mode}: {str(e)}")
+                        print(f"!! Skipped pose_type={pose_type}, use_pose_mode={use_pose_mode}: {str(e)}")
                         print("   This is normal if your Blender version doesn't support pose libraries")
                     else:
                         self.fail(f"Export failed with pose_type={pose_type}, use_pose_mode={use_pose_mode}: {str(e)}")
@@ -604,7 +602,7 @@ class TestVPDExporter(unittest.TestCase):
             self.assertTrue(os.path.getsize(output_path) > 0, "VPD file for real model is empty")
             
             # Simple verification by checking file content
-            with open(output_path, 'r', encoding='utf-8', errors='replace') as f:
+            with open(output_path, 'r', encoding='shift_jis', errors='replace') as f:
                 content = f.read()
                 # The file should contain the model name in OSM format
                 self.assertIn(f"{model_name}.osm", content, "Model name not found in VPD file")

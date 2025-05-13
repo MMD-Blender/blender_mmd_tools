@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
 # Copyright 2024 MMD Tools authors
 # This file is part of MMD Tools.
 
 from typing import List
+
+import bpy
 
 class MMDMaterial(bpy.types.PropertyGroup):
     name_j: str

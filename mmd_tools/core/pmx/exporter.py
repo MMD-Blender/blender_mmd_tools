@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -15,14 +14,14 @@ import bpy
 import mathutils
 
 from ...bpyutils import FnContext
+from ...operators.misc import MoveObject
+from ...utils import saferelpath
 from .. import pmx
 from ..material import FnMaterial
 from ..morph import FnMorph
 from ..sdef import FnSDEF
 from ..translations import FnTranslations
 from ..vmd.importer import BoneConverter, BoneConverterPoseMode
-from ...operators.misc import MoveObject
-from ...utils import saferelpath
 
 
 class _Vertex:
@@ -334,18 +333,7 @@ class __PmxExporter:
         world_mat = arm.matrix_world
         r = {}
 
-        # determine the bone order
-        vtx_grps = {}
-        for mesh in meshes:
-            if mesh.modifiers.get("mmd_bone_order_override", None):
-                vtx_grps = mesh.vertex_groups
-                break
-
-        class _Dummy:
-            index = float("inf")
-
-        sorted_bones = sorted(pose_bones, key=lambda x: vtx_grps.get(x.name, _Dummy).index)
-        # sorted_bones = sorted(pose_bones, key=self.__countBoneDepth)
+        sorted_bones = sorted(pose_bones, key=lambda x: x.mmd_bone.bone_id if x.mmd_bone.bone_id >= 0 else float("inf"))
 
         Vector = mathutils.Vector
         pmx_matrix = world_mat * self.__scale
@@ -378,10 +366,7 @@ class __PmxExporter:
                 pmx_bone.parent = bone.parent
                 # Determine bone visibility: visible if not hidden and either has no collections or belongs to at least one visible collection
                 # This logic is the same as Blender's
-                pmx_bone.visible = (
-                    not bone.hide
-                    and (not bone.collections or any(collection.is_visible for collection in bone.collections))
-                )
+                pmx_bone.visible = not bone.hide and (not bone.collections or any(collection.is_visible for collection in bone.collections))
                 pmx_bone.isControllable = mmd_bone.is_controllable
                 pmx_bone.isMovable = not all(p_bone.lock_location)
                 pmx_bone.isRotatable = not all(p_bone.lock_rotation)
@@ -406,25 +391,16 @@ class __PmxExporter:
                 ):
                     logging.debug(' * fix location of bone %s, parent %s is tip', bone.name, pmx_bone.parent.name)
                     pmx_bone.location = boneMap[pmx_bone.parent].location
-
-                # a connected child bone is preferred
-                pmx_bone.displayConnection = None
-                for child in bone.children:
-                    if (
-                        child.use_connect
-                        or bool(child.get('mmd_bone_use_connect'))
-                        or (
-                            all(pose_bones[child.name].lock_location)
-                            and math.isclose(0.0, (child.head - bone.tail).length)
-                        )
-                    ):
-                        pmx_bone.displayConnection = child
-                        break
                 # fmt: on
 
-                if not pmx_bone.displayConnection:
+                if mmd_bone.display_connection_type == "BONE":
                     if mmd_bone.is_tip:
                         pmx_bone.displayConnection = -1
+                    else:
+                        pmx_bone.displayConnection = mmd_bone.display_connection_bone_id
+                elif mmd_bone.display_connection_type == "OFFSET":
+                    if mmd_bone.is_tip:
+                        pmx_bone.displayConnection = (0.0, 0.0, 0.0)
                     else:
                         tail_loc = __to_pmx_location(p_bone.tail)
                         pmx_bone.displayConnection = tail_loc - pmx_bone.location
@@ -1240,6 +1216,8 @@ class __PmxExporter:
         meshes = sorted(args.get("meshes", []), key=lambda x: x.name)
         rigids = sorted(args.get("rigid_bodies", []), key=lambda x: x.name)
         joints = sorted(args.get("joints", []), key=lambda x: x.name)
+
+        bpy.ops.mmd_tools.fix_bone_order()
 
         self.__scale = args.get("scale", 1.0)
         self.__disable_specular = args.get("disable_specular", False)

@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
 # Copyright 2024 MMD Tools authors
 # This file is part of MMD Tools.
 
 from typing import Literal
 
 import bpy
+
 from .morph import BoneMorph, GroupMorph, MaterialMorph, UVMorph, VertexMorph
 from .translations import MMDTranslation
 

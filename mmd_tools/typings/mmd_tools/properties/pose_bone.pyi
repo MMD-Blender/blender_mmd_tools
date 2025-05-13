@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2024 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -24,3 +23,6 @@ class MMDBone:
     additional_transform_bone_id: int
     additional_transform_influence: float
     is_additional_transform_dirty: bool
+    display_connection_bone: str
+    display_connection_bone_id: int
+    display_connection_type: str  # 'BONE', 'OFFSET'

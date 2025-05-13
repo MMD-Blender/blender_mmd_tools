@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2015 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -12,7 +11,7 @@ class MMDRigidbodySelectorPanel(PT_ProductionPanelBase, bpy.types.Panel):
     bl_idname = "OBJECT_PT_mmd_tools_rigidbody_list"
     bl_label = "Rigid Bodies"
     bl_options = {"DEFAULT_CLOSED"}
-    bl_order = 6
+    bl_order = 7
 
     def draw(self, context):
         active_obj = context.active_object

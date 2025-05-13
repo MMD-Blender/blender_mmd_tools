@@ -1,21 +1,20 @@
-# -*- coding: utf-8 -*-
 # Copyright 2015 MMD Tools authors
 # This file is part of MMD Tools.
 
 import bpy
 
 from ...core.model import FnModel, Model
-from . import FnDraw, PT_ProductionPanelBase
+from ...operators import morph as operators_morph
 from ...properties.morph import MaterialMorph
 from ...utils import ItemOp
-from ...operators import morph as operators_morph
+from . import FnDraw, PT_ProductionPanelBase
 
 
 class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
     bl_idname = "OBJECT_PT_mmd_tools_morph_tools"
     bl_label = "Morph Tools"
     bl_options = {"DEFAULT_CLOSED"}
-    bl_order = 4
+    bl_order = 5
 
     def draw(self, context):
         active_obj = context.active_object
@@ -223,6 +222,9 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
         row.operator("mmd_tools.morph_offset_remove", text="", icon="X").all = True
 
     def _draw_group_data(self, context, rig, col, morph):
+        row = col.row(align=True)
+        row.operator("mmd_tools.convert_group_morph_to_vertex_morph", text="Merge Group Vertex Morphs", icon="SHAPEKEY_DATA")
+
         col.label(text=bpy.app.translations.pgettext_iface("Group Offsets (%d)") % len(morph.data))
         item = self._template_morph_offset_list(col, morph, "MMD_TOOLS_UL_GroupMorphOffsets")
         if item is None:

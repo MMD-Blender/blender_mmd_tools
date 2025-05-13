@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2012 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -43,9 +42,9 @@ def register():
     auto_load.register()
 
     # pylint: disable=import-outside-toplevel
-    from .m17n import translation_dict
+    from .m17n import translations_dict
 
-    bpy.app.translations.register(PACKAGE_NAME, translation_dict)
+    bpy.app.translations.register(PACKAGE_NAME, translations_dict)
 
     handlers.MMDHanders.register()
     

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
@@ -8,8 +7,8 @@ import bpy
 
 from .. import bpyutils
 from ..core import rigid_body
-from ..core.rigid_body import RigidBodyMaterial, FnRigidBody
 from ..core.model import FnModel
+from ..core.rigid_body import FnRigidBody, RigidBodyMaterial
 from . import patch_library_overridable
 
 

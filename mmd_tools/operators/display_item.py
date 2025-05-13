@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 # Copyright 2014 MMD Tools authors
 # This file is part of MMD Tools.
 
 import bpy
 from bpy.types import Operator
 
-from ..core.model import Model, FnModel
 from ..core.bone import FnBone
+from ..core.model import FnModel, Model
 from ..utils import ItemMoveOp, ItemOp, selectSingleBone
 
 
