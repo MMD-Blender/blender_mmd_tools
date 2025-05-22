@@ -446,9 +446,43 @@ class AddJoint(bpy.types.Operator):
         bones = cast(bpy.types.Armature, armature_object.data).bones
         bone_map: Dict[bpy.types.Object, Optional[bpy.types.Bone]] = {r: bones.get(r.mmd_rigid.bone, None) for r in FnModel.iterate_rigid_body_objects(root_object) if r.select_get()}
 
-        if len(bone_map) < 2:
-            self.report({"ERROR"}, "Please select two or more mmd rigid objects")
+        # If only one rigid body is selected, create a joint at its location
+        if len(bone_map) == 1:
+            rigid = next(iter(bone_map.keys()))
+            joint_object = FnRigidBody.new_joint_object(context, FnModel.ensure_joint_group_object(context, root_object), FnModel.get_empty_display_size(root_object))
+            
+            # Use the rigid body's name for the joint
+            name_j = rigid.mmd_rigid.name_j or rigid.name
+            name_e = rigid.mmd_rigid.name_e or rigid.name
+            
+            # Use the location and rotation of the rigid body for the joint
+            loc = rigid.location
+            rot = rigid.rotation_euler
+            
+            # Set up the joint with itself as both objects (user will need to set second object manually)
+            joint = FnRigidBody.setup_joint_object(
+                obj=joint_object,
+                name=name_j + "_joint",
+                name_e=name_e + "_joint",
+                location=loc,
+                rotation=rot,
+                rigid_a=rigid,
+                rigid_b=rigid,  # Temporarily set same object, user needs to change
+                maximum_location=self.limit_linear_upper,
+                minimum_location=self.limit_linear_lower,
+                maximum_rotation=self.limit_angular_upper,
+                minimum_rotation=self.limit_angular_lower,
+                spring_linear=self.spring_linear,
+                spring_angular=self.spring_angular,
+            )
+            joint.select_set(True)
+            self.report({"INFO"}, "Created joint at rigid body location. Please set the second rigid body manually.")
+            return {"FINISHED"}
+        elif len(bone_map) < 2:
+            self.report({"ERROR"}, "Please select one or more mmd rigid objects")
             return {"CANCELLED"}
+        
+        
 
         FnContext.select_single_object(context, root_object).select_set(False)
         if context.scene.rigidbody_world is None:
