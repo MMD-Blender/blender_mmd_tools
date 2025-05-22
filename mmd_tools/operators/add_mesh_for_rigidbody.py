@@ -125,7 +125,7 @@ class AddMeshForRigidbodyOperator(bpy.types.Operator):
         return {'FINISHED'}
 
 def register():
-    bpy.utils.register_class(AddMeshForRigidbodyOperator)
+    pass  # Registration handled by auto_load
 
 def unregister():
-    bpy.utils.unregister_class(AddMeshForRigidbodyOperator)
+    pass  # Unregistration handled by auto_load
