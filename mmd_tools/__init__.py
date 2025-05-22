@@ -50,6 +50,7 @@ def register():
     handlers.MMDHanders.register()
     
     auto_export.register()
+   
     
     # Register keymap
     wm = bpy.context.window_manager
@@ -68,6 +69,7 @@ def unregister():
     from . import handlers
     
     auto_export.unregister()
+     
     
     # Unregister keymap
     for km, kmi in addon_keymaps:
