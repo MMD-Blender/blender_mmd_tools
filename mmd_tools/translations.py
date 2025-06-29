@@ -3,7 +3,9 @@
 
 import csv
 import logging
+import os
 import time
+from collections import OrderedDict
 
 import bpy
 
@@ -349,8 +351,6 @@ class MMDTranslator:
         self.__csv_tuples.sort(key=lambda row: (-len(row[0]), row))
 
     def update(self):
-        from collections import OrderedDict
-
         count_old = len(self.__csv_tuples)
         tuples_dict = OrderedDict((row[0], row) for row in self.__csv_tuples if len(row) >= 2 and row[0])
         self.__csv_tuples.clear()
@@ -434,8 +434,6 @@ class DictionaryEnum:
 
         for txt_name in sorted(x.name for x in bpy.data.texts if x.name.lower().endswith(".csv")):
             items.append((txt_name, txt_name, "bpy.data.texts['%s']" % txt_name, "TEXT", len(items)))
-
-        import os
 
         folder = FnContext.get_addon_preferences_attribute(context, "dictionary_folder", "")
         if os.path.isdir(folder):

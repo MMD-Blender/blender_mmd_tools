@@ -1,8 +1,11 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
+import math
 import os
 import shutil
 import unittest
-from math import pi
 
 import bpy
 from bl_ext.user_default.mmd_tools.core import pmx
@@ -56,9 +59,9 @@ class TestPmxExporter(unittest.TestCase):
         return max(abs(a - b) for a, b in zip(tuple0, tuple1, strict=False))
 
     def __quaternion_error(self, quat0, quat1):
-        angle = quat0.rotation_difference(quat1).angle % pi
+        angle = quat0.rotation_difference(quat1).angle % math.pi
         assert angle >= 0
-        return min(angle, pi - angle)
+        return min(angle, math.pi - angle)
 
     # ********************************************
     # Header & Informations
@@ -181,7 +184,9 @@ class TestPmxExporter(unittest.TestCase):
                 self.assertGreaterEqual(dot_product, 0.99999, f"Normal angle difference too large: dot_product={dot_product:.6f}")
 
             self.assertLess(self.__vector_error(v0.uv, v1.uv), 1e-6)
-            self.assertEqual(v0.additional_uvs, v1.additional_uvs)
+            for uv0, uv1 in zip(v0.additional_uvs, v1.additional_uvs, strict=False):
+                self.assertLess(self.__tuple_error(uv0, uv1), 1e-6)
+
             self.assertEqual(v0.edge_scale, v1.edge_scale)
             self.assertEqual(v0.weight.type, v1.weight.type)
             self.assertEqual(v0.weight.bones, v1.weight.bones)

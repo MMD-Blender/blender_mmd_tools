@@ -68,7 +68,7 @@ class MMDDataHandlerABC(ABC):
 
     @classmethod
     def check_data_visible(cls, filter_selected: bool, filter_visible: bool, select: bool, hide: bool) -> bool:
-        return filter_selected and not select or filter_visible and hide
+        return (filter_selected and not select) or (filter_visible and hide)
 
     @classmethod
     def prop_restorable(cls, layout: bpy.types.UILayout, mmd_translation_element: "MMDTranslationElement", prop_name: str, original_value: str, index: int):
@@ -659,7 +659,7 @@ class FnTranslations:
                         "org_name_j": org_name_j,
                         "org_name_e": org_name_e,
                     },
-                )
+                ),
             )
 
             if batch_operation_target == "BLENDER":
@@ -699,7 +699,7 @@ class FnTranslations:
         filter_visible: bool = mmd_translation.filter_visible
 
         def check_blank_name(name_j: str, name_e: str) -> bool:
-            return filter_japanese_blank and name_j or filter_english_blank and name_e
+            return (filter_japanese_blank and name_j) or (filter_english_blank and name_e)
 
         for handler in MMD_DATA_HANDLERS:
             if handler.type_name in mmd_translation.filter_types:

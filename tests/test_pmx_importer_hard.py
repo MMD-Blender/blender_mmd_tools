@@ -1,9 +1,12 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import gc
 import logging
+import math
 import os
 import shutil
 import unittest
-from math import pi
 
 import bpy
 from bl_ext.user_default.mmd_tools.core.model import Model
@@ -51,9 +54,9 @@ class TestPmxImporter(unittest.TestCase):
         return (Vector(vec0) - Vector(vec1)).length
 
     def __quaternion_error(self, quat0, quat1):
-        angle = quat0.rotation_difference(quat1).angle % pi
+        angle = quat0.rotation_difference(quat1).angle % math.pi
         assert angle >= 0
-        return min(angle, pi - angle)
+        return min(angle, math.pi - angle)
 
     def __safe_get_object(self, name):
         """Safely get object by name"""
@@ -381,7 +384,7 @@ class TestPmxImporter(unittest.TestCase):
 
             # Verify that display frames reference existing bones
             mmd_root = root_obj.mmd_root
-            bone_names = set(bone.name for bone in armature.pose.bones)
+            bone_names = {bone.name for bone in armature.pose.bones}
 
             for frame in mmd_root.display_item_frames:
                 for item in frame.data:
@@ -881,7 +884,7 @@ class TestPmxImporter(unittest.TestCase):
                     degenerate_faces = 0
                     for poly in mesh_data.polygons:
                         vertices = [mesh_data.vertices[i].co for i in poly.vertices]
-                        if len(set(tuple(v) for v in vertices)) < 3:
+                        if len({tuple(v) for v in vertices}) < 3:
                             degenerate_faces += 1
 
                     print(f"   - Found {degenerate_faces} potentially degenerate faces")

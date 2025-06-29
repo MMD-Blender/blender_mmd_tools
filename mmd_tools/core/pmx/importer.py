@@ -260,7 +260,7 @@ class PMXImporter:
                             b_bone.tail = b_bone.head + Vector((0, 0, 1)) * self.__scale
                     else:
                         b_bone.tail = b_bone.head + Vector((0, 0, 1)) * self.__scale
-                    if m_bone.displayConnection != -1 and m_bone.displayConnection != [0.0, 0.0, 0.0]:
+                    if m_bone.displayConnection not in (-1, (0.0, 0.0, 0.0), [0.0, 0.0, 0.0]):
                         logging.debug(" * special tip bone %s, display %s", b_bone.name, str(m_bone.displayConnection))
                         specialTipBones.append(b_bone.name)
 
@@ -421,7 +421,7 @@ class PMXImporter:
             else:  # vector offset
                 mmd_bone.display_connection_type = "OFFSET"
 
-            if pmx_bone.displayConnection == -1 or pmx_bone.displayConnection == (0.0, 0.0, 0.0):
+            if pmx_bone.displayConnection in (-1, (0.0, 0.0, 0.0), [0.0, 0.0, 0.0]):
                 mmd_bone.is_tip = True
             elif b_bone.name in specialTipBones:
                 mmd_bone.is_tip = True
@@ -616,7 +616,7 @@ class PMXImporter:
                 bf.image = self.__imageTable.get(mi, None)
 
         # Import ADD UV2 as vertex colors
-        if pmxModel.header and pmxModel.header.additional_uvs >= 2:
+        if self.__import_adduv2_as_vertex_colors and pmxModel.header and pmxModel.header.additional_uvs >= 2:
             # Create vertex color layer
             vertex_colors = mesh.vertex_colors.new(name="Color")
             color_data = []
@@ -905,6 +905,7 @@ class PMXImporter:
         remove_doubles = args.get("remove_doubles", False)
         self.__mark_sharp_edges = args.get("mark_sharp_edges", True)
         self.__sharp_edge_angle = args.get("sharp_edge_angle", math.radians(179.0))
+        self.__import_adduv2_as_vertex_colors = args.get("import_adduv2_as_vertex_colors", False)
         self.__scale = args.get("scale", 1.0)
         self.__use_mipmap = args.get("use_mipmap", True)
         self.__sph_blend_factor = args.get("sph_blend_factor", 1.0)

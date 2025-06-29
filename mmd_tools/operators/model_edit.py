@@ -194,7 +194,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
                 [
                     joint_object.rigid_body_constraint.object1 in separate_rigid_bodies,
                     joint_object.rigid_body_constraint.object2 in separate_rigid_bodies,
-                ]
+                ],
             )
         }
 
@@ -264,7 +264,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             overwrite=True,
             replace_name2values={
                 # replace related_mesh property values
-                "related_mesh": {m.data.name: s.data.name for m, s in model2separate_mesh_objects.items()}
+                "related_mesh": {m.data.name: s.data.name for m, s in model2separate_mesh_objects.items()},
             },
         )
 

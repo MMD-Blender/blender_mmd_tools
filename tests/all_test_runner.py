@@ -1,3 +1,6 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import glob
 import multiprocessing
 import os
@@ -128,6 +131,7 @@ def run_test(blender_path, test_script, current_test_num, total_tests, previous_
             text=True,
             encoding="utf-8",
             errors="replace",  # Handle Unicode decode errors gracefully
+            check=True,
         )
 
         # Calculate total execution time
@@ -143,12 +147,16 @@ def run_test(blender_path, test_script, current_test_num, total_tests, previous_
         # Return the final progress for this test
         final_progress = current_test_num / total_tests
 
-        # Check if the test passed
-        # Look for "OK" indicating all tests passed, or check for absence of FAILED/ERROR
-        if "OK" in result.stdout or (result.returncode == 0 and "FAILED" not in result.stdout and "ERROR" not in result.stdout):
+        # Check if the test passed - specifically for unittest output
+        output = result.stdout + result.stderr
+        success_indicators = ["OK"]
+        failure_indicators = ["FAILED", "ERROR", "failures=", "errors=", "skipped="]
+
+        has_success = any(indicator in output for indicator in success_indicators)
+        has_failure = any(indicator in output for indicator in failure_indicators)
+
+        if result.returncode == 0 and has_success and not has_failure:
             return True, "", elapsed_str, final_progress
-        # We no longer extract the detailed error message
-        # Just indicate that the test failed
         return False, "Test failed", elapsed_str, final_progress
 
     except Exception:

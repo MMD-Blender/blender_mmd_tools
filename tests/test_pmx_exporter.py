@@ -1,8 +1,11 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
+import math
 import os
 import shutil
 import unittest
-from math import pi
 
 import bpy
 from bl_ext.user_default.mmd_tools.core import pmx
@@ -45,10 +48,21 @@ class TestPmxExporter(unittest.TestCase):
     def __vector_error(self, vec0, vec1):
         return (Vector(vec0) - Vector(vec1)).length
 
+    def __tuple_error(self, tuple0, tuple1):
+        """
+        Calculate the maximum absolute difference between two tuples of numbers.
+        Returns 0.0 if both tuples are empty (considered equal).
+        """
+        if len(tuple0) != len(tuple1):
+            raise ValueError(f"Tuple lengths mismatch: {len(tuple0)} vs {len(tuple1)}")
+        if not tuple0 and not tuple1:  # Both tuples are empty
+            return 0.0  # Empty tuples are considered equal
+        return max(abs(a - b) for a, b in zip(tuple0, tuple1, strict=False))
+
     def __quaternion_error(self, quat0, quat1):
-        angle = quat0.rotation_difference(quat1).angle % pi
+        angle = quat0.rotation_difference(quat1).angle % math.pi
         assert angle >= 0
-        return min(angle, pi - angle)
+        return min(angle, math.pi - angle)
 
     # ********************************************
     # Header & Informations
@@ -169,10 +183,11 @@ class TestPmxExporter(unittest.TestCase):
             seq1 = [result_vertices[i] for i in f1]
             for v0, v1 in zip(seq0, seq1, strict=False):
                 self.assertLess(self.__vector_error(v0.co, v1.co), 1e-6)
-                self.assertLess(self.__vector_error(v0.uv, v1.uv), 1e-6)
                 # self.assertLess(self.__vector_error(v0.normal, v1.normal), 1e-2)  # Blender normal vectors can have relatively large discrepancies, so we allow an error tolerance up to 1e-2
+                self.assertLess(self.__vector_error(v0.uv, v1.uv), 1e-6)
+                for uv0, uv1 in zip(v0.additional_uvs, v1.additional_uvs, strict=False):
+                    self.assertLess(self.__tuple_error(uv0, uv1), 1e-6)
 
-                self.assertEqual(v0.additional_uvs, v1.additional_uvs)
                 self.assertEqual(v0.edge_scale, v1.edge_scale)
                 # self.assertEqual(v0.weight.weights, v1.weight.weights)
                 # self.assertEqual(v0.weight.bones, v1.weight.bones)

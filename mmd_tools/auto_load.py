@@ -1,3 +1,6 @@
+# Copyright 2021 MMD Tools authors
+# This file is part of MMD Tools.
+
 import importlib
 import inspect
 import pkgutil
@@ -103,10 +106,9 @@ def get_dependency_from_annotation(value):
     if blender_version >= (2, 93):
         if isinstance(value, bpy.props._PropertyDeferred):
             return value.keywords.get("type")
-    else:
-        if isinstance(value, tuple) and len(value) == 2:
-            if value[0] in (bpy.props.PointerProperty, bpy.props.CollectionProperty):
-                return value[1]["type"]
+    elif isinstance(value, tuple) and len(value) == 2:
+        if value[0] in (bpy.props.PointerProperty, bpy.props.CollectionProperty):
+            return value[1]["type"]
     return None
 
 
@@ -130,8 +132,7 @@ def iter_my_classes(modules):
 def get_classes_in_modules(modules):
     classes = set()
     for module in modules:
-        for cls in iter_classes_in_module(module):
-            classes.add(cls)
+        classes.update(iter_classes_in_module(module))
     return classes
 
 
@@ -142,13 +143,13 @@ def iter_classes_in_module(module):
 
 
 def get_register_base_types():
-    return set(getattr(bpy.types, name) for name in [
+    return {getattr(bpy.types, name) for name in [
         "Panel", "Operator", "PropertyGroup",
         "AddonPreferences", "Header", "Menu",
         "Node", "NodeSocket", "NodeTree",
         "UIList", "RenderEngine",
         "Gizmo", "GizmoGroup",
-    ])
+    ]}
 
 
 # Find order to register to solve dependencies

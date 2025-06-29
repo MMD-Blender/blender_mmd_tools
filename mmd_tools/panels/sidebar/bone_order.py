@@ -224,7 +224,7 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
         collection_map = {
             "Layer 1": {"new_name": "mmd_normal", "should_be_shadow": False},
             "Layer 9": {"new_name": BONE_COLLECTION_NAME_SHADOW, "should_be_shadow": True},
-            "Layer 10": {"new_name": BONE_COLLECTION_NAME_DUMMY, "should_be_shadow": True}
+            "Layer 10": {"new_name": BONE_COLLECTION_NAME_DUMMY, "should_be_shadow": True},
         }
 
         # Check if all three collections exist

@@ -11,11 +11,16 @@ class InvalidFileError(Exception):
 
 
 def _decodeCp932String(byteString):
-    """Convert a VMD format byte string to a regular string."""
-    # If the first byte is replaced with b"\x00" during encoding, add � at the beginning during decoding
-    # and replace ? with � to ensure replacement character consistency between UnicodeEncodeError and UnicodeDecodeError.
-    # UnicodeEncodeError: Bone/Morph name has characters not supported by cp932 encoding. Default replacement character: ?
-    # UnicodeDecodeError: Bone/Morph name was truncated at 15 bytes, breaking character boundaries. Default replacement character: �(U+FFFD)
+    r"""Convert a VMD format byte string to a regular string.
+    If the first byte is replaced with b"\x00" during encoding, add � at the beginning during decoding
+    and replace ? with � to ensure replacement character consistency between UnicodeEncodeError and UnicodeDecodeError.
+    - UnicodeEncodeError: Bone/Morph name has characters not supported by cp932 encoding. Default replacement character: ?
+    - UnicodeDecodeError: Bone/Morph name was truncated at 15 bytes, breaking character boundaries. Default replacement character: �(U+FFFD)
+    Example:
+        original = "左带_0_1調整"
+        byteString = b"\x00\xb6\x3f\x5f\x30\x5f\x31\x92\xb2\x90\xae\x00\x00\x00\x00"
+        decoded = "�ｶ�_0_1調整"
+    """
     decoded = byteString.replace(b"\x00", b"").decode("cp932", errors="replace")
     if byteString[:1] == b"\x00":
         decoded = "\ufffd" + decoded.replace("?", "\ufffd")
@@ -53,6 +58,15 @@ class Header:
 
 
 class BoneFrameKey:
+    """
+    VMD bone keyframe data structure.
+
+    TODO: Optimize this bottleneck. Large VMD files may instantiate millions of BoneFrameKey objects, significantly impacting performance.
+    """
+
+    # Use __slots__ for better performance
+    __slots__ = ("frame_number", "location", "rotation", "interp")
+
     def __init__(self):
         self.frame_number = 0
         self.location = []
@@ -61,11 +75,11 @@ class BoneFrameKey:
 
     def load(self, fin):
         (self.frame_number,) = struct.unpack("<L", fin.read(4))
-        self.location = list(struct.unpack("<fff", fin.read(4 * 3)))
-        self.rotation = list(struct.unpack("<ffff", fin.read(4 * 4)))
+        self.location = tuple(struct.unpack("<fff", fin.read(4 * 3)))
+        self.rotation = tuple(struct.unpack("<ffff", fin.read(4 * 4)))
         if not any(self.rotation):
             self.rotation = (0, 0, 0, 1)
-        self.interp = list(struct.unpack("<64b", fin.read(64)))
+        self.interp = tuple(struct.unpack("<64b", fin.read(64)))
 
     def save(self, fin):
         fin.write(struct.pack("<L", self.frame_number))
@@ -82,6 +96,9 @@ class BoneFrameKey:
 
 
 class ShapeKeyFrameKey:
+    # Use __slots__ for better performance
+    __slots__ = ("frame_number", "weight")
+
     def __init__(self):
         self.frame_number = 0
         self.weight = 0.0
@@ -102,6 +119,9 @@ class ShapeKeyFrameKey:
 
 
 class CameraKeyFrameKey:
+    # Use __slots__ for better performance
+    __slots__ = ("frame_number", "distance", "location", "rotation", "interp", "angle", "persp")
+
     def __init__(self):
         self.frame_number = 0
         self.distance = 0.0
@@ -114,9 +134,9 @@ class CameraKeyFrameKey:
     def load(self, fin):
         (self.frame_number,) = struct.unpack("<L", fin.read(4))
         (self.distance,) = struct.unpack("<f", fin.read(4))
-        self.location = list(struct.unpack("<fff", fin.read(4 * 3)))
-        self.rotation = list(struct.unpack("<fff", fin.read(4 * 3)))
-        self.interp = list(struct.unpack("<24b", fin.read(24)))
+        self.location = tuple(struct.unpack("<fff", fin.read(4 * 3)))
+        self.rotation = tuple(struct.unpack("<fff", fin.read(4 * 3)))
+        self.interp = tuple(struct.unpack("<24b", fin.read(24)))
         (self.angle,) = struct.unpack("<L", fin.read(4))
         (self.persp,) = struct.unpack("<b", fin.read(1))
         self.persp = self.persp == 0
@@ -142,6 +162,9 @@ class CameraKeyFrameKey:
 
 
 class LampKeyFrameKey:
+    # Use __slots__ for better performance
+    __slots__ = ("frame_number", "color", "direction")
+
     def __init__(self):
         self.frame_number = 0
         self.color = []
@@ -149,8 +172,8 @@ class LampKeyFrameKey:
 
     def load(self, fin):
         (self.frame_number,) = struct.unpack("<L", fin.read(4))
-        self.color = list(struct.unpack("<fff", fin.read(4 * 3)))
-        self.direction = list(struct.unpack("<fff", fin.read(4 * 3)))
+        self.color = tuple(struct.unpack("<fff", fin.read(4 * 3)))
+        self.direction = tuple(struct.unpack("<fff", fin.read(4 * 3)))
 
     def save(self, fin):
         fin.write(struct.pack("<L", self.frame_number))
@@ -166,6 +189,9 @@ class LampKeyFrameKey:
 
 
 class SelfShadowFrameKey:
+    # Use __slots__ for better performance
+    __slots__ = ("frame_number", "mode", "distance")
+
     def __init__(self):
         self.frame_number = 0
         self.mode = 0  # 0: none, 1: mode1, 2: mode2
@@ -196,6 +222,9 @@ class SelfShadowFrameKey:
 
 
 class PropertyFrameKey:
+    # Use __slots__ for better performance
+    __slots__ = ("frame_number", "visible", "ik_states")
+
     def __init__(self):
         self.frame_number = 0
         self.visible = True

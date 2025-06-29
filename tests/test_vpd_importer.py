@@ -1,6 +1,10 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
 import os
 import shutil
+import traceback
 import unittest
 
 import bpy
@@ -66,7 +70,7 @@ class TestVPDImporter(unittest.TestCase):
                 else bpy.ops.preferences.addon_enable
             )
             addon_enable(
-                module="bl_ext.user_default.mmd_tools"
+                module="bl_ext.user_default.mmd_tools",
             )  # make sure addon 'mmd_tools' is enabled
 
     def __create_model_from_pmx(self, pmx_file):
@@ -128,7 +132,7 @@ class TestVPDImporter(unittest.TestCase):
 
                 if not model_root:
                     print(
-                        "   * Skipping model - no MMD root object found after import"
+                        "   * Skipping model - no MMD root object found after import",
                     )
                     continue
 
@@ -156,7 +160,7 @@ class TestVPDImporter(unittest.TestCase):
 
                         # Import using operator
                         result = bpy.ops.mmd_tools.import_vpd(
-                            filepath=vpd_file, scale=1.0
+                            filepath=vpd_file, scale=1.0,
                         )
 
                         # Check result
@@ -174,17 +178,13 @@ class TestVPDImporter(unittest.TestCase):
 
                     except Exception as e:
                         print(f"   * Exception during VPD import: {str(e)}")
-                        import traceback
-
                         print(traceback.format_exc())
                         self.fail(
-                            f"Exception importing VPD {vpd_name} to model {model_name}: {str(e)}"
+                            f"Exception importing VPD {vpd_name} to model {model_name}: {str(e)}",
                         )
 
             except Exception as e:
                 print(f"   * Exception during model import: {str(e)}")
-                import traceback
-
                 print(traceback.format_exc())
                 self.fail(f"Exception importing model {model_name}: {str(e)}")
 

@@ -1,3 +1,6 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
 import os
 import shutil
@@ -5,7 +8,7 @@ import unittest
 
 import bmesh
 import bpy
-from bl_ext.user_default.mmd_tools.core.sdef import FnSDEF
+from bl_ext.user_default.mmd_tools.core.sdef import FnSDEF, _hash
 from mathutils import Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -143,8 +146,6 @@ class TestSDEFSystem(unittest.TestCase):
 
     def test_hash_function(self):
         """Test the internal _hash function"""
-        from bl_ext.user_default.mmd_tools.core.sdef import _hash
-
         # Create test objects
         armature_obj = self.__create_test_armature()
         mesh_obj = self.__create_test_mesh_with_sdef(armature_obj=armature_obj)
@@ -342,8 +343,6 @@ class TestSDEFSystem(unittest.TestCase):
         self.assertTrue(result, "SDEF bind should succeed")
 
         # Check if cache is populated
-        from bl_ext.user_default.mmd_tools.core.sdef import _hash
-
         key = _hash(mesh_obj)
         self.assertIn(key, FnSDEF.g_verts, "Cache should be populated after binding")
 
@@ -744,8 +743,6 @@ class TestSDEFSystem(unittest.TestCase):
         self.assertTrue(result2, "Second SDEF bind should succeed")
 
         # Verify cache is populated
-        from bl_ext.user_default.mmd_tools.core.sdef import _hash
-
         key1 = _hash(mesh_obj1)
         key2 = _hash(mesh_obj2)
         self.assertIn(key1, FnSDEF.g_verts, "First object should be in cache")

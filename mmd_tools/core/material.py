@@ -316,8 +316,6 @@ class FnMaterial:
     def __create_texture_node(self, node_name, filepath, pos):
         texture = self.__get_texture_node(node_name)
         if texture is None:
-            from mathutils import Vector
-
             self.__update_shader_nodes()
             nodes = self.material.node_tree.nodes
             texture = nodes.new("ShaderNodeTexImage")

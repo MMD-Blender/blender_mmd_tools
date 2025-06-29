@@ -239,7 +239,7 @@ class MMDBone(bpy.types.PropertyGroup):
                 description="MMD IK toggle is used to import/export animation of IK on-off",
                 update=_pose_bone_update_mmd_ik_toggle,
                 default=True,
-            )
+            ),
         )
 
     @staticmethod

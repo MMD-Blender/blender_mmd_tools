@@ -4,7 +4,7 @@
 import re
 
 from bpy.types import Operator
-from mathutils import Matrix
+from mathutils import Matrix, Quaternion
 
 
 class _SetShadingBase:
@@ -126,8 +126,6 @@ class FlipPose(Operator):
 
     @classmethod
     def __flip_pose(cls, matrix_basis, bone_src, bone_dest):
-        from mathutils import Quaternion
-
         m = bone_dest.bone.matrix_local.to_3x3().transposed()
         mi = bone_src.bone.matrix_local.to_3x3().transposed().inverted() if bone_src != bone_dest else m.inverted()
         loc, rot, scale = matrix_basis.decompose()

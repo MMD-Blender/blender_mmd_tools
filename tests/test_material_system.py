@@ -1,3 +1,6 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import gc
 import logging
 import os
@@ -6,8 +9,9 @@ import unittest
 
 import bpy
 from bl_ext.user_default.mmd_tools.core.exceptions import MaterialNotFoundError
-from bl_ext.user_default.mmd_tools.core.material import FnMaterial
+from bl_ext.user_default.mmd_tools.core.material import FnMaterial, MigrationFnMaterial
 from bl_ext.user_default.mmd_tools.core.model import Model
+from bl_ext.user_default.mmd_tools.panels.prop_material import MMDMaterialPanel, MMDTexturePanel
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
@@ -929,9 +933,6 @@ class TestMaterialSystem(unittest.TestCase):
         """Test MMD material panel poll conditions"""
         self._enable_mmd_tools()
 
-        # Import the panel class
-        from bl_ext.user_default.mmd_tools.panels.prop_material import MMDMaterialPanel
-
         # Test with no active object
         bpy.context.view_layer.objects.active = None
         self.assertFalse(MMDMaterialPanel.poll(bpy.context), "Should not poll with no active object")
@@ -952,9 +953,6 @@ class TestMaterialSystem(unittest.TestCase):
     def test_mmd_texture_panel_poll(self):
         """Test MMD texture panel poll conditions"""
         self._enable_mmd_tools()
-
-        # Import the panel class
-        from bl_ext.user_default.mmd_tools.panels.prop_material import MMDTexturePanel
 
         # Test similar conditions as material panel
         mesh_obj, material = self.__create_test_mesh_with_material()
@@ -1199,8 +1197,6 @@ class TestMaterialSystem(unittest.TestCase):
         self.assertIsNotNone(mmd_mat.diffuse_color, "Should have converted diffuse color")
 
         # Test shader migration
-        from bl_ext.user_default.mmd_tools.core.material import MigrationFnMaterial
-
         MigrationFnMaterial.update_mmd_shader()
 
         print("✓ Material version compatibility test passed")

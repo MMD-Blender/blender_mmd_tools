@@ -4,6 +4,7 @@
 import logging
 import os
 import re
+import string
 from typing import Callable, Optional, Set
 
 import bpy
@@ -60,8 +61,8 @@ def selectSingleBone(context, armature, bone_name, reset_pose=False):
             i.hide = False
 
 
-__CONVERT_NAME_TO_L_REGEXP = re.compile("^(.*)左(.*)$")
-__CONVERT_NAME_TO_R_REGEXP = re.compile("^(.*)右(.*)$")
+__CONVERT_NAME_TO_L_REGEXP = re.compile(r"^(.*)左(.*)$")
+__CONVERT_NAME_TO_R_REGEXP = re.compile(r"^(.*)右(.*)$")
 
 
 # 日本語で左右を命名されている名前をblender方式のL(R)に変更する
@@ -176,8 +177,6 @@ def int2base(x, base, width=0):
     Convert an int to a base
     Source: http://stackoverflow.com/questions/2267362
     """
-    import string
-
     digs = string.digits + string.ascii_uppercase
     assert 2 <= base <= len(digs)
     digits, negtive = "", False

@@ -1,7 +1,11 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
 import math
 import os
 import shutil
+import traceback
 import unittest
 
 import bpy
@@ -246,32 +250,30 @@ class TestVmdExporter(unittest.TestCase):
                     error_count += 1
                     print(f"        Invalid for zero-dy axis {axis} at index {j:2d} ({param_name:>4}): {s:4d} -> {r:4d} (expected: {' or '.join(expected_values)}, dy={dy_values[axis]:.2e}), {msg}")
                     max_error = max(max_error, abs(s - r))
-            else:
-                # Check if current axis has linear interpolation
-                if is_axis_linear(axis):
-                    # For linear interpolation, allow result to be 20, 107 for corresponding positions
-                    is_valid = s == r  # Always allow source == result
+            # Check if current axis has linear interpolation
+            elif is_axis_linear(axis):
+                # For linear interpolation, allow result to be 20, 107 for corresponding positions
+                is_valid = s == r  # Always allow source == result
 
+                if param_type in ["x1", "y1"]:
+                    is_valid = is_valid or (r == 20)
+                elif param_type in ["x2", "y2"]:
+                    is_valid = is_valid or (r == 107)
+
+                if not is_valid:
+                    error_count += 1
+                    expected_values = ["same as source"]
                     if param_type in ["x1", "y1"]:
-                        is_valid = is_valid or (r == 20)
+                        expected_values.append("20")
                     elif param_type in ["x2", "y2"]:
-                        is_valid = is_valid or (r == 107)
-
-                    if not is_valid:
-                        error_count += 1
-                        expected_values = ["same as source"]
-                        if param_type in ["x1", "y1"]:
-                            expected_values.append("20")
-                        elif param_type in ["x2", "y2"]:
-                            expected_values.append("107")
-                        print(f"        Invalid for linear interp at index {j:2d} ({param_name:>4}): {s:4d} -> {r:4d} (expected: {' or '.join(expected_values)}), {msg}")
-                        max_error = max(max_error, abs(s - r))
-                else:
-                    # Normal case: require exact match
-                    if abs(s - r) > 0:
-                        error_count += 1
-                        print(f"        Difference at index {j:2d} ({param_name:>4}): {s:4d} -> {r:4d}, diff {abs(s - r):4d}, {msg}")
-                        max_error = max(max_error, abs(s - r))
+                        expected_values.append("107")
+                    print(f"        Invalid for linear interp at index {j:2d} ({param_name:>4}): {s:4d} -> {r:4d} (expected: {' or '.join(expected_values)}), {msg}")
+                    max_error = max(max_error, abs(s - r))
+            # Normal case: require exact match
+            elif abs(s - r) > 0:
+                error_count += 1
+                print(f"        Difference at index {j:2d} ({param_name:>4}): {s:4d} -> {r:4d}, diff {abs(s - r):4d}, {msg}")
+                max_error = max(max_error, abs(s - r))
 
         return max_error, error_count
 
@@ -493,8 +495,6 @@ class TestVmdExporter(unittest.TestCase):
             except Exception as e:
                 print(f"    ✗ VMD test failed: {e}")
                 # Don't fail the entire test, just log the error
-                import traceback
-
                 traceback.print_exc()
 
         print("\n=== VMD Export Test Results ===")

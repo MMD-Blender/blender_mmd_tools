@@ -1,3 +1,6 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
 import os
 import shutil
@@ -89,8 +92,8 @@ class TestVertexColorExporter(unittest.TestCase):
 
     def __create_deterministic_mesh(self, name, mesh_type="simple_quad"):
         """
-        Create deterministic test meshes with known vertex color patterns
-        These meshes are designed to expose triangulation and mapping issues
+        Create deterministic test meshes using Blender's built-in objects
+        This approach is more stable than from_pydata() as it ensures proper mesh initialization
 
         Args:
             name: Mesh name
@@ -102,71 +105,90 @@ class TestVertexColorExporter(unittest.TestCase):
         # Create MMD model structure
         root, armature = self.__create_mmd_model(name)
 
-        # Create mesh data
-        mesh_data = bpy.data.meshes.new(name)
-        mesh_obj = bpy.data.objects.new(name, mesh_data)
-        mesh_obj.parent = armature
-        bpy.context.collection.objects.link(mesh_obj)
-
         if mesh_type == "simple_quad":
-            # Simple quad that will be triangulated into 2 triangles
-            # This tests basic triangulation vertex color mapping
-            vertices = [
-                (0, 0, 0),  # 0
-                (1, 0, 0),  # 1
-                (1, 1, 0),  # 2
-                (0, 1, 0),  # 3
-            ]
-            faces = [
-                [0, 1, 2, 3],  # Single quad (loops: 0,1,2,3)
-            ]
+            # Create a simple plane for quad testing
+            bpy.ops.mesh.primitive_plane_add(location=(0, 0, 0))
+            mesh_obj = bpy.context.active_object
+
         elif mesh_type == "complex_quad":
-            # Multiple quads to test more complex triangulation
-            vertices = [
-                # First quad
-                (0, 0, 0),  # 0
-                (1, 0, 0),  # 1
-                (1, 1, 0),  # 2
-                (0, 1, 0),  # 3
-                # Second quad (separate vertices to avoid sharing)
-                (2, 0, 0),  # 4
-                (3, 0, 0),  # 5
-                (3, 1, 0),  # 6
-                (2, 1, 0),  # 7
-            ]
-            faces = [
-                [0, 1, 2, 3],  # First quad (loops: 0,1,2,3)
-                [4, 5, 6, 7],  # Second quad (loops: 4,5,6,7)
-            ]
+            # Create two separate planes for complex quad testing
+            # First plane
+            bpy.ops.mesh.primitive_plane_add(location=(0.5, 0.5, 0))
+            first_plane = bpy.context.active_object
+
+            # Second plane
+            bpy.ops.mesh.primitive_plane_add(location=(2.5, 0.5, 0))
+            second_plane = bpy.context.active_object
+
+            # Select both planes and join them
+            bpy.ops.object.select_all(action="DESELECT")
+            first_plane.select_set(True)
+            second_plane.select_set(True)
+            bpy.context.view_layer.objects.active = first_plane
+            bpy.ops.object.join()
+
+            mesh_obj = bpy.context.active_object
+
         elif mesh_type == "mixed_ngon":
-            # Mix of triangles, quads, and pentagon to test complex triangulation
-            vertices = [
-                # Triangle
-                (0, 0, 0),  # 0
-                (1, 0, 0),  # 1
-                (0.5, 1, 0),  # 2
-                # Quad
-                (2, 0, 0),  # 3
-                (3, 0, 0),  # 4
-                (3, 1, 0),  # 5
-                (2, 1, 0),  # 6
-                # Pentagon
-                (0, 2, 0),  # 7
-                (1, 2, 0),  # 8
-                (1.5, 3, 0),  # 9
-                (0.5, 3.5, 0),  # 10
-                (-0.5, 3, 0),  # 11
-            ]
-            faces = [
-                [0, 1, 2],  # Triangle (loops: 0,1,2)
-                [3, 4, 5, 6],  # Quad (loops: 3,4,5,6)
-                [7, 8, 9, 10, 11],  # Pentagon (loops: 7,8,9,10,11)
-            ]
+            # Create a more complex mesh using multiple primitives
+            # Start with a plane (quad)
+            bpy.ops.mesh.primitive_plane_add(location=(2, 0.5, 0))
+            quad_obj = bpy.context.active_object
+
+            # Add a triangle (delete one vertex from a plane)
+            bpy.ops.mesh.primitive_plane_add(location=(0.5, 0.5, 0))
+            tri_obj = bpy.context.active_object
+            bpy.ops.object.mode_set(mode="EDIT")
+            bpy.ops.mesh.select_all(action="DESELECT")
+            # Select and delete one vertex to make triangle
+            bpy.ops.mesh.select_mode(type="VERT")
+            bpy.context.tool_settings.mesh_select_mode[:] = True, False, False
+            mesh_data = tri_obj.data
+            mesh_data.vertices[0].select = True
+            bpy.ops.mesh.delete(type="VERT")
+            bpy.ops.object.mode_set(mode="OBJECT")
+
+            # Add a pentagon (start with cylinder, top face only)
+            bpy.ops.mesh.primitive_cylinder_add(vertices=5, location=(0.5, 2.5, 0), depth=0)
+            pent_obj = bpy.context.active_object
+            # Remove bottom face, keep only top pentagon
+            bpy.ops.object.mode_set(mode="EDIT")
+            bpy.ops.mesh.select_all(action="DESELECT")
+            bpy.ops.mesh.select_mode(type="FACE")
+            bpy.context.tool_settings.mesh_select_mode[:] = False, False, True
+            # Select bottom face and delete it
+            for face in pent_obj.data.polygons:
+                if face.center.z < 0:
+                    face.select = True
+            bpy.ops.mesh.delete(type="FACE")
+            bpy.ops.object.mode_set(mode="OBJECT")
+
+            # Join all objects
+            bpy.ops.object.select_all(action="DESELECT")
+            tri_obj.select_set(True)
+            quad_obj.select_set(True)
+            pent_obj.select_set(True)
+            bpy.context.view_layer.objects.active = tri_obj
+            bpy.ops.object.join()
+
+            mesh_obj = bpy.context.active_object
+
         else:
             raise ValueError(f"Unknown mesh type: {mesh_type}")
 
-        mesh_data.from_pydata(vertices, [], faces)
-        mesh_data.update()
+        # Set proper name and parent relationship
+        mesh_obj.name = name
+        mesh_obj.parent = armature
+
+        # Ensure the mesh is properly initialized
+        # Enter and exit edit mode to trigger proper mesh data calculation
+        bpy.context.view_layer.objects.active = mesh_obj
+        bpy.ops.object.mode_set(mode="EDIT")
+        bpy.ops.object.mode_set(mode="OBJECT")
+
+        # Update mesh data to ensure all internal structures are properly calculated
+        mesh_obj.data.update()
+        mesh_obj.data.calc_loop_triangles()
 
         # Add armature modifier to mesh
         modifier = mesh_obj.modifiers.new(name="Armature", type="ARMATURE")
@@ -174,7 +196,7 @@ class TestVertexColorExporter(unittest.TestCase):
 
         # Create a default material
         material = bpy.data.materials.new(name + "_Material")
-        mesh_data.materials.append(material)
+        mesh_obj.data.materials.append(material)
 
         return root, armature, mesh_obj
 
@@ -290,6 +312,7 @@ class TestVertexColorExporter(unittest.TestCase):
                 sort_materials=False,
                 sort_vertices="NONE",
                 vertex_splitting=False,
+                export_vertex_colors_as_adduv2=True,
                 log_level="WARNING",  # Reduce log noise for cleaner test output
             )
         except Exception as e:
@@ -353,9 +376,7 @@ class TestVertexColorExporter(unittest.TestCase):
 
         # Check for precision vs mapping errors
         expected_color_set = set()
-        for expected_color in expected_mapping.values():
-            # Convert to tuple for set operations
-            expected_color_set.add(tuple(expected_color))
+        expected_color_set.update(tuple(expected_color) for expected_color in expected_mapping.values())
 
         for vertex_idx, exported_color in exported_vertex_colors:
             # Find closest expected color
@@ -777,8 +798,7 @@ class TestVertexColorExporter(unittest.TestCase):
                 exported_colors.append(color_tuple)
 
         original_colors = set()
-        for color in original_loop_colors.values():
-            original_colors.add(tuple(round(c, 3) for c in color))
+        original_colors.update(tuple(round(c, 3) for c in color) for color in original_loop_colors.values())
 
         exported_color_set = set(exported_colors)
 

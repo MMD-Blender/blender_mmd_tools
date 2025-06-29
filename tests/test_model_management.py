@@ -1,3 +1,6 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
 import os
 import shutil
@@ -5,7 +8,9 @@ import unittest
 
 import bmesh
 import bpy
-from bl_ext.user_default.mmd_tools.core.model import FnModel
+from bl_ext.user_default.mmd_tools.core.model import FnModel, Model
+from bl_ext.user_default.mmd_tools.core.sdef import FnSDEF
+from mathutils import Vector
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
@@ -214,8 +219,6 @@ class TestModelManagement(unittest.TestCase):
         Add SDEF shape keys to mesh objects for testing SDEF binding functionality
         This creates the minimal SDEF data structure that FnSDEF.has_sdef_data() expects
         """
-        from mathutils import Vector  # Import Vector class for proper vector operations
-
         for mesh_obj in mesh_objects:
             if len(mesh_obj.data.vertices) == 0:
                 continue  # Skip meshes without vertices
@@ -1451,8 +1454,6 @@ class TestModelManagement(unittest.TestCase):
         # Test if the issue is with model state
         print("\n--- Testing Model Build State ---")
         try:
-            from bl_ext.user_default.mmd_tools.core.model import Model
-
             model = Model(root_obj)
             print("Model created successfully")
             print(f"Model has armature: {model.armature() is not None}")
@@ -1582,8 +1583,6 @@ class TestModelManagement(unittest.TestCase):
                 print(f"    * {mod.name}: target={mod.object.name if mod.object else 'None'}")
 
             # Test FnSDEF.has_sdef_data specifically
-            from bl_ext.user_default.mmd_tools.core.sdef import FnSDEF
-
             has_sdef_data = FnSDEF.has_sdef_data(mesh_obj)
             print(f"  - FnSDEF.has_sdef_data(): {has_sdef_data}")
 

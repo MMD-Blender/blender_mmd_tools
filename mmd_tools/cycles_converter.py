@@ -91,16 +91,16 @@ def __enum_linked_nodes(node: bpy.types.Node) -> Iterable[bpy.types.Node]:
     yield node
     if node.parent:
         yield node.parent
-    for n in set(link.from_node for i in node.inputs for link in i.links):
+    for n in {link.from_node for i in node.inputs for link in i.links}:
         yield from __enum_linked_nodes(n)
 
 
 def __cleanNodeTree(material: bpy.types.Material):
     nodes = material.node_tree.nodes
-    node_names = set(n.name for n in nodes)
+    node_names = {n.name for n in nodes}
     for o in (n for n in nodes if n.bl_idname in {"ShaderNodeOutput", "ShaderNodeOutputMaterial"}):
         if any(i.is_linked for i in o.inputs):
-            node_names -= set(linked.name for linked in __enum_linked_nodes(o))
+            node_names -= {linked.name for linked in __enum_linked_nodes(o)}
     for name in node_names:
         nodes.remove(nodes[name])
 

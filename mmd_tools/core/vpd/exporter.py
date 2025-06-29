@@ -133,4 +133,4 @@ class VPDExporter:
                 self.__bone_util_cls = importer.BoneConverterPoseMode
             self.__exportPoseLib(armature, pose_type, filepath, use_pose_mode)
         else:
-            raise ValueError('Unknown pose type "{pose_type}"')
+            raise ValueError(f'Unknown pose type "{pose_type}"')

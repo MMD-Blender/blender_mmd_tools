@@ -3,11 +3,11 @@
 
 import copy
 import logging
+import math
 import os
 import re
-from math import radians
 
-import mathutils
+from mathutils import Vector
 
 from .. import pmd, pmx
 from ..pmx import importer as import_pmx
@@ -93,7 +93,7 @@ def import_pmd_to_pmx(filepath):
         pmx_bone.name_e = bone.name_e
         pmx_bone.location = bone.position
         pmx_bone.parent = bone.parent
-        if bone.type != 9 and bone.type != 8 and bone.tail_bone > 0:
+        if bone.type not in {9, 8} and bone.tail_bone > 0:
             pmx_bone.displayConnection = bone.tail_bone  # Corresponds to 'BONE' type
         else:
             pmx_bone.displayConnection = -1  # Corresponds to 'NONE' type
@@ -121,8 +121,8 @@ def import_pmd_to_pmx(filepath):
             pmx_bone.isMovable = False
         elif bone.type == 8:
             pmx_bone.isMovable = False
-            tail_loc = mathutils.Vector(pmd_model.bones[bone.tail_bone].position)
-            loc = mathutils.Vector(bone.position)
+            tail_loc = Vector(pmd_model.bones[bone.tail_bone].position)
+            loc = Vector(bone.position)
             vec = tail_loc - loc
             vec.normalize()
             pmx_bone.axis = list(vec)
@@ -134,7 +134,7 @@ def import_pmd_to_pmx(filepath):
 
         pmx_model.bones.append(pmx_bone)
 
-        if re.search("ひざ$", pmx_bone.name):
+        if re.search(r"ひざ$", pmx_bone.name):
             knee_bones.append(i)
 
     for i in pmx_model.bones:
@@ -168,8 +168,8 @@ def import_pmd_to_pmx(filepath):
             ik_link = pmx.IKLink()
             ik_link.target = i
             if i in knee_bones:
-                ik_link.maximumAngle = [radians(-0.5), 0.0, 0.0]
-                ik_link.minimumAngle = [radians(-180.0), 0.0, 0.0]
+                ik_link.maximumAngle = [math.radians(-0.5), 0.0, 0.0]
+                ik_link.minimumAngle = [math.radians(-180.0), 0.0, 0.0]
                 logging.info("  Add knee constraints to %s", i)
             logging.debug("  IKLink: %s(index: %d)", pmx_model.bones[i].name, i)
             pmx_bone.ik_links.append(ik_link)
@@ -312,7 +312,7 @@ def import_pmd_to_pmx(filepath):
             t = 0
         else:
             t = rigid.bone
-        pmx_rigid.location = mathutils.Vector(pmx_model.bones[t].location) + mathutils.Vector(rigid.location)
+        pmx_rigid.location = Vector(pmx_model.bones[t].location) + Vector(rigid.location)
         pmx_rigid.rotation = rigid.rotation
 
         pmx_rigid.mass = rigid.mass

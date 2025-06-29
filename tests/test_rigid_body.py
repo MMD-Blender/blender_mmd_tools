@@ -1,9 +1,12 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import gc
 import logging
+import math
 import os
 import shutil
 import unittest
-from math import pi
 
 import bpy
 from bl_ext.user_default.mmd_tools.core import rigid_body
@@ -52,9 +55,9 @@ class TestRigidBody(unittest.TestCase):
         return (Vector(vec0) - Vector(vec1)).length
 
     def __quaternion_error(self, quat0, quat1):
-        angle = quat0.rotation_difference(quat1).angle % pi
+        angle = quat0.rotation_difference(quat1).angle % math.pi
         assert angle >= 0
-        return min(angle, pi - angle)
+        return min(angle, math.pi - angle)
 
     def __safe_get_object(self, name):
         """Safely get object by name"""
@@ -146,8 +149,8 @@ class TestRigidBody(unittest.TestCase):
             rigid_b=rigid_b,
             maximum_location=Vector((0.1, 0.1, 0.1)),
             minimum_location=Vector((-0.1, -0.1, -0.1)),
-            maximum_rotation=Euler((pi / 4, pi / 4, pi / 4)),
-            minimum_rotation=Euler((-pi / 4, -pi / 4, -pi / 4)),
+            maximum_rotation=Euler((math.pi / 4, math.pi / 4, math.pi / 4)),
+            minimum_rotation=Euler((-math.pi / 4, -math.pi / 4, -math.pi / 4)),
             spring_angular=Vector((0, 0, 0)),
             spring_linear=Vector((0, 0, 0)),
             name="TestJoint",
@@ -447,8 +450,8 @@ class TestRigidBody(unittest.TestCase):
         # Test with specific limits and springs
         max_location = Vector((0.5, 0.5, 0.5))
         min_location = Vector((-0.5, -0.5, -0.5))
-        max_rotation = Euler((pi / 3, pi / 3, pi / 3))
-        min_rotation = Euler((-pi / 3, -pi / 3, -pi / 3))
+        max_rotation = Euler((math.pi / 3, math.pi / 3, math.pi / 3))
+        min_rotation = Euler((-math.pi / 3, -math.pi / 3, -math.pi / 3))
         spring_linear = Vector((10, 10, 10))
         spring_angular = Vector((5, 5, 5))
 

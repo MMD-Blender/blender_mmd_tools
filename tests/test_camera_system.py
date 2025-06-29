@@ -1,8 +1,11 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
+import math
 import os
 import shutil
 import unittest
-from math import pi, radians
 
 import bpy
 from bl_ext.user_default.mmd_tools.core.camera import FnCamera, MMDCamera
@@ -53,9 +56,9 @@ class TestCameraSystem(unittest.TestCase):
 
     def __quaternion_error(self, quat0, quat1):
         """Calculate quaternion rotation difference error"""
-        angle = quat0.rotation_difference(quat1).angle % pi
+        angle = quat0.rotation_difference(quat1).angle % math.pi
         assert angle >= 0
-        return min(angle, pi - angle)
+        return min(angle, math.pi - angle)
 
     def __create_test_camera(self, name="TestCamera"):
         """Create a basic camera for testing"""
@@ -133,7 +136,7 @@ class TestCameraSystem(unittest.TestCase):
         camera_obj.parent = empty
 
         # Set up required properties
-        empty.mmd_camera.angle = radians(30)
+        empty.mmd_camera.angle = math.radians(30)
         empty.mmd_camera.is_perspective = True
 
         # Test adding drivers
@@ -186,7 +189,7 @@ class TestCameraSystem(unittest.TestCase):
         expected_location = Vector((0, -45.0, 0))
         self.assertLess(self.__vector_error(camera_obj.location, expected_location), 1e-6)
 
-        expected_rotation = Euler((radians(90), 0, 0), "XYZ")
+        expected_rotation = Euler((math.radians(90), 0, 0), "XYZ")
         self.assertLess(self.__quaternion_error(camera_obj.rotation_euler.to_quaternion(), expected_rotation.to_quaternion()), 1e-6)
 
         # Check locks - convert to tuple for proper comparison
@@ -205,7 +208,7 @@ class TestCameraSystem(unittest.TestCase):
         self.assertEqual(tuple(root_obj.lock_scale), (True, True, True))
 
         # Check MMD camera properties - use correct attribute name
-        self.assertAlmostEqual(root_obj.mmd_camera.angle, radians(30), places=6)
+        self.assertAlmostEqual(root_obj.mmd_camera.angle, math.radians(30), places=6)
         self.assertTrue(root_obj.mmd_camera.is_perspective)  # Corrected attribute name
 
     def test_mmd_camera_object_and_camera_methods(self):

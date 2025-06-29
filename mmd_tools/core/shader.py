@@ -9,7 +9,7 @@ import bpy
 class _NodeTreeUtils:
     def __init__(self, shader: bpy.types.ShaderNodeTree):
         self.shader = shader
-        self.nodes: bpy.types.bpy_prop_collection[bpy.types.ShaderNode] = shader.nodes  # type: ignore
+        self.nodes: bpy.types.bpy_prop_collection[bpy.types.ShaderNode] = shader.nodes  # type: ignore[assignment]
         self.links = shader.links
 
     def _find_node(self, node_type: str) -> Optional[bpy.types.ShaderNode]:

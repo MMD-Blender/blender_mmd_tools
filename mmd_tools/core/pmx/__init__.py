@@ -129,7 +129,6 @@ class FileWriteStream(FileStream):
             self.__fout.write(struct.pack(typedict[size], int(index)))
         else:
             raise ValueError("invalid data size %s" % str(size))
-        return
 
     def __writeSignedIndex(self, index, size):
         return self.__writeIndex(index, size, {1: "<b", 2: "<h", 4: "<i"})
@@ -992,7 +991,7 @@ class Bone:
     def __repr__(self):
         return "<Bone name %s, name_e %s>" % (
             self.name,
-            self.name_e,)
+            self.name_e)
 
     def load(self, fs):
         self.name = fs.readStr()
@@ -1620,12 +1619,14 @@ def load(path):
         header = Header()
         header.load(fs)
         fs.setHeader(header)
+
         model = Model()
         try:
             model.load(fs)
-        except struct.error as e:
-            logging.error(" * Corrupted file: %s", e)
+        except struct.error:
+            logging.exception(" * Corrupted file")
             # raise
+
         logging.info(" Finished loading.")
         logging.info("----------------------------------------")
         logging.info(" mmd_tools.pmx module")

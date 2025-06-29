@@ -11,7 +11,7 @@ from collections import OrderedDict
 
 import bmesh
 import bpy
-import mathutils
+from mathutils import Euler, Matrix, Vector
 
 from ...bpyutils import FnContext
 from ...operators.misc import MoveObject
@@ -155,24 +155,9 @@ class __PmxExporter:
                     pv.normal = v.normal
                     pv.uv = self.flipUV_V(v.uv)
                     pv.edge_scale = v.edge_scale
-
-                    # Handle additional UVs
-                    max_uv_index = max((i for i, uvzw in enumerate(v.add_uvs) if uvzw), default=-1)  # Find the highest index with valid data
-                    if max_uv_index >= 0:
-                        # Ensure additional_uvs list is long enough to include all required indices
-                        for uv_index in range(max_uv_index + 1):
-                            _uvzw = v.add_uvs[uv_index]
-                            if _uvzw:
-                                if uv_index == 1:  # ADD UV2 (vertex color data)
-                                    # Vertex color data doesn't need V-axis flipping
-                                    additional_uv_data = _uvzw[0] + _uvzw[1]
-                                else:
-                                    # Other UV data requires V-axis flipping
-                                    additional_uv_data = self.flipUV_V(_uvzw[0]) + self.flipUV_V(_uvzw[1])
-                                pv.additional_uvs.append(additional_uv_data)
-                            else:
-                                # If this index has no data but higher indices do, insert zero data to keep indices aligned
-                                pv.additional_uvs.append((0.0, 0.0, 0.0, 0.0))
+                    for _uvzw in v.add_uvs:
+                        if _uvzw:
+                            pv.additional_uvs.append(self.flipUV_V(_uvzw[0]) + self.flipUV_V(_uvzw[1]))
 
                     t = len(v.groups)
                     if t == 0:
@@ -357,7 +342,6 @@ class __PmxExporter:
 
         sorted_bones = sorted(pose_bones, key=lambda x: x.mmd_bone.bone_id if x.mmd_bone.bone_id >= 0 else float("inf"))
 
-        Vector = mathutils.Vector
         pmx_matrix = world_mat * self.__scale
         pmx_matrix[1], pmx_matrix[2] = pmx_matrix[2].copy(), pmx_matrix[1].copy()
 
@@ -465,9 +449,7 @@ class __PmxExporter:
         ik_link = pmx.IKLink()
         ik_link.target = bone_map[pose_bone.name]
 
-        from math import pi
-
-        minimum, maximum = [-pi] * 3, [pi] * 3
+        minimum, maximum = [-math.pi] * 3, [math.pi] * 3
         unused_counts = 0
 
         if ik_export_option == "IGNORE_ALL":
@@ -670,11 +652,11 @@ class __PmxExporter:
         モデル中心座標から離れている位置で使用されているマテリアルほどリストの後ろ側にくるように。
         かなりいいかげんな実装
         """
-        center = mathutils.Vector([0, 0, 0])
+        center = Vector([0, 0, 0])
         vertices = self.__model.vertices
         vert_num = len(vertices)
         for v in self.__model.vertices:
-            center += mathutils.Vector(v.co) / vert_num
+            center += Vector(v.co) / vert_num
 
         faces = self.__model.faces
         offset = 0
@@ -684,9 +666,9 @@ class __PmxExporter:
             face_num = int(mat.vertex_count / 3)
             for i in range(offset, offset + face_num):
                 face = faces[i]
-                d += (mathutils.Vector(vertices[face[0]].co) - center).length
-                d += (mathutils.Vector(vertices[face[1]].co) - center).length
-                d += (mathutils.Vector(vertices[face[2]].co) - center).length
+                d += (Vector(vertices[face[0]].co) - center).length
+                d += (Vector(vertices[face[1]].co) - center).length
+                d += (Vector(vertices[face[2]].co) - center).length
             distances.append((d / mat.vertex_count, mat, offset, face_num, bl_mat_name))
             offset += face_num
         sorted_faces = []
@@ -816,7 +798,7 @@ class __PmxExporter:
                 if j.type == "BONE" and j.name in bone_map:
                     items.append((0, bone_map[j.name]))
                 elif j.type == "MORPH" and (j.morph_type, j.name) in morph_map:
-                    items.append((1, morph_map[(j.morph_type, j.name)]))
+                    items.append((1, morph_map[j.morph_type, j.name]))
                 else:
                     logging.warning("Display item (%s, %s) was not found.", j.type, j.name)
             d.data = items
@@ -857,18 +839,17 @@ class __PmxExporter:
     def __exportRigidBodies(self, rigid_bodies, bone_map):
         rigid_map = {}
         rigid_cnt = 0
-        Vector = mathutils.Vector
         for obj in rigid_bodies:
             t, r, s = obj.matrix_world.decompose()
             if any(math.isnan(val) for val in t):
                 logging.warning(f"Rigid body '{obj.name}' has invalid position coordinates, using default position")
-                t = mathutils.Vector((0.0, 0.0, 0.0))
+                t = Vector((0.0, 0.0, 0.0))
             if any(math.isnan(val) for val in r):
                 logging.warning(f"Rigid body '{obj.name}' has invalid rotation coordinates, using default rotation")
-                r = mathutils.Euler((0.0, 0.0, 0.0), "YXZ")
+                r = Euler((0.0, 0.0, 0.0), "YXZ")
             if any(math.isnan(val) for val in s):
                 logging.warning(f"Rigid body '{obj.name}' has invalid scale coordinates, using default scale")
-                s = mathutils.Vector((1.0, 1.0, 1.0))
+                s = Vector((1.0, 1.0, 1.0))
             r = r.to_euler("YXZ")
             rb = obj.rigid_body
             if rb is None:
@@ -916,7 +897,6 @@ class __PmxExporter:
         return rigid_map
 
     def __exportJoints(self, joints, rigid_map):
-        Vector = mathutils.Vector
         for joint in joints:
             t, r, s = joint.matrix_world.decompose()
             r = r.to_euler("YXZ")
@@ -941,77 +921,29 @@ class __PmxExporter:
             p_joint.spring_rotation_constant = Vector(mmd_joint.spring_angular).xzy
             self.__model.joints.append(p_joint)
 
-    def __convertFaceUVToVertexUV(self, vert_index, uv, normal, vertices_map, face_area, loop_angle, vertex_color):
+    def __convertFaceUVToVertexUV(self, vert_index, uv, normal, vertices_map, face_area, loop_angle):
         vertices = vertices_map[vert_index]
         assert vertices, f"Empty vertices list for vertex index {vert_index}"
-
-        # Normalize vertex_color to always be a Vector (None becomes zero vector)
-        color_vec = mathutils.Vector(vertex_color) if vertex_color else mathutils.Vector((0, 0, 0, 0))
-
-        def _ensure_add_uvs(vertex):
-            """Ensure vertex has add_uvs list with at least 2 elements"""
-            if not hasattr(vertex, "add_uvs"):
-                vertex.add_uvs = [None] * 4
-            elif len(vertex.add_uvs) < 2:
-                vertex.add_uvs.extend([None] * (2 - len(vertex.add_uvs)))
-
-        def _color_to_uv(color_vector):
-            """Convert color vector to ADD UV2 format"""
-            if color_vector.length > 0:
-                return ((color_vector[0], color_vector[1]), (color_vector[2], color_vector[3]))
-            return None
-
-        def _color_diff(vertex, current_color_uv):
-            """Calculate difference between vertex's existing color and current color"""
-            # Return 0.0 if no color data exists (compatible)
-            if not hasattr(vertex, "add_uvs") or len(vertex.add_uvs) < 2:
-                return 0.0
-
-            existing_color_uv = vertex.add_uvs[1]
-
-            # Both None - perfectly compatible
-            if existing_color_uv is None and current_color_uv is None:
-                return 0.0
-
-            # One None, one not - incompatible
-            if existing_color_uv is None or current_color_uv is None:
-                return 1.0  # Large difference to force splitting
-
-            # Calculate maximum component difference
-            max_diff = 0.0
-            for j in range(2):
-                for k in range(2):
-                    diff = abs(existing_color_uv[j][k] - current_color_uv[j][k])
-                    max_diff = max(max_diff, diff)
-
-            return max_diff
-
-        # Convert current vertex color to ADD UV2 format for comparison
-        current_color_uv = _color_to_uv(color_vec)
 
         if self.__vertex_splitting:  # Vertex splitting mode
             for i in vertices:
                 if i.uv is None:
                     # Initialize new vertex with all attributes
-                    _ensure_add_uvs(i)
                     i.uv = uv
                     i.normal = normal
-                    i.add_uvs[1] = current_color_uv
                     return i
-                if (i.uv - uv).length < 0.001 and (normal - i.normal).length < 0.01 and _color_diff(i, current_color_uv) < 0.01:
-                    # UV, normal, and vertex color are all compatible within thresholds
+                if (i.uv - uv).length < 0.001 and (normal - i.normal).length < 0.01:
+                    # UV, normal are all compatible within thresholds
                     return i
 
-            # Create new vertex for different UV, normal, or vertex color
+            # Create new vertex for different UV, normal
             n = copy.copy(vertices[0])  # Shallow copy should be fine
-            _ensure_add_uvs(n)
             n.uv = uv
             n.normal = normal
-            n.add_uvs[1] = current_color_uv
             vertices.append(n)
             return n
 
-        # Non-splitting mode: UV splits, normals and colors use weighted averaging
+        # Non-splitting mode: UV splits, normals use weighted averaging
         # Find or create vertex based on UV compatibility only
         v = None
         for i in vertices:
@@ -1030,13 +962,12 @@ class __PmxExporter:
             vertices.append(v)
 
         # Initialize averaging lists if needed
-        for attr_name in ["_normal_list", "_color_list", "_area_list", "_angle_list"]:
+        for attr_name in ["_normal_list", "_area_list", "_angle_list"]:
             if not hasattr(v, attr_name):
                 setattr(v, attr_name, [])
 
         # Append current values to averaging lists
         v._normal_list.append(normal)
-        v._color_list.append(color_vec)
         v._area_list.append(face_area)
         v._angle_list.append(loop_angle)
 
@@ -1045,22 +976,11 @@ class __PmxExporter:
         total_weight = sum(weights) or 1.0  # Avoid division by zero
 
         # Average normals
-        if len(set(tuple(n) for n in v._normal_list)) == 1:  # All normals identical
+        if len({tuple(n) for n in v._normal_list}) == 1:  # All normals identical
             v.normal = normal
         else:
-            weighted_normal_sum = sum((n * w for n, w in zip(v._normal_list, weights, strict=False)), mathutils.Vector((0, 0, 0)))
+            weighted_normal_sum = sum((n * w for n, w in zip(v._normal_list, weights, strict=False)), Vector((0, 0, 0)))
             v.normal = (weighted_normal_sum / total_weight).normalized()
-
-        # Average vertex colors and convert to ADD UV2 format
-        if len(set(tuple(c) for c in v._color_list)) == 1:  # All colors identical
-            final_color = color_vec
-        else:
-            weighted_color_sum = sum((c * w for c, w in zip(v._color_list, weights, strict=False)), mathutils.Vector((0, 0, 0, 0)))
-            final_color = weighted_color_sum / total_weight
-
-        # Set averaged vertex color as ADD UV2
-        _ensure_add_uvs(v)
-        v.add_uvs[1] = _color_to_uv(final_color)
         return v
 
     def __convertAddUV(self, vert, adduv, addzw, uv_index, vertices, rip_vertices):
@@ -1124,7 +1044,7 @@ class __PmxExporter:
         sx, sy, sz = meshObj.matrix_world.to_scale()
         normal_matrix = pmx_matrix.to_3x3()
         if not (sx == sy == sz):
-            invert_scale_matrix = mathutils.Matrix([[1.0 / sx, 0, 0], [0, 1.0 / sy, 0], [0, 0, 1.0 / sz]])
+            invert_scale_matrix = Matrix([[1.0 / sx, 0, 0], [0, 1.0 / sy, 0], [0, 0, 1.0 / sz]])
             normal_matrix = normal_matrix @ invert_scale_matrix  # reset the scale of meshObj.matrix_world
             normal_matrix = normal_matrix @ invert_scale_matrix  # the scale transform of normals
 
@@ -1138,20 +1058,8 @@ class __PmxExporter:
                 loop_angles.append(loop.calc_angle())
         bm_temp.free()
 
-        # Extract vertex colors from triangulated mesh
-        vertex_colors = base_mesh.vertex_colors.active
-        vertex_color_data = None
-        if vertex_colors:
-            color_data = [c.color for c in vertex_colors.data]
-            # Check if all vertex colors are white (1.0, 1.0, 1.0, 1.0)
-            if all(color[0] == 1.0 and color[1] == 1.0 and color[2] == 1.0 and color[3] == 1.0 for color in color_data):
-                logging.info("All vertex colors are white - treating as no vertex colors")
-            else:
-                vertex_color_data = color_data
-
         # Apply transformation to triangulated mesh
         base_mesh.transform(pmx_matrix)
-        remapped_vertex_colors = vertex_color_data
 
         def _get_weight(vertex_group_index, vertex, default_weight):
             for i in vertex.groups:
@@ -1203,53 +1111,44 @@ class __PmxExporter:
                     get_edge_scale(v),
                     get_vertex_order(v),
                     get_uv_offsets(v),
-                )
+                ),
             ]
 
-        # Process UV layers (skip UV2 if vertex colors present)
-        bl_add_uvs = [i for i in base_mesh.uv_layers[1:] if not i.name.startswith("_")]
-
-        # Handle UV2 layer based on vertex color presence
-        if vertex_colors:
-            # When vertex colors exist, UV2 is likely converted from vertex colors - skip it
-            if any(uv.name == "UV2" for uv in bl_add_uvs):
-                logging.info("Vertex colors detected - UV2 layer treated as vertex color data and skipped.")
-                bl_add_uvs = [uv for uv in bl_add_uvs if uv.name != "UV2"]
-        else:
-            # When no vertex colors, UV2 is treated as normal additional UV layer
-            logging.info("No vertex colors detected - all UV layers exported normally.")
-
-        # Check total UV count limit (PMX supports maximum 4 additional UVs)
-        total_uv_needed = len(bl_add_uvs)
-        if vertex_colors:
-            total_uv_needed += 1  # Vertex colors need one UV slot
-
-        if total_uv_needed > 4:
-            logging.warning(f"Too many UV channels: {total_uv_needed} needed, but maximum is 4.")
-            logging.warning("Some UV data will be lost.")
-
+        # Extract vertex colors as ADD UV2
+        vertex_colors = None
+        vertex_colors_data = None
+        if self.__export_vertex_colors_as_adduv2:
+            vertex_colors = base_mesh.vertex_colors.active
             if vertex_colors:
-                # Prioritize vertex colors, limit other UV layers
-                max_other_uvs = 3
-                if len(bl_add_uvs) > max_other_uvs:
-                    logging.warning(f"Keeping vertex colors and first {max_other_uvs} UV layers.")
-                    logging.warning(f"Discarding UV layers: {[uv.name for uv in bl_add_uvs[max_other_uvs:]]}")
-                    bl_add_uvs = bl_add_uvs[:max_other_uvs]
-            else:
-                # No vertex colors, limit to 4 UV layers maximum
-                if len(bl_add_uvs) > 4:
-                    logging.warning(f"Keeping first 4 UV layers out of {len(bl_add_uvs)}.")
-                    logging.warning(f"Discarding UV layers: {[uv.name for uv in bl_add_uvs[4:]]}")
-                    bl_add_uvs = bl_add_uvs[:4]
+                vertex_colors_data = [c.color for c in vertex_colors.data]
 
-        # Update additional UV count
-        self.__add_uv_count = max(self.__add_uv_count, len(bl_add_uvs))
-        if vertex_colors:
-            self.__add_uv_count = max(self.__add_uv_count, len(bl_add_uvs) + 1, 2)  # Ensure at least 2 for ADD UV2
+                if "UV1" not in base_mesh.uv_layers:
+                    uv1_layer = base_mesh.uv_layers.new(name="UV1")
+                    for loop_data in uv1_layer.data:
+                        loop_data.uv = (0, 1.0)
+
+                if "UV2" not in base_mesh.uv_layers:
+                    base_mesh.uv_layers.new(name="UV2")
+                if "_UV2" not in base_mesh.uv_layers:
+                    base_mesh.uv_layers.new(name="_UV2")
+
+                uv2_layer = base_mesh.uv_layers["UV2"]
+                uv2_zw_layer = base_mesh.uv_layers["_UV2"]
+
+                for loop_idx, color in enumerate(vertex_colors_data):
+                    if loop_idx < len(uv2_layer.data):
+                        # Pre-flip V coordinates to compensate for flipUV_V processing
+                        uv2_layer.data[loop_idx].uv = (color[0], 1.0 - color[1])
+                        uv2_zw_layer.data[loop_idx].uv = (color[2], 1.0 - color[3])
+                logging.info("Export vertex colors as ADD UV2")
+
+        # Process UV layers
+        bl_add_uvs = [i for i in base_mesh.uv_layers[1:] if not i.name.startswith("_")]
+        self.__add_uv_count = min(max(0, len(bl_add_uvs)), 4)
 
         # Process faces from triangulated mesh
         class _DummyUV:
-            uv1 = uv2 = uv3 = mathutils.Vector((0, 1))
+            uv1 = uv2 = uv3 = Vector((0, 1))
 
             def __init__(self, uvs):
                 self.uv1, self.uv2, self.uv3 = (v.uv.copy() for v in uvs)
@@ -1271,14 +1170,10 @@ class __PmxExporter:
             loop_indices = list(face.loop_indices)
             n1, n2, n3 = [loop_normals[idx] for idx in loop_indices]
             a1, a2, a3 = [loop_angles[idx] for idx in loop_indices]
-            if remapped_vertex_colors:
-                c1, c2, c3 = [remapped_vertex_colors[idx] for idx in loop_indices]
-            else:
-                c1 = c2 = c3 = None
             face_area = face.area
-            v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices, face_area, a1, c1)
-            v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices, face_area, a2, c2)
-            v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices, face_area, a3, c3)
+            v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices, face_area, a1)
+            v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices, face_area, a2)
+            v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices, face_area, a3)
 
             t = _Face([v1, v2, v3], face.index)
             face_seq.append(t)
@@ -1291,39 +1186,26 @@ class __PmxExporter:
         material_names = {i: _mat_name(m) for i, m in enumerate(base_mesh.materials)}
         material_names = {i: material_names.get(i) or _mat_name(None) for i in material_faces.keys()}
 
-        # Vertex colors are handled directly in __convertFaceUVToVertexUV
-        if vertex_colors:
-            logging.info("Exported vertex colors as ADD UV2")
-
         # Export additional UV layers
         for uv_n, uv_tex in enumerate(bl_add_uvs):
             if uv_n > 3:
-                logging.warning(" * extra addUV%d+ are not supported", uv_n + 1)
-                break
+                logging.warning(f" * extra addUV{uv_n + 1} ({uv_tex.name}) are not supported")
+                continue
             uv_data = _UVWrapper(uv_tex.data)
             zw_data = base_mesh.uv_layers.get("_" + uv_tex.name, None)
-            logging.info(" # exporting addUV%d: %s [zw: %s]", uv_n + 1, uv_tex.name, zw_data)
+            logging.info(f" # exporting addUV{uv_n + 1}: {uv_tex.name} [zw: {zw_data.name if zw_data else zw_data}]")
             if zw_data:
                 zw_data = _UVWrapper(zw_data.data)
             else:
                 zw_data = iter(lambda: _DummyUV, None)
             rip_vertices_map = {}
 
-            # Adjust UV index if vertex colors are being used for ADD UV2
-            actual_uv_index = uv_n
-            if vertex_colors:
-                # If vertex colors use index 1, shift other UVs accordingly
-                if uv_n >= 1:
-                    actual_uv_index = uv_n + 1
-                elif uv_n == 0:
-                    actual_uv_index = 0  # UV1 stays at index 0
-
             for f, face, uv, zw in zip(face_seq, base_mesh.polygons, uv_data, zw_data, strict=False):
                 vertices = [base_vertices[x] for x in face.vertices]
                 rip_vertices = [rip_vertices_map.setdefault(x, [x]) for x in f.vertices]
-                f.vertices[0] = self.__convertAddUV(f.vertices[0], uv.uv1, zw.uv1, actual_uv_index, vertices[0], rip_vertices[0])
-                f.vertices[1] = self.__convertAddUV(f.vertices[1], uv.uv2, zw.uv2, actual_uv_index, vertices[1], rip_vertices[1])
-                f.vertices[2] = self.__convertAddUV(f.vertices[2], uv.uv3, zw.uv3, actual_uv_index, vertices[2], rip_vertices[2])
+                f.vertices[0] = self.__convertAddUV(f.vertices[0], uv.uv1, zw.uv1, uv_n, vertices[0], rip_vertices[0])
+                f.vertices[1] = self.__convertAddUV(f.vertices[1], uv.uv2, zw.uv2, uv_n, vertices[1], rip_vertices[1])
+                f.vertices[2] = self.__convertAddUV(f.vertices[2], uv.uv3, zw.uv3, uv_n, vertices[2], rip_vertices[2])
 
         _to_mesh_clear(meshObj, base_mesh)
 
@@ -1458,6 +1340,7 @@ class __PmxExporter:
         self.__scale = args.get("scale", 1.0)
         self.__disable_specular = args.get("disable_specular", False)
         self.__vertex_splitting = args.get("vertex_splitting", False)
+        self.__export_vertex_colors_as_adduv2 = args.get("export_vertex_colors_as_adduv2", False)
         self.__ik_angle_limits = args.get("ik_angle_limits", "EXPORT_ALL")
         sort_vertices = args.get("sort_vertices", "NONE")
         if sort_vertices != "NONE":
@@ -1524,12 +1407,12 @@ class __PmxExporter:
 
 def export(filepath, **kwargs):
     logging.info("****************************************")
-    logging.info(" %s module" % __name__)
+    logging.info(" %s module", __name__)
     logging.info("----------------------------------------")
     start_time = time.time()
     exporter = __PmxExporter()
     exporter.execute(filepath, **kwargs)
     logging.info(" Finished exporting the model in %f seconds.", time.time() - start_time)
     logging.info("----------------------------------------")
-    logging.info(" %s module" % __name__)
+    logging.info(" %s module", __name__)
     logging.info("****************************************")

@@ -396,7 +396,7 @@ class FnModel:
             return
 
         # Create new bone order array
-        new_bone_order = valid_bones[:]
+        new_bone_order = valid_bones.copy()
 
         if old_pos < new_pos:
             # Move right: shift left bones to the right by one position
@@ -574,8 +574,8 @@ class FnModel:
                         # Execute the join - after merging, objects will remain at the parent armature's position
                         bpy.ops.object.join()
 
-                    except Exception as e:
-                        logging.error(f"Error joining armatures: {e}")
+                    except Exception:
+                        logging.exception("Error joining armatures")
                         # Ensure we exit special modes regardless of what happened
                         if bpy.context.mode != "OBJECT":
                             bpy.ops.object.mode_set(mode="OBJECT")
@@ -634,8 +634,8 @@ class FnModel:
                     try:
                         if child_rigid_group_object.name in bpy.data.objects:
                             bpy.data.objects.remove(child_rigid_group_object)
-                    except Exception as e:
-                        logging.error(f"Error removing rigid group: {e}")
+                    except Exception:
+                        logging.exception("Error removing rigid group")
 
             # Handle joints - similar to the rigid body approach
             child_joint_group_object = FnModel.find_joint_group_object(child_root_object)
@@ -667,8 +667,8 @@ class FnModel:
                     try:
                         if child_joint_group_object.name in bpy.data.objects:
                             bpy.data.objects.remove(child_joint_group_object)
-                    except Exception as e:
-                        logging.error(f"Error removing joint group: {e}")
+                    except Exception:
+                        logging.exception("Error removing joint group")
 
             # Handle temporary objects - similar approach
             child_temporary_group_object = FnModel.find_temporary_group_object(child_root_object)
@@ -707,22 +707,22 @@ class FnModel:
 
                         if child_temporary_group_object.name in bpy.data.objects:
                             bpy.data.objects.remove(child_temporary_group_object)
-                    except Exception as e:
-                        logging.error(f"Error removing temporary objects: {e}")
+                    except Exception:
+                        logging.exception("Error removing temporary objects")
 
             # Copy MMD root properties
             try:
                 FnModel.copy_mmd_root(parent_root_object, child_root_object, overwrite=False)
-            except Exception as e:
-                logging.error(f"Error copying MMD root: {e}")
+            except Exception:
+                logging.exception("Error copying MMD root")
 
             # Safely remove empty child root objects
             try:
                 if child_root_object and len(child_root_object.children) == 0:
                     if child_root_object.name in bpy.data.objects:
                         bpy.data.objects.remove(child_root_object)
-            except Exception as e:
-                logging.error(f"Error removing child root object: {e}")
+            except Exception:
+                logging.exception("Error removing child root object")
 
         # Clean and reapply additional transformations to properly set up all bones and constraints
         bpy.ops.mmd_tools.clean_additional_transform()
@@ -1125,7 +1125,7 @@ class Model:
         if mesh_name == "":
             return None
         for mesh in self.meshes():
-            if mesh.name == mesh_name or mesh.data.name == mesh_name:
+            if mesh_name in (mesh.name, mesh.data.name):
                 return mesh
         return None
 
@@ -1143,7 +1143,7 @@ class Model:
         if mesh_name == "":
             return -1
         for i, mesh in enumerate(self.meshes()):
-            if mesh.name == mesh_name or mesh.data.name == mesh_name:
+            if mesh_name in (mesh.name, mesh.data.name):
                 return i
         return -1
 

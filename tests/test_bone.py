@@ -1,8 +1,11 @@
+# Copyright 2025 MMD Tools authors
+# This file is part of MMD Tools.
+
 import logging
+import math
 import os
 import shutil
 import unittest
-from math import pi
 
 import bpy
 
@@ -102,14 +105,6 @@ class TestBone(unittest.TestCase):
         FnBone.setup_special_bone_collections(armature_object)
 
         return armature_object
-
-    def __vector_error(self, vec0, vec1):
-        """Calculate vector difference"""
-        return (Vector(vec0) - Vector(vec1)).length
-
-    def __axis_error(self, axis0, axis1):
-        """Calculate axis difference"""
-        return (Vector(axis0).normalized() - Vector(axis1).normalized()).length
 
     # ********************************************
     # Bone ID Tests
@@ -238,7 +233,7 @@ class TestBone(unittest.TestCase):
 
         # The roll might change based on local axes - verify the change is reasonable
         roll_difference = abs(new_roll - original_roll)
-        self.assertLessEqual(roll_difference, 2 * pi, "Roll change should be within reasonable bounds")
+        self.assertLessEqual(roll_difference, 2 * math.pi, "Roll change should be within reasonable bounds")
 
         # Verify that the bone is still valid after local axes application
         bone = self.test_armature.data.bones["左腕"]

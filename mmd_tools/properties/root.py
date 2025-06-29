@@ -550,7 +550,7 @@ class MMDRoot(bpy.types.PropertyGroup):
                     ("SPRING_CONSTRAINT", "Spring Constraint", "", 53),
                     ("SPRING_GOAL", "Spring Goal", "", 54),
                 ],
-            )
+            ),
         )
         bpy.types.Object.mmd_root = patch_library_overridable(bpy.props.PointerProperty(type=MMDRoot))
 
@@ -563,7 +563,7 @@ class MMDRoot(bpy.types.PropertyGroup):
                     "ANIMATABLE",
                     "LIBRARY_EDITABLE",
                 },
-            )
+            ),
         )
         bpy.types.Object.hide = patch_library_overridable(
             bpy.props.BoolProperty(
@@ -574,7 +574,7 @@ class MMDRoot(bpy.types.PropertyGroup):
                     "ANIMATABLE",
                     "LIBRARY_EDITABLE",
                 },
-            )
+            ),
         )
 
     @staticmethod

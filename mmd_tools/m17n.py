@@ -6133,5 +6133,5 @@ if __name__ == "__main__":
 
     for lang, cnt in untranslated_count.items():
         print(
-            f"Of {total_count} entries, {cnt} have not been translated for language {lang}"
+            f"Of {total_count} entries, {cnt} have not been translated for language {lang}",
         )

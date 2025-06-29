@@ -7,8 +7,6 @@ import os
 import re
 import struct
 
-from ..vmd import _decodeCp932String
-
 
 class InvalidFileError(Exception):
     pass
@@ -71,10 +69,16 @@ class FileReadStream(FileStream):
         return v
 
     def readStr(self, size):
+        r"""Read a string of given byte size from file, decode it as cp932.
+        Example:
+            original = "あ"
+            buf = b"\x82\xa0\x00\xfd\xfd\xfd\xfd\xfd\xfd\xfd\xfd\xfd\xfd\xfd\xfd\xfd\xfd\xfd\xfd\xfd"
+            result = "あ"
+        """
         buf = self.__fin.read(size)
-        if not buf:
+        if buf[0] == b"\xfd":
             return ""
-        return _decodeCp932String(buf)
+        return buf.split(b"\x00")[0].decode("cp932", errors="replace")
 
     def readFloat(self):
         (v,) = struct.unpack("<f", self.__fin.read(4))
@@ -617,8 +621,8 @@ def load(path):
         model = Model()
         try:
             model.load(fs)
-        except struct.error as e:
-            logging.error(" * Corrupted file: %s", e)
+        except struct.error:
+            logging.exception(" * Corrupted file")
             # raise
 
         logging.info(" Finish loading.")

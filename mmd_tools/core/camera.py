@@ -5,6 +5,7 @@ import math
 from typing import Optional
 
 import bpy
+from mathutils import Matrix, Vector
 
 from ..bpyutils import FnContext, Props
 
@@ -176,10 +177,6 @@ class MMDCamera:
         distance_action = bpy.data.actions.new(name=action_name + "_dis")
         FnCamera.remove_drivers(mmd_cam)
 
-        from math import atan
-
-        from mathutils import Matrix, Vector
-
         render = scene.render
         factor = (render.resolution_y * render.pixel_aspect_y) / (render.resolution_x * render.pixel_aspect_x)
         matrix_rotation = Matrix(([1, 0, 0, 0], [0, 0, 1, 0], [0, -1, 0, 0], [0, 0, 0, 1]))
@@ -232,7 +229,7 @@ class MMDCamera:
             x.co, y.co, z.co = ((f, i) for i in cam_target_loc)
             rx.co, ry.co, rz.co = ((f, i) for i in cam_rotation)
             dis.co = (f, cam_dis)
-            fov.co = (f, 2 * atan(tan_val))
+            fov.co = (f, 2 * math.atan(tan_val))
             persp.co = (f, cameraObj.data.type != "ORTHO")
             persp.interpolation = "CONSTANT"
             for kp in (x, y, z, rx, ry, rz, fov, dis):

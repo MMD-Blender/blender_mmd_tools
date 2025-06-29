@@ -345,7 +345,6 @@ class VMDImporter:
             bezier = [20, 20, 107, 107]
 
         # Always multiply before dividing to reduce precision errors
-        d = (kp1.co - kp0.co)
         kp0.handle_right = kp0.co + Vector((d.x * bezier[0] / 127.0, d.y * bezier[1] / 127.0))
         kp1.handle_left = kp0.co + Vector((d.x * bezier[2] / 127.0, d.y * bezier[3] / 127.0))
 
@@ -455,18 +454,17 @@ class VMDImporter:
 
         if fcurve is None:
             fcurve = action.fcurves.new(data_path=data_path, index=index, action_group=action_group_name)
-        else:
-            # Ensure F-Curve belongs to the correct action group
-            if action_group_name and (fcurve.group is None or fcurve.group.name != action_group_name):
-                # Find or create the action group
-                group = None
-                for g in action.groups:
-                    if g.name == action_group_name:
-                        group = g
-                        break
-                if group is None:
-                    group = action.groups.new(action_group_name)
-                fcurve.group = group
+        # Ensure F-Curve belongs to the correct action group
+        elif action_group_name and (fcurve.group is None or fcurve.group.name != action_group_name):
+            # Find or create the action group
+            group = None
+            for g in action.groups:
+                if g.name == action_group_name:
+                    group = g
+                    break
+            if group is None:
+                group = action.groups.new(action_group_name)
+            fcurve.group = group
 
         return fcurve
 
@@ -515,7 +513,7 @@ class VMDImporter:
             fcurves = [dummy_keyframe_points] * 7  # x, y, z, r0, r1, r2, (r3)
             data_path_rot = prop_rot_map.get(bone.rotation_mode, "rotation_euler")
             bone_rotation = getattr(bone, data_path_rot)
-            default_values = list(bone.location) + list(bone_rotation)
+            default_values = tuple(bone.location) + tuple(bone_rotation)
             data_path = 'pose.bones["%s"].location' % bone.name
             for axis_i in range(3):
                 fcurves[axis_i] = self.__get_or_create_fcurve(action, data_path, axis_i, bone.name)
@@ -622,10 +620,7 @@ class VMDImporter:
             mmd_root = root_object.mmd_root
             # Check all types of morphs in the model
             for morph_type in ["vertex_morphs", "uv_morphs", "bone_morphs", "material_morphs", "group_morphs"]:
-                for morph in getattr(mmd_root, morph_type, []):
-                    model_morph_names.add(morph.name)
-
-        from math import ceil, floor
+                model_morph_names.update(morph.name for morph in getattr(mmd_root, morph_type, []))
 
         for name, keyFrames in shapeKeyAnim.items():
             if name not in shapeKeyDict:
@@ -651,8 +646,8 @@ class VMDImporter:
                 v.co = (k.frame_number + self.__frame_start + self.__frame_margin, k.weight)
                 v.interpolation = "LINEAR"
             weights = tuple(i.weight for i in keyFrames)
-            shapeKey.slider_min = min(shapeKey.slider_min, floor(min(weights)))
-            shapeKey.slider_max = max(shapeKey.slider_max, ceil(max(weights)))
+            shapeKey.slider_min = min(shapeKey.slider_min, math.floor(min(weights)))
+            shapeKey.slider_max = max(shapeKey.slider_max, math.ceil(max(weights)))
 
         self.__assign_action(meshObj.data.shape_keys, action)
 
@@ -734,6 +729,7 @@ class VMDImporter:
             if prev_kps is not None:
                 interp = k.interp
                 for idx, prev_kp, kp in zip(indices, prev_kps, curr_kps, strict=False):
+                    # TODO: Optimize this bottleneck: __setInterpolation is called per keypoint; should batch set interpolation instead
                     self.__setInterpolation(interp[idx : idx + 4 : 2] + interp[idx + 1 : idx + 4 : 2], prev_kp, kp)
             prev_kps = curr_kps
 
