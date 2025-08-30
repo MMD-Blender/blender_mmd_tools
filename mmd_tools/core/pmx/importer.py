@@ -200,7 +200,7 @@ class PMXImporter:
         dependency_cycle_ik_bones = []
         # for i, p_bone in enumerate(pmx_bones):
         #    if p_bone.isIK:
-        #        if p_bone.target != -1:
+        #        if p_bone.target >= 0:
         #            t = pmx_bones[p_bone.target]
         #            if p_bone.parent == t.parent:
         #                dependency_cycle_ik_bones.append(i)
@@ -217,7 +217,7 @@ class PMXImporter:
                 nameTable.append(bone.name)
 
             for i, (b_bone, m_bone) in enumerate(zip(editBoneTable, pmx_bones, strict=False)):
-                if m_bone.parent != -1:
+                if m_bone.parent >= 0:
                     if i not in dependency_cycle_ik_bones:
                         b_bone.parent = editBoneTable[m_bone.parent]
                     else:
@@ -225,7 +225,7 @@ class PMXImporter:
 
             for b_bone, m_bone in zip(editBoneTable, pmx_bones, strict=False):
                 if isinstance(m_bone.displayConnection, int):
-                    if m_bone.displayConnection != -1:
+                    if m_bone.displayConnection >= 0:
                         b_bone.tail = editBoneTable[m_bone.displayConnection].head
                     else:
                         b_bone.tail = b_bone.head
@@ -234,7 +234,7 @@ class PMXImporter:
                     b_bone.tail = b_bone.head + loc
 
             for b_bone, m_bone in zip(editBoneTable, pmx_bones, strict=False):
-                if m_bone.isIK and m_bone.target != -1:
+                if m_bone.isIK and m_bone.target >= 0:
                     logging.debug(" - checking IK links of %s", b_bone.name)
                     b_target = editBoneTable[m_bone.target]
                     for i in range(len(m_bone.ik_links)):
@@ -443,7 +443,7 @@ class PMXImporter:
                 mmd_bone.has_additional_location = pmx_bone.hasAdditionalLocation
                 mmd_bone.additional_transform_influence = influ
                 if 0 <= bone_index < len(pose_bones):
-                    mmd_bone.additional_transform_bone = pose_bones[bone_index].name
+                    mmd_bone.additional_transform_bone_id = bone_index
 
             if pmx_bone.localCoordinate is not None:
                 mmd_bone.enabled_local_axes = True
@@ -460,6 +460,9 @@ class PMXImporter:
                     b_bone.lock_scale = [True, True, True]
 
     def __importRigids(self):
+        if len(self.__model.rigids) == 0:
+            logging.info("No rigid bodies to import, skipping rigid body creation.")
+            return
         start_time = time.time()
         self.__rigidTable = {}
         context = FnContext.ensure_context()
@@ -506,6 +509,9 @@ class PMXImporter:
         logging.debug("Finished importing rigid bodies in %f seconds.", time.time() - start_time)
 
     def __importJoints(self):
+        if len(self.__model.joints) == 0:
+            logging.info("No joints to import, skipping joint creation.")
+            return
         start_time = time.time()
         context = FnContext.ensure_context()
         joint_pool = FnRigidBody.new_joint_objects(context, FnModel.ensure_joint_group_object(context, self.__rig.rootObject()), len(self.__model.joints), FnModel.get_empty_display_size(self.__rig.rootObject()))
@@ -562,7 +568,7 @@ class PMXImporter:
             self.__materialFaceCountTable.append(int(i.vertex_count / 3))
             self.__meshObj.data.materials.append(mat)
             fnMat = FnMaterial(mat)
-            if i.texture != -1:
+            if i.texture >= 0:
                 texture_slot = fnMat.create_texture(self.__textureTable[i.texture])
                 texture_slot.texture.use_mipmap = self.__use_mipmap
                 self.__imageTable[len(self.__materialTable) - 1] = texture_slot.texture.image
@@ -579,7 +585,7 @@ class PMXImporter:
                 amount = self.__spa_blend_factor
             else:
                 amount = self.__sph_blend_factor
-            if i.sphere_texture != -1 and amount != 0.0:
+            if i.sphere_texture >= 0 and amount != 0.0:
                 texture_slot = fnMat.create_sphere_texture(self.__textureTable[i.sphere_texture])
                 texture_slot.diffuse_color_factor = amount
                 if i.sphere_texture_mode == 3 and getattr(pmxModel.header, "additional_uvs", 0):

@@ -417,17 +417,16 @@ class __PmxExporter:
                     pmx_bone.location = boneMap[pmx_bone.parent].location
                 # fmt: on
 
-                if mmd_bone.display_connection_type == "BONE":
-                    if mmd_bone.is_tip:
+                if mmd_bone.is_tip:
+                    if mmd_bone.display_connection_type == "BONE":
                         pmx_bone.displayConnection = -1
-                    else:
-                        pmx_bone.displayConnection = mmd_bone.display_connection_bone_id
-                elif mmd_bone.display_connection_type == "OFFSET":
-                    if mmd_bone.is_tip:
+                    elif mmd_bone.display_connection_type == "OFFSET":
                         pmx_bone.displayConnection = (0.0, 0.0, 0.0)
-                    else:
-                        tail_loc = __to_pmx_location(p_bone.tail)
-                        pmx_bone.displayConnection = tail_loc - pmx_bone.location
+                elif mmd_bone.display_connection_type == "BONE" and mmd_bone.display_connection_bone_id >= 0:
+                    pmx_bone.displayConnection = mmd_bone.display_connection_bone_id
+                else:  # mmd_bone.display_connection_type == "OFFSET" or display_connection_bone_id invalid
+                    tail_loc = __to_pmx_location(p_bone.tail)
+                    pmx_bone.displayConnection = tail_loc - pmx_bone.location
 
                 if mmd_bone.enabled_fixed_axis:
                     pmx_bone.axis = __to_pmx_axis(mmd_bone.fixed_axis, p_bone)

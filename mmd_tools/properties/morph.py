@@ -96,6 +96,10 @@ class _MorphBase:
     )
 
 
+def _bone_morph_data_update_bone_id(prop: "BoneMorphData", context: bpy.types.Context):
+    pass  # Empty function is sufficient to trigger UI update
+
+
 def _bone_morph_data_get_bone(prop: "BoneMorphData") -> str:
     bone_id = prop.get("bone_id", -1)
     if bone_id < 0:
@@ -148,6 +152,7 @@ class BoneMorphData(bpy.types.PropertyGroup):
 
     bone_id: bpy.props.IntProperty(
         name="Bone ID",
+        update=_bone_morph_data_update_bone_id,
     )
 
     location: bpy.props.FloatVectorProperty(

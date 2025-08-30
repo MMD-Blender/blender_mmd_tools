@@ -152,18 +152,6 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
     bl_description = "Realign bone IDs to be sequential without gaps. Sorted primarily by hierarchy depth (ensuring parents have lower IDs than children), then by bone_id (valid ones prioritized), then by bone name. Apply additional transforms afterward (Assembly -> Bone button)."
     bl_options = {"REGISTER", "UNDO"}
 
-    # Add sorting method property
-    sorting_method: bpy.props.EnumProperty(
-        name="Sorting Method",
-        description="Choose how to sort bones during realignment",
-        items=[
-            ("FIX-MOVE-CHILDREN", "Fix: Move Children", "Move children after parents, preserve parent positions"),
-            ("REBUILD-DEPTH", "Rebuild: Depth", "Sort by hierarchy depth (chains mixing)"),
-            ("REBUILD-PATH", "Rebuild: Path", "Sort by hierarchy path (keeps bone chains together)"),
-        ],
-        default="FIX-MOVE-CHILDREN",
-    )
-
     def execute(self, context):
         root = FnModel.find_root_object(context.active_object)
         armature = FnModel.find_armature_object(root)
@@ -198,7 +186,7 @@ class MMDToolsRealignBoneIds(bpy.types.Operator):
                 if not getattr(bone, "is_mmd_shadow_bone", False):
                     current_state[bone.name] = bone.mmd_bone.bone_id
 
-            FnModel.realign_bone_ids(0, root.mmd_root.bone_morphs, armature.pose.bones, self.sorting_method)
+            FnModel.realign_bone_ids(0, root.mmd_root.bone_morphs, armature.pose.bones)
 
             new_state = {}
             for bone in armature.pose.bones:
@@ -519,7 +507,7 @@ class MMD_TOOLS_UL_ModelBones(bpy.types.UIList):
             parent_icon = "ERROR"
             if parent_bone_id >= 0:
                 if bone_transform_rank >= (parent_bone_id + bone_parent.mmd_bone.transform_order * count):
-                    parent_icon = "INFO" if bone_id < parent_bone_id else "FILE_PARENT"
+                    parent_icon = "FILE_PARENT"
             r.label(text=str(parent_bone_id), icon=parent_icon)
         else:
             r.label()

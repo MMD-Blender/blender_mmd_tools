@@ -91,10 +91,10 @@ class MMDBonePanel(bpy.types.Panel):
         c.prop(mmd_bone, "additional_transform_influence", text="Influence", slider=True)
 
         c = layout.column(align=True)
-        c.label(text="Display Connection (Bone Target):")
+        c.label(text="Display Connection (Bone Tail Location):")
         c.row().prop(mmd_bone, "display_connection_type", text="Type")
 
         if mmd_bone.display_connection_type == "BONE":
             c.prop_search(mmd_bone, "display_connection_bone", pose_bone.id_data.pose, "bones", icon="BONE_DATA", text="Target Bone")
         elif mmd_bone.display_connection_type == "OFFSET":
-            c.label(text="Offset is auto-calculated at export.")
+            c.label(text="Offset is auto-calculated during export.")

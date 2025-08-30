@@ -461,7 +461,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         default=False,
     )
     detect_camera_changes: bpy.props.BoolProperty(
-        name="Detect Camera Changes",
+        name="Detect Camera Cut",
         description="When the interval between camera keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing between rapid camera cuts.",
         default=True,
     )
@@ -473,7 +473,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         #   - Documentation and comments
         #   - Function parameters and return values
         # This change is necessary since Blender 2.80 renamed the "Lamp" type to "Light".
-        name="Detect Light Changes",
+        name="Detect Light Cut",
         description="When the interval between light keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing during sudden lighting changes.",
         default=True,
     )

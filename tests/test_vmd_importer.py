@@ -888,7 +888,7 @@ class TestVMDImporter(unittest.TestCase):
         print("\nFull setup import resulted in:")
         print(f" - {results['bone_changes']} bone changes/FCurves")
         print(f" - {results['shape_key_changes']} shape key changes/FCurves")
-        print(f" - {results['camera_changes']} camera changes/FCurves")
+        print(f" - {results['camera_changes']} camera cut/FCurves")
         print(f" - {results['lamp_changes']} lamp changes/FCurves")
 
         total_animation = sum(results.values())

@@ -436,69 +436,67 @@ class FnModel:
                     mmd_bone.display_connection_bone_id = id_translation_map[mmd_bone.display_connection_bone_id]
 
     @staticmethod
-    def realign_bone_ids(bone_id_offset: int, bone_morphs, pose_bones, sorting_method: str = "FIX-MOVE-CHILDREN"):
+    def realign_bone_ids(bone_id_offset: int, bone_morphs, pose_bones):
         """Realigns all bone IDs sequentially without gaps and sorts bones in MMD-compatible hierarchy order."""
+        # Build bone_id to pose_bone index for fast lookup
+        bone_id_to_pose_bone = {}
+        valid_bones = []
+        for pose_bone in pose_bones:
+            if not (hasattr(pose_bone, "is_mmd_shadow_bone") and pose_bone.is_mmd_shadow_bone):
+                valid_bones.append(pose_bone)
+                bone_id = pose_bone.mmd_bone.bone_id
+                if bone_id >= 0:
+                    bone_id_to_pose_bone[bone_id] = pose_bone
 
-        def get_hierarchy_depth(bone):
-            """Get the depth of bone in the hierarchy (root bones have depth 0)"""
-            depth = 0
-            while bone.parent:
-                depth += 1
-                bone = bone.parent
-            return depth
+        def get_sort_key(bone):
+            """Generate sorting key that only moves bones violating parent-child rules and additional transform rules"""
+            transform_order = getattr(bone.mmd_bone, "transform_order", 0)
+            current_id = bone.mmd_bone.bone_id if bone.mmd_bone.bone_id >= 0 else float("inf")
+            additional_transform_bone_id = getattr(bone.mmd_bone, "additional_transform_bone_id", -1)
 
-        def bone_hierarchy_path(bone):
-            """Build path from root to bone for parent-child hierarchy sorting"""
-            path = []
-            while bone:
-                path.append(bone.name)
-                bone = bone.parent
-            return tuple(reversed(path))
-
-        def get_fix_key_move_children(bone):
-            """Fix mode: move children after their parents (preserve parent positions)"""
-            # Find the maximum ID among ALL ancestors in the hierarchy chain
+            # Check if this bone violates parent-child order rules
+            violation_found = False
             max_ancestor_id = -1
-            temp_parent = bone.parent
+            parent = bone.parent
 
-            while temp_parent:
-                if hasattr(temp_parent, "is_mmd_shadow_bone") and temp_parent.is_mmd_shadow_bone:
-                    temp_parent = temp_parent.parent
+            while parent:
+                if hasattr(parent, "is_mmd_shadow_bone") and parent.is_mmd_shadow_bone:
+                    parent = parent.parent
                     continue
 
-                if temp_parent.mmd_bone.bone_id >= 0:
-                    max_ancestor_id = max(max_ancestor_id, temp_parent.mmd_bone.bone_id)
-                temp_parent = temp_parent.parent
+                parent_transform_order = getattr(parent.mmd_bone, "transform_order", 0)
+                parent_id = parent.mmd_bone.bone_id
 
-            current_id = bone.mmd_bone.bone_id
+                # The rule that can be solved by sorting:
+                # if parent.transform_order == child.transform_order,
+                # then parent.bone_id must be < child.bone_id
+                if parent_transform_order == transform_order and parent_id >= 0 and current_id >= 0 and parent_id >= current_id:
+                    violation_found = True
+                    max_ancestor_id = max(max_ancestor_id, parent_id)
 
-            if max_ancestor_id >= 0 and current_id >= 0 and max_ancestor_id >= current_id:
-                # This bone needs to be moved after ALL ancestors
-                # Use max ancestor ID + small offset + hierarchy depth for stable sorting
-                return (1, max_ancestor_id + 0.1, get_hierarchy_depth(bone), bone.name)
-            # Keep original position
-            return (0, current_id if current_id >= 0 else float("inf"), bone.name)
+                parent = parent.parent
 
-        # 1. Get valid bones (non-shadow bones) and sort them to determine the final order
-        valid_bones = [pb for pb in pose_bones if not (hasattr(pb, "is_mmd_shadow_bone") and pb.is_mmd_shadow_bone)]
+            # Check additional transform constraint
+            # additional_transform_bone_id must be smaller than current bone_id when transform_order is the same
+            if additional_transform_bone_id >= 0 and current_id >= 0 and additional_transform_bone_id >= current_id:
+                additional_transform_bone = bone_id_to_pose_bone.get(additional_transform_bone_id)
+                if additional_transform_bone:
+                    additional_transform_order = getattr(additional_transform_bone.mmd_bone, "transform_order", 0)
+                    # Only apply constraint when transform_order is the same
+                    if additional_transform_order == transform_order:
+                        violation_found = True
+                        max_ancestor_id = max(max_ancestor_id, additional_transform_bone_id)
 
-        if sorting_method == "REBUILD-DEPTH":
-            # Sort by hierarchy depth, then name (allows chain mixing)
-            valid_bones.sort(key=lambda pb: (get_hierarchy_depth(pb), pb.name))
-        elif sorting_method == "REBUILD-PATH":
-            # Sort by hierarchy path (keeps bone chains together)
-            valid_bones.sort(key=bone_hierarchy_path)
-        else:  # "FIX-MOVE-CHILDREN"
-            # Fix mode: move children after parents (preserve parent positions)
-            valid_bones.sort(key=get_fix_key_move_children)
+            if violation_found:
+                # Move this bone after its ancestors and additional transform dependencies
+                return (max_ancestor_id + 0.1, current_id, bone.name)
+            # Keep original position - use current bone_id for sorting
+            return (current_id, current_id, bone.name)
 
-        # Use conflict-free batch remapping
-        # ---------------------------------
-        # This optimized approach avoids conflicts by first creating a complete map of all
-        # required ID changes, then updating all external references in one pass, and
-        # finally applying the new IDs to the bones themselves.
+        # Sort - only bones violating rules will be moved
+        valid_bones.sort(key=get_sort_key)
 
-        # 2. Create a translation map from old bone_id to new bone_id
+        # Create a translation map from old bone_id to new bone_id
         id_translation_map = {}
         bone_to_new_id_map = {}
         for i, bone in enumerate(valid_bones):
@@ -509,13 +507,13 @@ class FnModel:
                     id_translation_map[old_id] = new_id
             bone_to_new_id_map[bone.name] = new_id
 
-        # 3. Assign the new IDs to the bones themselves
+        # Assign the new IDs to the bones themselves
         for bone in valid_bones:
             new_id = bone_to_new_id_map[bone.name]
             if bone.mmd_bone.bone_id != new_id:
                 bone.mmd_bone.bone_id = new_id
 
-        # 4. Batch update all references (morphs and other bones) using the translation map
+        # Batch update all references (morphs and other bones) using the translation map
         if not id_translation_map:  # No changes needed
             return
 
@@ -567,23 +565,19 @@ class FnModel:
             mmd_bone = bone.mmd_bone
 
             # --- Clean up Additional Transform ---
-            at_bone_id = mmd_bone.additional_transform_bone_id
-            if at_bone_id >= 0 and at_bone_id not in valid_bone_ids:
-                logging.info(f"Resetting invalid additional transform from bone '{bone.name}' (was targeting bone_id {at_bone_id})")
-                mmd_bone.has_additional_rotation = False
-                mmd_bone.has_additional_location = False
+            ref_bone_id = mmd_bone.additional_transform_bone_id
+            if ref_bone_id >= 0 and ref_bone_id not in valid_bone_ids:
                 mmd_bone.additional_transform_bone_id = -1
-                mmd_bone.additional_transform_influence = 1.0
                 mmd_bone.is_additional_transform_dirty = True
                 cleaned_count += 1
+                logging.info(f"Cleaned invalid additional transform reference on bone '{bone.name}' (bone_id: {ref_bone_id} does not exist)")
 
             # --- Clean up Display Connection ---
-            dc_bone_id = mmd_bone.display_connection_bone_id
-            if dc_bone_id >= 0 and dc_bone_id not in valid_bone_ids:
-                logging.info(f"Resetting invalid display connection from bone '{bone.name}' (was targeting bone_id {dc_bone_id})")
+            ref_bone_id = mmd_bone.display_connection_bone_id
+            if ref_bone_id >= 0 and ref_bone_id not in valid_bone_ids:
                 mmd_bone.display_connection_bone_id = -1
-                mmd_bone.display_connection_type = "OFFSET"
                 cleaned_count += 1
+                logging.info(f"Cleaned invalid display connection reference on bone '{bone.name}' (bone_id: {ref_bone_id} does not exist)")
 
         # Step 3: Clean up invalid references within Bone Morphs.
         if bone_morphs:
@@ -591,10 +585,11 @@ class FnModel:
                 morph_data = morph.data
                 for i in range(len(morph_data) - 1, -1, -1):
                     item = morph_data[i]
-                    if item.bone_id >= 0 and item.bone_id not in valid_bone_ids:
-                        logging.info(f"Removing invalid morph item targeting bone_id {item.bone_id} from morph '{morph.name}'")
-                        morph_data.remove(i)
+                    ref_bone_id = item.bone_id
+                    if ref_bone_id >= 0 and ref_bone_id not in valid_bone_ids:
+                        item.bone_id = -1
                         cleaned_count += 1
+                        logging.info(f"Cleaned invalid bone reference on morph '{morph.name}' (bone_id: {ref_bone_id} does not exist)")
 
         return cleaned_count
 

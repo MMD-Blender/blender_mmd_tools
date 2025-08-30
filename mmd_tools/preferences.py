@@ -70,37 +70,37 @@ class MMDToolsAddonPreferences(bpy.types.AddonPreferences):
 
     # Preset selection properties
     default_pmx_import_preset: bpy.props.EnumProperty(
-        name="Default PMX Import Preset",
+        name="Default PMX Import Operator Preset",
         description="Default preset to use for PMX import operations",
         items=get_pmx_import_preset_items,
         default=0,
     )
     default_vmd_import_preset: bpy.props.EnumProperty(
-        name="Default VMD Import Preset",
+        name="Default VMD Import Operator Preset",
         description="Default preset to use for VMD import operations",
         items=get_vmd_import_preset_items,
         default=0,
     )
     default_vpd_import_preset: bpy.props.EnumProperty(
-        name="Default VPD Import Preset",
+        name="Default VPD Import Operator Preset",
         description="Default preset to use for VPD import operations",
         items=get_vpd_import_preset_items,
         default=0,
     )
     default_pmx_export_preset: bpy.props.EnumProperty(
-        name="Default PMX Export Preset",
+        name="Default PMX Export Operator Preset",
         description="Default preset to use for PMX export operations",
         items=get_pmx_export_preset_items,
         default=0,
     )
     default_vmd_export_preset: bpy.props.EnumProperty(
-        name="Default VMD Export Preset",
+        name="Default VMD Export Operator Preset",
         description="Default preset to use for VMD export operations",
         items=get_vmd_export_preset_items,
         default=0,
     )
     default_vpd_export_preset: bpy.props.EnumProperty(
-        name="Default VPD Export Preset",
+        name="Default VPD Export Operator Preset",
         description="Default preset to use for VPD export operations",
         items=get_vpd_export_preset_items,
         default=0,
@@ -133,7 +133,7 @@ class MMDToolsAddonPreferences(bpy.types.AddonPreferences):
         layout.prop(self, "dictionary_folder")
 
         layout.separator()
-        layout.label(text="Default Presets:")
+        layout.label(text="Default Operator Presets:")
         layout.prop(self, "default_pmx_import_preset", text="PMX Import")
         layout.prop(self, "default_pmx_export_preset", text="PMX Export")
         layout.prop(self, "default_vmd_import_preset", text="VMD Import")

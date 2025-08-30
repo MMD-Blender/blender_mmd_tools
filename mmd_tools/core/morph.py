@@ -739,7 +739,7 @@ class MigrationFnMorph:
                     morph_data.material_data = None
                     if "material_id" in morph_data:
                         mat_id = morph_data["material_id"]
-                        if mat_id != -1:
+                        if mat_id >= 0:
                             fnMat = FnMaterial.from_material_id(mat_id)
                             if fnMat:
                                 morph_data.material_data = fnMat.material

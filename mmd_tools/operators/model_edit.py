@@ -175,7 +175,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
 
         # Create new separate model first
         bpy.ops.object.mode_set(mode="OBJECT")
-        separate_model: Model = Model.create(mmd_root_object.mmd_root.name, mmd_root_object.mmd_root.name_e, mmd_scale, add_root_bone=False)
+        separate_model: Model = Model.create(mmd_root_object.mmd_root.name, mmd_root_object.mmd_root.name_e, mmd_scale, obj_name=mmd_root_object.name, add_root_bone=False)
         separate_model.initialDisplayFrames()
         separate_root_object = separate_model.rootObject()
         separate_root_object.matrix_world = mmd_root_object.matrix_world

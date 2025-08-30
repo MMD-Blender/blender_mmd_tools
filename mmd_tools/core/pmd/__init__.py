@@ -168,7 +168,7 @@ class Material:
             self.texture_path = t.pop(0)
         if len(t) > 0:
             self.sphere_path = t.pop(0)
-            if "aA".find(self.sphere_path[-1]) != -1:
+            if self.sphere_path[-1] in "aA":
                 self.sphere_mode = 2
 
 
