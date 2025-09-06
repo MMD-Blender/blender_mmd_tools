@@ -13,7 +13,7 @@ translations_tuple = (
         ((), ()),
         (
             "ja_JP",
-            "Project-Id-Version: MMD Tools 4.3.10 (0)\n",
+            "Project-Id-Version: MMD Tools 4.5.0 (0)\n",
             (
                 False,
                 (
@@ -26,7 +26,7 @@ translations_tuple = (
         ),
         (
             "zh_HANS",
-            "Project-Id-Version: MMD Tools 4.3.10 (0)\n",
+            "Project-Id-Version: MMD Tools 4.5.0 (0)\n",
             (
                 False,
                 (
@@ -1554,15 +1554,6 @@ translations_tuple = (
         ("zh_HANS", "", (False, ())),
     ),
     (
-        (
-            "*",
-            "When Vertex Splitting is disabled, keep sharp edge normals. This option has no effect when Vertex Splitting is enabled, as vertex splitting naturally preserves all sharp edge normals",
-        ),
-        (("bpy.types.MMD_TOOLS_OT_export_pmx.keep_sharp",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
-    ),
-    (
         ("*", "Log level"),
         (
             (
@@ -1647,6 +1638,92 @@ translations_tuple = (
         ("zh_HANS", "1. ERROR", (False, ())),
     ),
     (
+        ("*", "Normal Handling"),
+        (("bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "法线处理", (False, ())),
+    ),
+    (
+        (
+            "*",
+            "Choose how to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals.",
+        ),
+        (("bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling",), ()),
+        ("ja_JP", "", (False, ())),
+        (
+            "zh_HANS",
+            "选择导出时如何处理法线。这会影响顶点数量、边数量以及网格拓扑，通过拆分顶点和边来保留拆边法线。",
+            (False, ()),
+        ),
+    ),
+    (
+        ("*", "Preserve All Normals"),
+        (
+            (
+                "bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'PRESERVE_ALL_NORMALS'",
+            ),
+            (),
+        ),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "保留所有法线", (False, ())),
+    ),
+    (
+        (
+            "*",
+            "Export existing normals without any changes. Use this if you have already perfected normals (e.g., using Weighted Normal modifiers).",
+        ),
+        (
+            (
+                "bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'PRESERVE_ALL_NORMALS'",
+            ),
+            (),
+        ),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Smooth (Keep Sharp)"),
+        (
+            ("bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_KEEP_SHARP'",),
+            (),
+        ),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "平滑(保留锐边)", (False, ())),
+    ),
+    (
+        (
+            "*",
+            "Automatically smooth normals while respecting sharp edges defined by angle or manual marking.",
+        ),
+        (
+            ("bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_KEEP_SHARP'",),
+            (),
+        ),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Smooth All Normals"),
+        (
+            ("bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_ALL_NORMALS'",),
+            (),
+        ),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "平滑所有法线", (False, ())),
+    ),
+    (
+        (
+            "*",
+            "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count.",
+        ),
+        (
+            ("bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_ALL_NORMALS'",),
+            (),
+        ),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
         ("*", "Overwrite Bone Morphs"),
         (
             (
@@ -1705,7 +1782,7 @@ translations_tuple = (
     (
         (
             "*",
-            "Angle threshold for determining sharp edges when Keep Sharp is enabled. Edges with angles greater than this value will be considered sharp.\nNote that manually marked sharp edges are also considered sharp.",
+            "Angle threshold for Normal Handling: Smooth (Keep Sharp), edges with an angle sharper than this value will be preserved.",
         ),
         (("bpy.types.MMD_TOOLS_OT_export_pmx.sharp_edge_angle",), ()),
         ("ja_JP", "", (False, ())),
@@ -1771,21 +1848,6 @@ translations_tuple = (
         (("bpy.types.MMD_TOOLS_OT_export_pmx.translate_in_presets",), ()),
         ("ja_JP", "エクスポート前にプリセットで翻訳します", (False, ())),
         ("zh_HANS", "导出前在预设中进行翻译", (False, ())),
-    ),
-    (
-        ("*", "Vertex Splitting"),
-        (("bpy.types.MMD_TOOLS_OT_export_pmx.vertex_splitting",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "顶点分裂", (False, ())),
-    ),
-    (
-        (
-            "*",
-            "Vertex Splitting for Custom Split Normals\nENABLE:\n    Split vertices when the same vertex has different normals.\nDISABLE:\n    Use angle * area weighted averaging for normals.\nWARNING:\n    Enabling vertex splitting will break model geometry by severing connections between faces to preserve multiple custom split normals per vertex, and can significantly increase the vertex count. Use with caution.\n\nNOTE:\n    UV coordinates will always use vertex splitting, as they cannot be averaged. Therefore, the vertex count may still increase after export even when this option is disabled. Please try to maintain UV continuity when possible.\n    Additionally, unreferenced vertices will not be exported (similar to Clean Model during import), so the vertex count may also decrease.",
-        ),
-        (("bpy.types.MMD_TOOLS_OT_export_pmx.vertex_splitting",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Visible Meshes Only"),
@@ -2072,6 +2134,18 @@ translations_tuple = (
         (("bpy.types.MMD_TOOLS_OT_import_model.apply_bone_fixed_axis",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "应用骨骼的固定坐标轴，使其适合被 Blender 处理", (False, ())),
+    ),
+    (
+        ("*", "Bone Display Mode"),
+        (("bpy.types.MMD_TOOLS_OT_import_model.bone_disp_mode",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "骨骼显示样式", (False, ())),
+    ),
+    (
+        ("*", "Change how bones look in viewport."),
+        (("bpy.types.MMD_TOOLS_OT_import_model.bone_disp_mode",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Clean Model"),
@@ -2834,6 +2908,15 @@ translations_tuple = (
         ("zh_HANS", "用骨骼合并模型", (False, ())),
     ),
     (
+        (
+            "*",
+            "Join multiple MMD models into one.\nWARNING: To align models before joining, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly as they will not move together.",
+        ),
+        (("bpy.types.MMD_TOOLS_OT_model_join_by_bones",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
         ("*", "Join Type"),
         (("bpy.types.MMD_TOOLS_OT_model_join_by_bones.join_type",), ()),
         ("ja_JP", "接続タイプ", (False, ())),
@@ -2844,6 +2927,15 @@ translations_tuple = (
         (("bpy.types.MMD_TOOLS_OT_model_separate_by_bones",), ()),
         ("ja_JP", "モデルをボーンで分離", (False, ())),
         ("zh_HANS", "用骨骼分离模型", (False, ())),
+    ),
+    (
+        (
+            "*",
+            "Separate MMD model into multiple models based on selected bones.\nWARNING: This operation will split meshes, armatures, rigid bodies and joints. To move models before separating, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly before separating as they will not move together.",
+        ),
+        (("bpy.types.MMD_TOOLS_OT_model_separate_by_bones",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Boundary Joint Owner"),
@@ -5465,13 +5557,13 @@ translations_tuple = (
     ),
     (
         ("*", 'Imported MMD model from ""'),
-        (("extensions/blender_org/mmd_tools/operators/fileio.py:378",), ()),
+        (("extensions/blender_org/mmd_tools/operators/fileio.py:391",), ()),
         ("ja_JP", 'MMDモデルを "%s" からインポートしました', (True, ())),
         ("zh_HANS", '已从"%s"导入 MMD 模型', (True, ())),
     ),
     (
         ("*", '[Skipped] The armature object of MMD model "" can\'t be found'),
-        (("extensions/blender_org/mmd_tools/operators/fileio.py:890",), ()),
+        (("extensions/blender_org/mmd_tools/operators/fileio.py:891",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", '[跳过] 找不到 MMD 模型"%s"的骨架数据', (True, ())),
     ),
@@ -6179,22 +6271,28 @@ translations_tuple = (
     ),
     (
         ("*", "Migrating from old vertex group ordering to bone_id system"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:276",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:275",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "从旧的顶点组排序迁移至新的骨骼 ID 系统", (False, ())),
     ),
     (
         ("*", "Successfully migrated  bones from vertex groups to bone_id system"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:301",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:300",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "成功从旧的顶点组排序迁移至新的骨骼 ID 系统", (False, ())),
+    ),
+    (
+        ("*", "Cleaning invalid bone references..."),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:314",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
     ),
     (
         ("Operator", "Fix Bone Order"),
         (
             (
-                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:572",
-                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:619",
+                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:573",
+                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:620",
             ),
             (),
         ),
@@ -6205,8 +6303,8 @@ translations_tuple = (
         ("*", "Total Bones: %d"),
         (
             (
-                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:618",
-                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:618",
+                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:619",
+                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:619",
             ),
             (),
         ),
@@ -6236,37 +6334,37 @@ translations_tuple = (
     ),
     (
         ("*", "Bone order did not converge after 10 iterations"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:199",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:198",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Converting layer collections to MMD collections"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:251",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:250",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "将分层集合转换为 MMD 集合", (False, ())),
     ),
     (
         ("*", "Operation cancelled: No active MMD model found."),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:317",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:318",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Operation cancelled: Armature not found for MMD model ''."),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:322",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:323",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Successfully cleaned or removed  invalid bone reference(s)."),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:329",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:330",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "No invalid bone references were found."),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:331",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:332",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),
@@ -6274,7 +6372,7 @@ translations_tuple = (
         ("*", "Select a MMD Model"),
         (
             (
-                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:586",
+                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:587",
                 "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:22",
                 "extensions/blender_org/mmd_tools/panels/sidebar/joints.py:20",
                 "extensions/blender_org/mmd_tools/panels/sidebar/meshes_sorter.py:21",
@@ -6289,7 +6387,7 @@ translations_tuple = (
     ),
     (
         ("*", "The armature object of active MMD model can't be found"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:591",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:592",), ()),
         ("ja_JP", "選択中のMMDモデルのアーマチュアが見つかりません", (False, ())),
         ("zh_HANS", "找不到选中MMD模型的骨架", (False, ())),
     ),

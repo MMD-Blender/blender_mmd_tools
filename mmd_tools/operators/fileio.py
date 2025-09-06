@@ -765,31 +765,19 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         description="Translate in presets before exporting.",
         default=False,
     )
-    vertex_splitting: bpy.props.BoolProperty(
-        name="Vertex Splitting",
-        description=(
-            "Vertex Splitting for Custom Split Normals\n"
-            "ENABLE:\n"
-            "    Split vertices when the same vertex has different normals.\n"
-            "DISABLE:\n"
-            "    Use angle * area weighted averaging for normals.\n"
-            "WARNING:\n"
-            "    Enabling vertex splitting will break model geometry by severing connections between faces to preserve multiple custom split normals per vertex, and can significantly increase the vertex count. Use with caution.\n"
-            "\n"
-            "NOTE:\n"
-            "    UV coordinates will always use vertex splitting, as they cannot be averaged. Therefore, the vertex count may still increase after export even when this option is disabled. Please try to maintain UV continuity when possible.\n"
-            "    Additionally, unreferenced vertices will not be exported (similar to Clean Model during import), so the vertex count may also decrease."
-        ),
-        default=False,
-    )
-    keep_sharp: bpy.props.BoolProperty(
-        name="Keep Sharp",
-        description="When Vertex Splitting is disabled, keep sharp edge normals. This option has no effect when Vertex Splitting is enabled, as vertex splitting naturally preserves all sharp edge normals",
-        default=True,
+    normal_handling: bpy.props.EnumProperty(
+        name="Normal Handling",
+        description="Choose how to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals.",
+        items=[
+            ("PRESERVE_ALL_NORMALS", "Preserve All Normals", "Export existing normals without any changes. Use this if you have already perfected normals (e.g., using Weighted Normal modifiers).", 0),
+            ("SMOOTH_KEEP_SHARP", "Smooth (Keep Sharp)", "Automatically smooth normals while respecting sharp edges defined by angle or manual marking.", 1),
+            ("SMOOTH_ALL_NORMALS", "Smooth All Normals", "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count.", 2),
+        ],
+        default="SMOOTH_KEEP_SHARP",
     )
     sharp_edge_angle: bpy.props.FloatProperty(
         name="Sharp Edge Angle",
-        description="Angle threshold for determining sharp edges when Keep Sharp is enabled. Edges with angles greater than this value will be considered sharp.\nNote that manually marked sharp edges are also considered sharp.",
+        description="Angle threshold for Normal Handling: Smooth (Keep Sharp), edges with an angle sharper than this value will be preserved.",
         default=math.radians(30),
         min=0.0,
         max=math.radians(180.0),
@@ -929,8 +917,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 sort_vertices=self.sort_vertices,
                 disable_specular=self.disable_specular,
                 export_vertex_colors_as_adduv2=self.export_vertex_colors_as_adduv2,
-                vertex_splitting=self.vertex_splitting,
-                keep_sharp=self.keep_sharp,
+                normal_handling=self.normal_handling,
                 sharp_edge_angle=self.sharp_edge_angle,
                 ik_angle_limits=self.ik_angle_limits,
             )

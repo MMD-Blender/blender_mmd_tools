@@ -632,7 +632,6 @@ class TestPmxExporter(unittest.TestCase):
                         copy_textures=False,
                         sort_materials=False,
                         sort_vertices="NONE",
-                        vertex_splitting=False,
                         log_level="ERROR",
                     )
                 except Exception:

@@ -230,19 +230,36 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             )
         }
 
-        separate_mesh_objects: Set[bpy.types.Object]
-        model2separate_mesh_objects: Dict[bpy.types.Object, bpy.types.Object]
-        if len(mmd_model_mesh_objects) == 0:
-            separate_mesh_objects = set()
-            model2separate_mesh_objects = {}
-        else:
-            # Save normal data before separation
+        separate_mesh_objects: List[bpy.types.Object] = []
+        model2separate_mesh_objects: Dict[bpy.types.Object, bpy.types.Object] = {}
+        if len(mmd_model_mesh_objects) > 0:
+            # Find a single unique attribute name that doesn't conflict with any existing attributes.
+            all_attribute_names = {attr.name for obj in mmd_model_mesh_objects for attr in obj.data.attributes}
+            temp_normal_name = "mmd_temp_normal"
+            i = 0
+            while temp_normal_name in all_attribute_names:
+                temp_normal_name = f"mmd_temp_normal.{i:03d}"
+                i += 1
+
+            # Backup custom normals to the unique temporary attribute.
             for mesh_obj in mmd_model_mesh_objects:
                 mesh_data = mesh_obj.data
-                mmd_normal = mesh_data.attributes.new("mmd_normal", "FLOAT_VECTOR", "CORNER")
-                normals_data = np.empty(mesh_data.attributes.domain_size("CORNER") * 3, dtype=np.float32)
-                mesh_data.loops.foreach_get("normal", normals_data)
-                mmd_normal.data.foreach_set("vector", normals_data)
+                existing_custom_normal = mesh_data.attributes.get("custom_normal")
+                if not existing_custom_normal:
+                    continue
+
+                if existing_custom_normal.data_type == "INT16_2D":
+                    normals_data = np.empty(len(mesh_data.loops) * 2, dtype=np.int16)
+                    existing_custom_normal.data.foreach_get("value", normals_data)
+                    temp_normal_attr = mesh_data.attributes.new(temp_normal_name, "INT16_2D", "CORNER")
+                    temp_normal_attr.data.foreach_set("value", normals_data)
+                elif existing_custom_normal.data_type == "FLOAT_VECTOR":
+                    normals_data = np.empty(len(mesh_data.loops) * 3, dtype=np.float32)
+                    existing_custom_normal.data.foreach_get("vector", normals_data)
+                    temp_normal_attr = mesh_data.attributes.new(temp_normal_name, "FLOAT_VECTOR", "CORNER")
+                    temp_normal_attr.data.foreach_set("vector", normals_data)
+                else:
+                    raise TypeError(f"Unsupported custom_normal data type: '{existing_custom_normal.data_type}'. Supported types: ['INT16_2D', 'FLOAT_VECTOR']")
 
             # Select meshes
             obj: bpy.types.Object
@@ -253,7 +270,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             # Separate mesh by selected vertices
             bpy.ops.object.mode_set(mode="EDIT")
             bpy.ops.mesh.separate(type="SELECTED")
-            separate_mesh_objects: List[bpy.types.Object] = [m for m in context.selected_objects if m.type == "MESH" and m not in mmd_model_mesh_objects]
+            separate_mesh_objects = [m for m in context.selected_objects if m.type == "MESH" and m not in mmd_model_mesh_objects]
             bpy.ops.object.mode_set(mode="OBJECT")
 
             model2separate_mesh_objects = dict(zip(mmd_model_mesh_objects, separate_mesh_objects, strict=False))
@@ -262,17 +279,29 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             all_mesh_objects = list(mmd_model_mesh_objects) + list(separate_mesh_objects)
             for mesh_obj in all_mesh_objects:
                 mesh_data = mesh_obj.data
-                mmd_normal = mesh_data.attributes.get("mmd_normal")
-                if mmd_normal:
-                    normals_data = np.empty(mesh_data.attributes.domain_size("CORNER") * 3, dtype=np.float32)
-                    mmd_normal.data.foreach_get("vector", normals_data)
+                temp_normal_attr = mesh_data.attributes.get(temp_normal_name)
+                if not temp_normal_attr:
+                    continue
 
-                    custom_normal_attr = mesh_data.attributes.get("custom_normal")
-                    if not custom_normal_attr:
-                        custom_normal_attr = mesh_data.attributes.new("custom_normal", "FLOAT_VECTOR", "CORNER")
-                    custom_normal_attr.data.foreach_set("vector", normals_data)
-
-                    mesh_data.attributes.remove(mmd_normal)
+                try:
+                    if temp_normal_attr.data_type == "INT16_2D":
+                        normals_data = np.empty(len(mesh_data.loops) * 2, dtype=np.int16)
+                        temp_normal_attr.data.foreach_get("value", normals_data)
+                        custom_normal_attr = mesh_data.attributes.get("custom_normal")
+                        if not custom_normal_attr:
+                            custom_normal_attr = mesh_data.attributes.new("custom_normal", "INT16_2D", "CORNER")
+                        custom_normal_attr.data.foreach_set("value", normals_data)
+                    elif temp_normal_attr.data_type == "FLOAT_VECTOR":
+                        normals_data = np.empty(len(mesh_data.loops) * 3, dtype=np.float32)
+                        temp_normal_attr.data.foreach_get("vector", normals_data)
+                        custom_normal_attr = mesh_data.attributes.get("custom_normal")
+                        if not custom_normal_attr:
+                            custom_normal_attr = mesh_data.attributes.new("custom_normal", "FLOAT_VECTOR", "CORNER")
+                        custom_normal_attr.data.foreach_set("vector", normals_data)
+                    else:
+                        raise TypeError(f"Unsupported custom_normal data type: '{temp_normal_attr.data_type}'. Supported types: ['INT16_2D', 'FLOAT_VECTOR']")
+                finally:
+                    mesh_data.attributes.remove(temp_normal_attr)
 
         if self.separate_armature and separate_armature_object:
             separate_armature_data = separate_armature_object.data
@@ -281,8 +310,9 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             if separate_armature_data.users == 0:
                 bpy.data.armatures.remove(separate_armature_data)
 
-        with select_object(separate_model_armature_object, objects=[separate_model_armature_object] + list(separate_mesh_objects)):
-            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
+        if separate_mesh_objects:
+            with select_object(separate_model_armature_object, objects=[separate_model_armature_object] + separate_mesh_objects):
+                bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
         # Replace mesh armature modifier.object
         for separate_mesh in separate_mesh_objects:
@@ -292,11 +322,13 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
 
             armature_modifier.object = separate_model_armature_object
 
-        with select_object(separate_model.rigidGroupObject(), objects=[separate_model.rigidGroupObject()] + list(separate_rigid_bodies)):
-            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
+        if separate_rigid_bodies:
+            with select_object(separate_model.rigidGroupObject(), objects=[separate_model.rigidGroupObject()] + list(separate_rigid_bodies)):
+                bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
-        with select_object(separate_model.jointGroupObject(), objects=[separate_model.jointGroupObject()] + list(separate_joints)):
-            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
+        if separate_joints:
+            with select_object(separate_model.jointGroupObject(), objects=[separate_model.jointGroupObject()] + list(separate_joints)):
+                bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
 
         # Move separate objects to new collection
         mmd_layer_collection = FnContext.find_user_layer_collection_by_object(context, mmd_root_object)
@@ -307,8 +339,10 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
 
         if mmd_layer_collection.name != separate_layer_collection.name:
             for separate_object in itertools.chain(separate_mesh_objects, separate_rigid_bodies, separate_joints):
-                separate_layer_collection.collection.objects.link(separate_object)
-                mmd_layer_collection.collection.objects.unlink(separate_object)
+                if separate_object.name not in separate_layer_collection.collection.objects:
+                    separate_layer_collection.collection.objects.link(separate_object)
+                if separate_object.name in mmd_layer_collection.collection.objects:
+                    mmd_layer_collection.collection.objects.unlink(separate_object)
 
         FnModel.copy_mmd_root(
             separate_root_object,
@@ -329,6 +363,9 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         # Restore original transform matrix for root object
         mmd_root_object.matrix_world = original_matrix_world
         separate_root_object.matrix_world = original_matrix_world
+
+        # End state
+        FnContext.set_active_and_select_single_object(context, separate_root_object)
 
     def select_weighted_vertices(self, mmd_model_mesh_objects: List[bpy.types.Object], separate_bones: Dict[str, bpy.types.EditBone], deform_bones: Dict[str, bpy.types.EditBone], weight_threshold: float) -> Dict[bpy.types.Object, int]:
         mesh2selected_vertex_count: Dict[bpy.types.Object, int] = {}

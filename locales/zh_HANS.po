@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the Blender package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
-msgstr "Project-Id-Version: MMD Tools 4.3.10 (0)"
+msgstr "Project-Id-Version: MMD Tools 4.5.0 (0)"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.base_texture_folder
 msgid "Base Texture Folder"
@@ -933,10 +933,6 @@ msgstr "覆盖控制"
 msgid "Use mmd_ik_limit_override constraints as the sole authority for IK limits. When mmd_ik_limit_override exists: only its enabled axes export limits, disabled axes export no limits (ignoring Blender IK limits). When mmd_ik_limit_override doesn't exist: fall back to Blender IK limits. This makes mmd_ik_limit_override act as a true 'override' that completely controls whether limits are exported, enabling fine-grained per-bone control"
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.keep_sharp
-msgid "When Vertex Splitting is disabled, keep sharp edge normals. This option has no effect when Vertex Splitting is enabled, as vertex splitting naturally preserves all sharp edge normals"
-msgstr ""
-
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.log_level
 #. :src: bpy.types.MMD_TOOLS_OT_export_vmd.log_level
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.log_level
@@ -979,6 +975,38 @@ msgstr "2. WARNING"
 msgid "1. ERROR"
 msgstr "1. ERROR"
 
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling
+msgid "Normal Handling"
+msgstr "法线处理"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling
+msgid "Choose how to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals."
+msgstr "选择导出时如何处理法线。这会影响顶点数量、边数量以及网格拓扑，通过拆分顶点和边来保留拆边法线。"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'PRESERVE_ALL_NORMALS'
+msgid "Preserve All Normals"
+msgstr "保留所有法线"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'PRESERVE_ALL_NORMALS'
+msgid "Export existing normals without any changes. Use this if you have already perfected normals (e.g., using Weighted Normal modifiers)."
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_KEEP_SHARP'
+msgid "Smooth (Keep Sharp)"
+msgstr "平滑(保留锐边)"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_KEEP_SHARP'
+msgid "Automatically smooth normals while respecting sharp edges defined by angle or manual marking."
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_ALL_NORMALS'
+msgid "Smooth All Normals"
+msgstr "平滑所有法线"
+
+#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_ALL_NORMALS'
+msgid "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count."
+msgstr ""
+
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.overwrite_bone_morphs_from_action_pose
 msgid "Overwrite Bone Morphs"
 msgstr "覆盖骨骼变形"
@@ -1003,9 +1031,7 @@ msgid "Sharp Edge Angle"
 msgstr "锐边角度"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sharp_edge_angle
-msgid ""
-"Angle threshold for determining sharp edges when Keep Sharp is enabled. Edges with angles greater than this value will be considered sharp.\n"
-"Note that manually marked sharp edges are also considered sharp."
+msgid "Angle threshold for Normal Handling: Smooth (Keep Sharp), edges with an angle sharper than this value will be preserved."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.sort_materials
@@ -1043,25 +1069,6 @@ msgstr "(实验性) 预设中的翻译"
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.translate_in_presets
 msgid "Translate in presets before exporting."
 msgstr "导出前在预设中进行翻译"
-
-#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.vertex_splitting
-msgid "Vertex Splitting"
-msgstr "顶点分裂"
-
-#. :src: bpy.types.MMD_TOOLS_OT_export_pmx.vertex_splitting
-msgid ""
-"Vertex Splitting for Custom Split Normals\n"
-"ENABLE:\n"
-"    Split vertices when the same vertex has different normals.\n"
-"DISABLE:\n"
-"    Use angle * area weighted averaging for normals.\n"
-"WARNING:\n"
-"    Enabling vertex splitting will break model geometry by severing connections between faces to preserve multiple custom split normals per vertex, and can significantly increase the vertex count. Use with caution.\n"
-"\n"
-"NOTE:\n"
-"    UV coordinates will always use vertex splitting, as they cannot be averaged. Therefore, the vertex count may still increase after export even when this option is disabled. Please try to maintain UV continuity when possible.\n"
-"    Additionally, unreferenced vertices will not be exported (similar to Clean Model during import), so the vertex count may also decrease."
-msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.visible_meshes_only
 msgid "Visible Meshes Only"
@@ -1249,6 +1256,14 @@ msgstr "应用骨骼固定轴"
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.apply_bone_fixed_axis
 msgid "Apply bone's fixed axis to be blender suitable"
 msgstr "应用骨骼的固定坐标轴，使其适合被 Blender 处理"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.bone_disp_mode
+msgid "Bone Display Mode"
+msgstr "骨骼显示样式"
+
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.bone_disp_mode
+msgid "Change how bones look in viewport."
+msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.clean_model
 msgid "Clean Model"
@@ -1692,6 +1707,12 @@ msgctxt "Operator"
 msgid "Model Join by Bones"
 msgstr "用骨骼合并模型"
 
+#. :src: bpy.types.MMD_TOOLS_OT_model_join_by_bones
+msgid ""
+"Join multiple MMD models into one.\n"
+"WARNING: To align models before joining, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly as they will not move together."
+msgstr ""
+
 #. :src: bpy.types.MMD_TOOLS_OT_model_join_by_bones.join_type
 msgid "Join Type"
 msgstr "接合类型"
@@ -1700,6 +1721,12 @@ msgstr "接合类型"
 msgctxt "Operator"
 msgid "Model Separate by Bones"
 msgstr "用骨骼分离模型"
+
+#. :src: bpy.types.MMD_TOOLS_OT_model_separate_by_bones
+msgid ""
+"Separate MMD model into multiple models based on selected bones.\n"
+"WARNING: This operation will split meshes, armatures, rigid bodies and joints. To move models before separating, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly before separating as they will not move together."
+msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_model_separate_by_bones.boundary_joint_owner
 msgid "Boundary Joint Owner"
@@ -3296,12 +3323,12 @@ msgctxt "Operator"
 msgid "Select MMD Rigid Body"
 msgstr "选择MMD刚体"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:378
+#: extensions/blender_org/mmd_tools/operators/fileio.py:391
 #, fuzzy
 msgid "Imported MMD model from \"\""
 msgstr "已从\"%s\"导入 MMD 模型"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:890
+#: extensions/blender_org/mmd_tools/operators/fileio.py:891
 #, fuzzy
 msgid "[Skipped] The armature object of MMD model \"\" can't be found"
 msgstr "[跳过] 找不到 MMD 模型\"%s\"的骨架数据"
@@ -3730,21 +3757,25 @@ msgctxt "Operator"
 msgid "Reset"
 msgstr "重设"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:276
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:275
 msgid "Migrating from old vertex group ordering to bone_id system"
 msgstr "从旧的顶点组排序迁移至新的骨骼 ID 系统"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:301
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:300
 msgid "Successfully migrated  bones from vertex groups to bone_id system"
 msgstr "成功从旧的顶点组排序迁移至新的骨骼 ID 系统"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:572
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:619
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:314
+msgid "Cleaning invalid bone references..."
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:573
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:620
 msgctxt "Operator"
 msgid "Fix Bone Order"
 msgstr "修复骨骼顺序"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:618
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:619
 msgid "Total Bones: %d"
 msgstr "骨骼数量: %d"
 
@@ -3757,31 +3788,31 @@ msgstr ""
 msgid "Cleaned  invalid bone reference(s)."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:199
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:198
 msgid "Bone order did not converge after 10 iterations"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:251
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:250
 msgid "Converting layer collections to MMD collections"
 msgstr "将分层集合转换为 MMD 集合"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:317
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:318
 msgid "Operation cancelled: No active MMD model found."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:322
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:323
 msgid "Operation cancelled: Armature not found for MMD model ''."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:329
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:330
 msgid "Successfully cleaned or removed  invalid bone reference(s)."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:331
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:332
 msgid "No invalid bone references were found."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:586
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:587
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:22
 #: extensions/blender_org/mmd_tools/panels/sidebar/joints.py:20
 #: extensions/blender_org/mmd_tools/panels/sidebar/meshes_sorter.py:21
@@ -3791,7 +3822,7 @@ msgstr ""
 msgid "Select a MMD Model"
 msgstr "选择一个MMD模型"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:591
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:592
 msgid "The armature object of active MMD model can't be found"
 msgstr "找不到选中MMD模型的骨架"
 

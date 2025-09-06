@@ -18,6 +18,7 @@ from ...operators.misc import MoveObject
 from ...utils import saferelpath
 from .. import pmx
 from ..material import FnMaterial
+from ..model import FnModel
 from ..morph import FnMorph
 from ..sdef import FnSDEF
 from ..translations import FnTranslations
@@ -37,6 +38,12 @@ class _Vertex:
         self.normal = None
         self.sdef_data = []  # (C, R0, R1)
         self.add_uvs = [None] * 4  # UV1~UV4
+
+        # used for calculate weighted normal
+        self._is_smooth_group = False
+        self._normal_list = []
+        self._area_list = []
+        self._angle_list = []
 
 
 class _Face:
@@ -283,14 +290,24 @@ class __PmxExporter:
                 # Handle packed images first by extracting them
                 if packed_image:
                     logging.info("Extracting packed texture '%s' -> '%s'", packed_image.name, full_dest_path)
-                    with open(full_dest_path, "wb") as f:
-                        f.write(packed_image.packed_file.data)
+                    try:
+                        with open(full_dest_path, "wb") as f:
+                            f.write(packed_image.packed_file.data)
+                    except PermissionError:
+                        logging.warning(f"Permission denied. Could not write texture to '{full_dest_path}'. Skipping.")
+                    except Exception as e:
+                        logging.exception(f"An unexpected error occurred while writing packed texture: {e}")
 
                 # If not packed, handle existing external files by copying them
                 elif os.path.isfile(src_path):
                     if os.path.normcase(src_path) != os.path.normcase(full_dest_path):
                         logging.info("Copying external texture '%s' -> '%s'", src_path, full_dest_path)
-                        shutil.copy2(src_path, full_dest_path)
+                        try:
+                            shutil.copy2(src_path, full_dest_path)
+                        except PermissionError:
+                            logging.warning(f"Permission denied. Could not copy texture to '{full_dest_path}'. Skipping.")
+                        except Exception as e:
+                            logging.exception(f"An unexpected error occurred while copying external texture: {e}")
                 else:
                     logging.warning("Source for texture '%s' not found. Cannot copy.", src_path)
 
@@ -358,7 +375,8 @@ class __PmxExporter:
         world_mat = arm.matrix_world
         r = {}
 
-        sorted_bones = sorted(pose_bones, key=lambda x: x.mmd_bone.bone_id if x.mmd_bone.bone_id >= 0 else float("inf"))
+        sorted_bones = sorted(pose_bones, key=lambda x: (x.mmd_bone.bone_id if x.mmd_bone.bone_id >= 0 else float("inf"), x.name))
+        bone_id_map = {p_bone.mmd_bone.bone_id: p_bone for p_bone in sorted_bones}
 
         pmx_matrix = world_mat * self.__scale
         pmx_matrix[1], pmx_matrix[2] = pmx_matrix[2].copy(), pmx_matrix[1].copy()
@@ -423,7 +441,16 @@ class __PmxExporter:
                     elif mmd_bone.display_connection_type == "OFFSET":
                         pmx_bone.displayConnection = (0.0, 0.0, 0.0)
                 elif mmd_bone.display_connection_type == "BONE" and mmd_bone.display_connection_bone_id >= 0:
-                    pmx_bone.displayConnection = mmd_bone.display_connection_bone_id
+                    target_bone_id = mmd_bone.display_connection_bone_id
+                    target_p_bone = bone_id_map.get(target_bone_id)
+
+                    # Force OFFSET if target bone is too far.
+                    if target_p_bone and (target_p_bone.head - p_bone.tail).length > 0.01:
+                        logging.warning('Bone "%s": Target bone "%s" is too far. Automatically switching display connection to OFFSET.', p_bone.name, target_p_bone.name)
+                        tail_loc = __to_pmx_location(p_bone.tail)
+                        pmx_bone.displayConnection = tail_loc - pmx_bone.location
+                    else:
+                        pmx_bone.displayConnection = target_bone_id
                 else:  # mmd_bone.display_connection_type == "OFFSET" or display_connection_bone_id invalid
                     tail_loc = __to_pmx_location(p_bone.tail)
                     pmx_bone.displayConnection = tail_loc - pmx_bone.location
@@ -945,70 +972,75 @@ class __PmxExporter:
 
     @staticmethod
     def __convertFaceUVToVertexUV(vert_index, uv, normal, vertices_map):
+        """
+        Find an existing vertex with identical final properties (UV and Normal),
+        or creates a new 'sharp' vertex if no match is found. This function acts
+        as the final deduplicator for all vertex types.
+        """
         vertices = vertices_map[vert_index]
         assert vertices, f"Empty vertices list for vertex index {vert_index}"
 
-        for i in vertices:
-            if i.uv is None:
-                i.uv = uv
-                i.normal = normal
-                return i
+        # Search for an existing vertex with identical properties, regardless of its creation method.
+        for i in vertices[1:]:
             if (i.uv - uv).length < 0.001 and (normal - i.normal).length < 0.01:
                 return i
-        n = copy.copy(i)  # shallow copy should be fine
+
+        # If no match is found, create a new sharp vertex from the clean template.
+        n = copy.copy(vertices[0])
         n.uv = uv
         n.normal = normal
+        # The default '_is_smooth_group=False' is correct for a new sharp vertex.
         vertices.append(n)
         return n
 
     def __convertFaceUVToVertexUVSmooth(self, vert_index, uv, normal, vertices_map, face_area, loop_angle, is_sharp_vertex):
-        """Convert face UV to vertex UV with weighted normal averaging."""
+        """
+        Manage smoothing groups. It finds or creates a smooth group container,
+        updates its weighted average normal, and then calls the final deduplicator
+        to register the result.
+        """
         if is_sharp_vertex:
             return self.__convertFaceUVToVertexUV(vert_index, uv, normal, vertices_map)
 
         vertices = vertices_map[vert_index]
         assert vertices, f"Empty vertices list for vertex index {vert_index}"
 
-        v = None
-        for i in vertices:
-            if i.uv is None:
-                i.uv = uv
-                v = i
-                break
-            if (i.uv - uv).length < 0.001:  # UV requires exact matching
-                v = i
+        v = None  # This will hold our target smooth group vertex.
+
+        # Step 1: Find or create the SMOOTH group container for this vertex index.
+        # The container is independent of UVs to correctly average normals across UV seams.
+        for i in vertices[1:]:
+            if i._is_smooth_group:
+                v = i  # Found the single smooth container for this vertex.
                 break
 
         if v is None:
-            # Create new vertex for different UV
+            # No container found, create a new one.
             v = copy.copy(vertices[0])
+            # v.uv will be set here, but it's temporary. The final call uses the corner's actual UV.
             v.uv = uv
+            v._is_smooth_group = True
             vertices.append(v)
 
-        # Initialize averaging lists if needed
-        for attr_name in ["_normal_list", "_area_list", "_angle_list"]:
-            if not hasattr(v, attr_name):
-                setattr(v, attr_name, [])
-
-        # Append current values to averaging lists
+        # Step 2: Accumulate the current corner's data and recalculate the average normal for the group.
+        # This ensures the smooth group's calculation is always complete and correct.
         v._normal_list.append(normal)
         v._area_list.append(face_area)
         v._angle_list.append(loop_angle)
 
-        # Calculate angle * area weighted averages
-        # Use manual normal averaging instead of Blender's Weighted Normal modifier,
-        # since the modifier can destroy some models' normals.
-        weights = [angle * area for angle, area in zip(v._angle_list, v._area_list, strict=False)]
-        total_weight = sum(weights) or 1.0  # Avoid division by zero
-
         # Average normals
-        if len({tuple(n) for n in v._normal_list}) == 1:  # All normals identical
+        if v._normal_list.count(v._normal_list[0]) == len(v._normal_list):  # All normals identical
             v.normal = normal
         else:
+            weights = [angle * area for angle, area in zip(v._angle_list, v._area_list, strict=False)]
+            total_weight = sum(weights) or 1.0  # Avoid division by zero
             weighted_normal_sum = sum((n * w for n, w in zip(v._normal_list, weights, strict=False)), Vector((0, 0, 0)))
             v.normal = (weighted_normal_sum / total_weight).normalized()
 
-        return v
+        # Step 3: Now that the smooth vertex 'v' has its final calculated average normal,
+        # pass it along with the CURRENT corner's UV to the final deduplicator.
+        # This correctly splits vertices based on UVs AFTER normal averaging is complete.
+        return self.__convertFaceUVToVertexUV(vert_index, uv, v.normal, vertices_map)
 
     @staticmethod
     def __convertAddUV(vert, adduv, addzw, uv_index, vertices, rip_vertices):
@@ -1021,7 +1053,7 @@ class __PmxExporter:
             uvzw = i.add_uvs[uv_index]
             if (uvzw[0] - adduv).length < 0.001 and (uvzw[1] - addzw).length < 0.001:
                 return i
-        n = copy.copy(vert)
+        n = copy.copy(vertices[0])
         add_uvs = n.add_uvs.copy()
         add_uvs[uv_index] = (adduv, addzw)
         n.add_uvs = add_uvs
@@ -1199,7 +1231,7 @@ class __PmxExporter:
 
         # Build per-face vertex sharp status lookup table
         vertex_sharp_status = {}
-        if self.__keep_sharp:
+        if self.__normal_handling == "SMOOTH_KEEP_SHARP":
             bm_sharp = bmesh.new()
             bm_sharp.from_mesh(base_mesh)
             bm_sharp.faces.ensure_lookup_table()
@@ -1210,14 +1242,16 @@ class __PmxExporter:
                     is_sharp = False
                     face_edges = [e for e in vertex.link_edges if face in e.link_faces]
                     for edge in face_edges:
+                        # Check if edge is marked as sharp
                         if not edge.smooth:
                             is_sharp = True
                             break
-                        if len(edge.link_faces) == 2:
-                            if edge.calc_face_angle() > self.__sharp_edge_angle:
-                                is_sharp = True
-                                break
-                        elif len(edge.link_faces) != 2:
+                        # Check if edge is boundary or non-manifold
+                        if len(edge.link_faces) != 2:
+                            is_sharp = True
+                            break
+                        # Check if edge angle exceeds threshold
+                        if edge.calc_face_angle() >= self.__sharp_edge_angle:
                             is_sharp = True
                             break
                     vertex_sharp_status[face.index, vertex.index] = is_sharp
@@ -1240,23 +1274,18 @@ class __PmxExporter:
             a1, a2, a3 = [loop_angles[idx] for idx in loop_indices]
             face_area = face.area
 
-            # Retrieve sharp vertex status using pre-computed lookup table
-            if self.__keep_sharp:
+            if self.__normal_handling == "PRESERVE_ALL_NORMALS":
+                v0_is_sharp = v1_is_sharp = v2_is_sharp = True
+            elif self.__normal_handling == "SMOOTH_KEEP_SHARP":
                 v0_is_sharp = vertex_sharp_status.get((face.index, face.vertices[0]), False)
                 v1_is_sharp = vertex_sharp_status.get((face.index, face.vertices[1]), False)
                 v2_is_sharp = vertex_sharp_status.get((face.index, face.vertices[2]), False)
-            else:
+            elif self.__normal_handling == "SMOOTH_ALL_NORMALS":
                 v0_is_sharp = v1_is_sharp = v2_is_sharp = False
 
-            # Convert face UV to vertex UV
-            if self.__vertex_splitting:
-                v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices)
-                v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices)
-                v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices)
-            else:
-                v1 = self.__convertFaceUVToVertexUVSmooth(face.vertices[0], uv.uv1, n1, base_vertices, face_area, a1, v0_is_sharp)
-                v2 = self.__convertFaceUVToVertexUVSmooth(face.vertices[1], uv.uv2, n2, base_vertices, face_area, a2, v1_is_sharp)
-                v3 = self.__convertFaceUVToVertexUVSmooth(face.vertices[2], uv.uv3, n3, base_vertices, face_area, a3, v2_is_sharp)
+            v1 = self.__convertFaceUVToVertexUVSmooth(face.vertices[0], uv.uv1, n1, base_vertices, face_area, a1, v0_is_sharp)
+            v2 = self.__convertFaceUVToVertexUVSmooth(face.vertices[1], uv.uv2, n2, base_vertices, face_area, a2, v1_is_sharp)
+            v3 = self.__convertFaceUVToVertexUVSmooth(face.vertices[2], uv.uv3, n3, base_vertices, face_area, a3, v2_is_sharp)
 
             t = _Face([v1, v2, v3], face.index)
             face_seq.append(t)
@@ -1423,14 +1452,13 @@ class __PmxExporter:
         rigids = sorted(args.get("rigid_bodies", []), key=lambda x: x.name)
         joints = sorted(args.get("joints", []), key=lambda x: x.name)
 
-        bpy.ops.mmd_tools.clean_invalid_bone_id_references()
+        FnModel.clean_invalid_bone_id_references(root)
         if args.get("fix_bone_order", True):
             bpy.ops.mmd_tools.fix_bone_order()
 
         self.__scale = args.get("scale", 1.0)
         self.__disable_specular = args.get("disable_specular", False)
-        self.__vertex_splitting = args.get("vertex_splitting", False)
-        self.__keep_sharp = args.get("keep_sharp", True)
+        self.__normal_handling = args.get("normal_handling", "SMOOTH_KEEP_SHARP")
         self.__sharp_edge_angle = args.get("sharp_edge_angle", math.radians(30))
         self.__export_vertex_colors_as_adduv2 = args.get("export_vertex_colors_as_adduv2", False)
         self.__ik_angle_limits = args.get("ik_angle_limits", "EXPORT_ALL")
@@ -1489,8 +1517,7 @@ class __PmxExporter:
         face_diff = final_face_count - original_face_count
         triangulation_ratio = final_face_count / original_face_count if original_face_count > 0 else 0
         logging.info("Changes in Vertex and Face Count:")
-        logging.info("  Vertex Splitting for Normals: %s", "Enabled" if self.__vertex_splitting else "Disabled")
-        logging.info("  Keep Sharp: %s", "Enabled" if self.__keep_sharp else "Disabled")
+        logging.info("  Normal Handling: %s", self.__normal_handling)
         logging.info("  Sharp Edge Angle: %.1f degrees", math.degrees(self.__sharp_edge_angle))
         logging.info("  Vertices: Original %d -> Output %d (%+d)", original_vertex_count, final_vertex_count, vertex_diff)
         logging.info("  Faces: Original %d -> Output %d (%+d)", original_face_count, final_face_count, face_diff)

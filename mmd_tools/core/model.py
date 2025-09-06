@@ -531,7 +531,7 @@ class FnModel:
                     mmd_bone.display_connection_bone_id = id_translation_map[mmd_bone.display_connection_bone_id]
 
     @staticmethod
-    def clean_invalid_bone_id_references(pose_bones, bone_morphs) -> int:
+    def clean_invalid_bone_id_references(mmd_root_object) -> int:
         """
         Scan all bones and bone morphs to clean up invalid bone ID references.
 
@@ -543,14 +543,24 @@ class FnModel:
             that reference a bone that no longer exists.
 
         Args:
-            pose_bones (bpy.types.bpy_prop_collection):
-                The pose bone collection from the armature object (armature.pose.bones).
-            bone_morphs (bpy.types.bpy_prop_collection):
-                The bone morph collection from the MMD root object (root.mmd_root.bone_morphs).
+            mmd_root_object: The MMD root object (should have mmd_root property).
 
         Returns:
             int: The total number of invalid references that were cleaned or removed.
         """
+        if not mmd_root_object or not hasattr(mmd_root_object, "mmd_root"):
+            logging.warning("Invalid mmd_root_object provided")
+            return 0
+
+        # Find armature
+        armature = FnModel.find_armature_object(mmd_root_object)
+        if not armature:
+            logging.warning(f"Armature not found for MMD model '{mmd_root_object.name}'")
+            return 0
+
+        pose_bones = armature.pose.bones
+        bone_morphs = mmd_root_object.mmd_root.bone_morphs
+
         if not pose_bones:
             return 0
 

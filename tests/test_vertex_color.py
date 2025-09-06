@@ -311,7 +311,6 @@ class TestVertexColorExporter(unittest.TestCase):
                 copy_textures=False,
                 sort_materials=False,
                 sort_vertices="NONE",
-                vertex_splitting=False,
                 export_vertex_colors_as_adduv2=True,
                 log_level="WARNING",  # Reduce log noise for cleaner test output
             )
