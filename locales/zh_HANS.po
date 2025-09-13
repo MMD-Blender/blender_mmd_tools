@@ -988,7 +988,7 @@ msgid "Preserve All Normals"
 msgstr "保留所有法线"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'PRESERVE_ALL_NORMALS'
-msgid "Export existing normals without any changes. Use this if you have already perfected normals (e.g., using Weighted Normal modifiers)."
+msgid "Export existing normals without any changes. This option performs NO automatic smoothing; only use it if you have already manually smoothed and perfected your normals. When using this option, please verify if the vertex and edge counts of the exported model have significantly increased or are within a reasonable range to prevent excessive geometry destruction and an overly fragmented model."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_KEEP_SHARP'
@@ -1004,7 +1004,7 @@ msgid "Smooth All Normals"
 msgstr "平滑所有法线"
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_ALL_NORMALS'
-msgid "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count."
+msgid "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex and edge count."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_export_pmx.overwrite_bone_morphs_from_action_pose
@@ -1434,7 +1434,7 @@ msgid ""
 "- Select the armature: imports only armature animation"
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.always_create_new_action
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.create_new_action
 msgid "Create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled."
 msgstr ""
 

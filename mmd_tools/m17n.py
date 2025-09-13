@@ -1670,7 +1670,7 @@ translations_tuple = (
     (
         (
             "*",
-            "Export existing normals without any changes. Use this if you have already perfected normals (e.g., using Weighted Normal modifiers).",
+            "Export existing normals without any changes. This option performs NO automatic smoothing; only use it if you have already manually smoothed and perfected your normals. When using this option, please verify if the vertex and edge counts of the exported model have significantly increased or are within a reasonable range to prevent excessive geometry destruction and an overly fragmented model.",
         ),
         (
             (
@@ -1714,7 +1714,7 @@ translations_tuple = (
     (
         (
             "*",
-            "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count.",
+            "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex and edge count.",
         ),
         (
             ("bpy.types.MMD_TOOLS_OT_export_pmx.normal_handling:'SMOOTH_ALL_NORMALS'",),
@@ -2454,7 +2454,7 @@ translations_tuple = (
             "*",
             "Create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled.",
         ),
-        (("bpy.types.MMD_TOOLS_OT_import_vmd.always_create_new_action",), ()),
+        (("bpy.types.MMD_TOOLS_OT_import_vmd.create_new_action",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),

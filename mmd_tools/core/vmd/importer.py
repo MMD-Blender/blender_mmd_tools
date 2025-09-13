@@ -10,6 +10,7 @@ import bpy
 from mathutils import Quaternion, Vector
 
 from ... import utils
+from ...core.model import FnModel
 from .. import vmd
 from ..camera import MMDCamera
 from ..lamp import MMDLamp
@@ -303,7 +304,7 @@ class HasAnimationData:
 
 
 class VMDImporter:
-    def __init__(self, filepath, scale=1.0, bone_mapper=None, use_pose_mode=False, convert_mmd_camera=True, convert_mmd_lamp=True, frame_margin=5, use_mirror=False, always_create_new_action=False, use_nla=False, detect_camera_changes=True, detect_lamp_changes=True):
+    def __init__(self, filepath, scale=1.0, bone_mapper=None, use_pose_mode=False, convert_mmd_camera=True, convert_mmd_lamp=True, frame_margin=5, use_mirror=False, create_new_action=False, use_nla=False, detect_camera_changes=True, detect_lamp_changes=True):
         self.__vmdFile = vmd.File()
         self.__vmdFile.load(filepath=filepath)
         logging.debug(str(self.__vmdFile.header))
@@ -315,7 +316,7 @@ class VMDImporter:
         self.__frame_start = bpy.context.scene.frame_current
         self.__frame_margin = frame_margin if self.__frame_start in {0, 1} else 0  # only applies if current frame is 0 or 1
         self.__mirror = use_mirror
-        self.__always_create_new_action = always_create_new_action
+        self.__create_new_action = create_new_action
         self.__use_nla = use_nla
         self.__detect_camera_changes = detect_camera_changes
         self.__detect_lamp_changes = detect_lamp_changes
@@ -423,7 +424,7 @@ class VMDImporter:
             target.animation_data_create()
 
         if not self.__use_nla:
-            if not self.__always_create_new_action and target.animation_data.action:
+            if not self.__create_new_action and target.animation_data.action:
                 return target.animation_data.action
             target.animation_data.action = action
         else:
@@ -443,7 +444,7 @@ class VMDImporter:
         else:
             animation_data = getattr(target, "animation_data", None)
 
-        if not self.__always_create_new_action and animation_data and animation_data.action:
+        if not self.__create_new_action and animation_data and animation_data.action:
             return animation_data.action
 
         return bpy.data.actions.new(name=action_name)
@@ -807,11 +808,82 @@ class VMDImporter:
         self.__assign_action(lampObj.data, color_action)
         self.__assign_action(lampObj, location_action)
 
+    def __reset_all_animations(self, target_obj):
+        """Reset all animation states for the target object and related MMD model objects"""
+        root_object = FnModel.find_root_object(target_obj)
+        objects_to_process = set()
+
+        if root_object:
+            objects_to_process.add(root_object)
+            objects_to_process.add(target_obj)
+            # Add armature object
+            armature_object = FnModel.find_armature_object(root_object)
+            if armature_object:
+                objects_to_process.add(armature_object)
+            # Add all mesh objects
+            objects_to_process.update(FnModel.iterate_mesh_objects(root_object))
+            # Add other group objects if they exist
+            rigid_group = FnModel.find_rigid_group_object(root_object)
+            if rigid_group:
+                objects_to_process.add(rigid_group)
+            joint_group = FnModel.find_joint_group_object(root_object)
+            if joint_group:
+                objects_to_process.add(joint_group)
+            temporary_group = FnModel.find_temporary_group_object(root_object)
+            if temporary_group:
+                objects_to_process.add(temporary_group)
+        else:
+            objects_to_process.add(target_obj)
+
+        # STEP 1: Clear all existing actions first
+        for obj in objects_to_process:
+            # Clear object's own actions
+            if obj.animation_data:
+                obj.animation_data.action = None
+
+            # Clear Shape Keys actions
+            if hasattr(obj, "data") and hasattr(obj.data, "shape_keys") and obj.data.shape_keys:
+                if obj.data.shape_keys.animation_data:
+                    obj.data.shape_keys.animation_data.action = None
+
+            # Clear light data actions
+            if obj.type == "LIGHT" and obj.data.animation_data:
+                obj.data.animation_data.action = None
+
+        # STEP 2: Reset all properties to default states
+        for obj in objects_to_process:
+            if obj.type == "ARMATURE":
+                # Reset armature pose
+                for bone in obj.pose.bones:
+                    bone.location = (0.0, 0.0, 0.0)
+                    bone.rotation_quaternion = (1.0, 0.0, 0.0, 0.0)
+                    bone.rotation_euler = (0.0, 0.0, 0.0)
+                    bone.rotation_axis_angle = (0.0, 0.0, 1.0, 0.0)
+                    bone.scale = (1.0, 1.0, 1.0)
+
+                    # Reset IK settings to default
+                    if hasattr(bone, "mmd_ik_toggle"):
+                        bone.mmd_ik_toggle = True
+
+            elif obj.type == "MESH" and getattr(obj.data, "shape_keys", None):
+                # Reset mesh morphs
+                for shape_key in obj.data.shape_keys.key_blocks:
+                    if shape_key.name != "Basis":  # Don't reset basis shape key
+                        shape_key.value = 0.0
+
+            elif hasattr(obj, "mmd_type") and obj.mmd_type == "ROOT":
+                # Reset root display state
+                if hasattr(obj, "mmd_root") and hasattr(obj.mmd_root, "show_meshes"):
+                    obj.mmd_root.show_meshes = True  # Default to show meshes
+
     def assign(self, obj, action_name=None):
         if obj is None:
             return
         if action_name is None:
             action_name = os.path.splitext(os.path.basename(self.__vmdFile.filepath))[0]
+
+        if self.__create_new_action:
+            self.__reset_all_animations(obj)
 
         if MMDCamera.isMMDCamera(obj):
             self.__assignToCamera(obj, action_name + "_camera")

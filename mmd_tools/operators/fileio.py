@@ -463,7 +463,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         description="Update frame range and frame rate (30 fps)",
         default=True,
     )
-    always_create_new_action: bpy.props.BoolProperty(
+    create_new_action: bpy.props.BoolProperty(
         name="Create New Action",
         description="Create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled.",
         default=False,
@@ -518,7 +518,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         layout = self.layout
         layout.prop(self, "scale")
         layout.prop(self, "margin")
-        layout.prop(self, "always_create_new_action")
+        layout.prop(self, "create_new_action")
         layout.prop(self, "use_nla")
 
         layout.prop(self, "bone_mapper")
@@ -577,7 +577,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
                     use_pose_mode=self.use_pose_mode,
                     frame_margin=self.margin,
                     use_mirror=self.use_mirror,
-                    always_create_new_action=self.always_create_new_action,
+                    create_new_action=self.create_new_action,
                     use_nla=self.use_nla,
                     detect_camera_changes=self.detect_camera_changes,
                     detect_lamp_changes=self.detect_lamp_changes,
@@ -769,9 +769,9 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         name="Normal Handling",
         description="Choose how to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals.",
         items=[
-            ("PRESERVE_ALL_NORMALS", "Preserve All Normals", "Export existing normals without any changes. Use this if you have already perfected normals (e.g., using Weighted Normal modifiers).", 0),
+            ("PRESERVE_ALL_NORMALS", "Preserve All Normals", "Export existing normals without any changes. This option performs NO automatic smoothing; only use it if you have already manually smoothed and perfected your normals. When using this option, please verify if the vertex and edge counts of the exported model have significantly increased or are within a reasonable range to prevent excessive geometry destruction and an overly fragmented model.", 0),
             ("SMOOTH_KEEP_SHARP", "Smooth (Keep Sharp)", "Automatically smooth normals while respecting sharp edges defined by angle or manual marking.", 1),
-            ("SMOOTH_ALL_NORMALS", "Smooth All Normals", "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count.", 2),
+            ("SMOOTH_ALL_NORMALS", "Smooth All Normals", "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex and edge count.", 2),
         ],
         default="SMOOTH_KEEP_SHARP",
     )

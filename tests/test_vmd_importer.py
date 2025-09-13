@@ -989,14 +989,14 @@ class TestVMDImporter(unittest.TestCase):
                 print("NLA tracks were not created (this may be normal depending on the MMD Tools version)")
 
     def test_vmd_import_new_action_settings(self):
-        """Test VMD importing with always_create_new_action option"""
+        """Test VMD importing with create_new_action option"""
         vmd_files = self._list_sample_files("vmd", "vmd")
         if not vmd_files:
             self.fail("No VMD sample files found for new action test")
 
         armature = self._create_standard_mmd_armature()
 
-        importer1 = VMDImporter(filepath=vmd_files[0], always_create_new_action=False)
+        importer1 = VMDImporter(filepath=vmd_files[0], create_new_action=False)
         importer1.assign(armature)
 
         first_action = None
@@ -1004,13 +1004,13 @@ class TestVMDImporter(unittest.TestCase):
             first_action = armature.animation_data.action
             self.assertIsNotNone(first_action, "First action should be created")
 
-        importer2 = VMDImporter(filepath=vmd_files[0], always_create_new_action=True)
+        importer2 = VMDImporter(filepath=vmd_files[0], create_new_action=True)
         importer2.assign(armature)
 
         if armature.animation_data and first_action:
             second_action = armature.animation_data.action
             self.assertIsNotNone(second_action, "Second action should be created")
-            self.assertNotEqual(first_action, second_action, "Should create a new action when always_create_new_action=True")
+            self.assertNotEqual(first_action, second_action, "Should create a new action when create_new_action=True")
 
     def test_vmd_import_detect_changes(self):
         """Test VMD importing with detect_camera_changes and detect_lamp_changes options"""
