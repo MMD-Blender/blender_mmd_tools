@@ -21,9 +21,24 @@ def _decodeCp932String(byteString):
         byteString = b"\x00\xb6\x3f\x5f\x30\x5f\x31\x92\xb2\x90\xae\x00\x00\x00\x00"
         decoded = "�ｶ�_0_1調整"
     """
-    decoded = byteString.replace(b"\x00", b"").decode("cp932", errors="replace")
+    # Truncate at null terminator (skip first byte) to remove trailing padding
+    # Trailing padding may vary across different VMD files. (\x00, \xfd, etc.)
+    # Before:
+    #     byteString = b"\x00\xb6\x3f\x5f\x30\x5f\x31\x92\xb2\x90\xae\x00\xfd\xfd\xfd"
+    # After:
+    #     byteString = b"\x00\xb6\x3f\x5f\x30\x5f\x31\x92\xb2\x90\xae"
+    if len(byteString) > 1:
+        terminator_pos = byteString.find(b"\x00", 1)
+        if terminator_pos != -1:
+            byteString = byteString[:terminator_pos]
+
+    # If flag indicates encoding error, replace the encoding replacement character from ? to � for consistency,
+    # avoiding two different replacement characters appearing in console simultaneously
+    # The first character masked by flag is also represented with replacement character
     if byteString[:1] == b"\x00":
-        decoded = "\ufffd" + decoded.replace("?", "\ufffd")
+        decoded = "\ufffd" + byteString[1:].decode("cp932", errors="replace").replace("?", "\ufffd")
+    else:
+        decoded = byteString.decode("cp932", errors="replace")
     return decoded
 
 
