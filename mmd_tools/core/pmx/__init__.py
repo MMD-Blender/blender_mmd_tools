@@ -189,7 +189,7 @@ class Encoding:
     _MAP = [
         (0, "utf-16-le"),
         (1, "utf-8"),
-        ]
+    ]
 
     def __init__(self, arg):
         self.index = 0
@@ -207,7 +207,7 @@ class Encoding:
             raise ValueError("invalid argument type")
         t = t[0]
         self.index = t[0]
-        self.charset  = t[1]
+        self.charset = t[1]
 
     def __repr__(self):
         return f"<Encoding charset {self.charset}>"
@@ -222,6 +222,7 @@ class Coordinate:
 class Header:
     PMX_SIGN = b"PMX "
     VERSION = 2.0
+
     def __init__(self, model=None):
         self.sign = self.PMX_SIGN
         self.version = 0
@@ -319,7 +320,7 @@ class Header:
             self.bone_index_size,
             self.morph_index_size,
             self.rigid_index_size,
-            )
+        )
 
 
 class Model:
@@ -702,7 +703,7 @@ class BoneWeight:
         (BDEF2, "BDEF2"),
         (BDEF4, "BDEF4"),
         (SDEF, "SDEF"),
-        ]
+    ]
 
     def __init__(self):
         self.bones = []
@@ -1144,7 +1145,7 @@ class Morph:
             6: UVMorph,
             7: UVMorph,
             8: MaterialMorph,
-            }
+        }
 
         name = fs.readStr()
         name_e = fs.readStr()
@@ -1410,6 +1411,7 @@ class Rigid:
     MODE_STATIC = 0
     MODE_DYNAMIC = 1
     MODE_DYNAMIC_BONE = 2
+
     def __init__(self):
         self.name = ""
         self.name_e = ""
@@ -1491,6 +1493,7 @@ class Rigid:
 
 class Joint:
     MODE_SPRING6DOF = 0
+
     def __init__(self):
         self.name = ""
         self.name_e = ""

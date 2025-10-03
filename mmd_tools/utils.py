@@ -132,14 +132,8 @@ def separateByMaterials(meshObj: bpy.types.Object, keep_normals: bool = False):
                     mmd_normal = meshData.attributes.new("mmd_normal", "INT16_2D", "CORNER")
                     mmd_normal_name = mmd_normal.name
                     mmd_normal.data.foreach_set("value", normals_data)
-                elif existing_custom_normal.data_type == "FLOAT_VECTOR":
-                    normals_data = np.empty(len(meshData.loops) * 3, dtype=np.float32)
-                    existing_custom_normal.data.foreach_get("vector", normals_data)
-                    mmd_normal = meshData.attributes.new("mmd_normal", "FLOAT_VECTOR", "CORNER")
-                    mmd_normal_name = mmd_normal.name
-                    mmd_normal.data.foreach_set("vector", normals_data)
                 else:
-                    raise TypeError(f"Unsupported custom_normal data type: '{existing_custom_normal.data_type}'. Supported types: ['INT16_2D', 'FLOAT_VECTOR']")
+                    raise TypeError(f"Unsupported custom_normal data type: '{existing_custom_normal.data_type}'. Supported types: 'INT16_2D'")
 
         try:
             enterEditMode(meshObj)
@@ -163,15 +157,8 @@ def separateByMaterials(meshObj: bpy.types.Object, keep_normals: bool = False):
                         if not custom_normal_attr:
                             custom_normal_attr = i.data.attributes.new("custom_normal", "INT16_2D", "CORNER")
                         custom_normal_attr.data.foreach_set("value", normals_data)
-                    elif mmd_normal.data_type == "FLOAT_VECTOR":
-                        normals_data = np.empty(len(i.data.loops) * 3, dtype=np.float32)
-                        mmd_normal.data.foreach_get("vector", normals_data)
-                        custom_normal_attr = i.data.attributes.get("custom_normal")
-                        if not custom_normal_attr:
-                            custom_normal_attr = i.data.attributes.new("custom_normal", "FLOAT_VECTOR", "CORNER")
-                        custom_normal_attr.data.foreach_set("vector", normals_data)
                     else:
-                        raise TypeError(f"Unsupported custom_normal data type: '{mmd_normal.data_type}'. Supported types: ['INT16_2D', 'FLOAT_VECTOR']")
+                        raise TypeError(f"Unsupported custom_normal data type: '{mmd_normal.data_type}'. Supported types: 'INT16_2D'")
                     i.data.attributes.remove(mmd_normal)
     finally:
         if dummy_parent and dummy_parent.name in bpy.data.objects:

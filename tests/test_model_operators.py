@@ -21,7 +21,6 @@ EXP_FRAME = "\u8868\u60c5"
 
 
 class ModelOperatorsTest(unittest.TestCase):
-
     def setUp(self):
         """Set up testing environment"""
         # Ensure active object exists (user may have deleted the default cube)

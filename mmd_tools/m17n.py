@@ -13,7 +13,7 @@ translations_tuple = (
         ((), ()),
         (
             "ja_JP",
-            "Project-Id-Version: MMD Tools 4.5.0 (0)\n",
+            "Project-Id-Version: MMD Tools 4.5.1 (0)\n",
             (
                 False,
                 (
@@ -26,7 +26,7 @@ translations_tuple = (
         ),
         (
             "zh_HANS",
-            "Project-Id-Version: MMD Tools 4.5.0 (0)\n",
+            "Project-Id-Version: MMD Tools 4.5.1 (0)\n",
             (
                 False,
                 (
@@ -1417,16 +1417,52 @@ translations_tuple = (
         ("zh_HANS", "将选中的 MMD 模型导出至 PMX 文件 (.pmx)", (False, ())),
     ),
     (
-        ("*", "Copy textures"),
-        (
-            (
-                "bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures",
-                "bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures",
-            ),
-            (),
-        ),
+        ("*", "Copy Textures"),
+        (("bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode",), ()),
         ("ja_JP", "テクスチャをコピー", (False, ())),
         ("zh_HANS", "复制纹理", (False, ())),
+    ),
+    (
+        ("*", "Choose how to handle texture files during export"),
+        (("bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Don't Copy"),
+        (("bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode:'NONE'",), ()),
+        ("ja_JP", "コピーしない", (False, ())),
+        ("zh_HANS", "不复制", (False, ())),
+    ),
+    (
+        ("*", "Don't copy texture files"),
+        (("bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode:'NONE'",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Copy (Skip Existing)"),
+        (("bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode:'SKIP_EXISTING'",), ()),
+        ("ja_JP", "コピー(既存をスキップ)", (False, ())),
+        ("zh_HANS", "复制(跳过已存在)", (False, ())),
+    ),
+    (
+        ("*", "Copy textures but skip files that already exist"),
+        (("bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode:'SKIP_EXISTING'",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
+    ),
+    (
+        ("*", "Copy (Overwrite)"),
+        (("bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode:'OVERWRITE'",), ()),
+        ("ja_JP", "コピー(上書き)", (False, ())),
+        ("zh_HANS", "复制(覆盖)", (False, ())),
+    ),
+    (
+        ("*", "Copy textures and overwrite existing files"),
+        (("bpy.types.MMD_TOOLS_OT_export_pmx.copy_textures_mode:'OVERWRITE'",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Disable SPH/SPA"),
@@ -2450,15 +2486,6 @@ translations_tuple = (
         ("zh_HANS", "", (False, ())),
     ),
     (
-        (
-            "*",
-            "Create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled.",
-        ),
-        (("bpy.types.MMD_TOOLS_OT_import_vmd.create_new_action",), ()),
-        ("ja_JP", "", (False, ())),
-        ("zh_HANS", "", (False, ())),
-    ),
-    (
         ("*", "Bone Mapper"),
         (
             (
@@ -2523,6 +2550,15 @@ translations_tuple = (
         (("bpy.types.MMD_TOOLS_OT_import_vmd.bone_mapper:'RENAMED_BONES'",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "重命名动作数据中的骨骼，使其适于被 Blender 处理", (False, ())),
+    ),
+    (
+        (
+            "*",
+            "Create a new action when importing VMD, otherwise add keyframes to existing actions if available. Note: This option is ignored when 'Use NLA' is enabled.",
+        ),
+        (("bpy.types.MMD_TOOLS_OT_import_vmd.create_new_action",), ()),
+        ("ja_JP", "", (False, ())),
+        ("zh_HANS", "", (False, ())),
     ),
     (
         ("*", "Detect Camera Cut"),
@@ -2910,7 +2946,7 @@ translations_tuple = (
     (
         (
             "*",
-            "Join multiple MMD models into one.\nWARNING: To align models before joining, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly as they will not move together.",
+            "Join multiple MMD models into one.\n\nWARNING: To align models before joining, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly as they will not move together.\n\nIMPORTANT: Don't use any of the 'Assembly' functions before using this function. This function requires the models to be in a clean state.",
         ),
         (("bpy.types.MMD_TOOLS_OT_model_join_by_bones",), ()),
         ("ja_JP", "", (False, ())),
@@ -2931,7 +2967,7 @@ translations_tuple = (
     (
         (
             "*",
-            "Separate MMD model into multiple models based on selected bones.\nWARNING: This operation will split meshes, armatures, rigid bodies and joints. To move models before separating, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly before separating as they will not move together.",
+            "Separate MMD model into multiple models based on selected bones.\n\nWARNING: This operation will split meshes, armatures, rigid bodies and joints. To move models before separating, only adjust the root (cross under the model) transformation. Do not move armatures, meshes, rigid bodies, or joints directly before separating as they will not move together.\n\nIMPORTANT: Don't use any of the 'Assembly' functions before using this function. This function requires the model to be in a clean state.",
         ),
         (("bpy.types.MMD_TOOLS_OT_model_separate_by_bones",), ()),
         ("ja_JP", "", (False, ())),
@@ -3615,7 +3651,7 @@ translations_tuple = (
     (
         (
             "*",
-            "Separate the mesh into multiple objects based on materials.\nHIGH RISK & BUGGY: This operation is not reversible and may cause various issues. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\nKnown issues include potential mesh corruption, UV mapping problems, and other unpredictable behaviors. Use with extreme caution and backup your work first.",
+            "Separate by Materials (High Risk)\nSeparate the mesh into multiple objects based on materials.\nHIGH RISK & BUGGY: This operation is not reversible and may cause various issues. It splits adjacent geometry by material, and merging later will not reconnect shared edges.\nKnown issues include potential mesh corruption, UV mapping problems, and other unpredictable behaviors. Use with extreme caution and backup your work first.",
         ),
         (("bpy.types.MMD_TOOLS_OT_separate_by_materials",), ()),
         ("ja_JP", "", (False, ())),
@@ -5569,13 +5605,13 @@ translations_tuple = (
     ),
     (
         ("*", '[Skipped] The armature object of MMD model "" can\'t be found'),
-        (("extensions/blender_org/mmd_tools/operators/fileio.py:891",), ()),
+        (("extensions/blender_org/mmd_tools/operators/fileio.py:968",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", '[跳过] 找不到 MMD 模型"%s"的骨架数据', (True, ())),
     ),
     (
         ("*", 'Exported MMD model "" to ""'),
-        (("extensions/blender_org/mmd_tools/operators/fileio.py:924",), ()),
+        (("extensions/blender_org/mmd_tools/operators/fileio.py:1001",), ()),
         ("ja_JP", 'MMDモデル "%s" を "%s" にエクスポートしました', (True, ())),
         ("zh_HANS", '已导出 MMD 模型"%s"至"%s"', (True, ())),
     ),
@@ -5608,8 +5644,8 @@ translations_tuple = (
         (
             (
                 "extensions/blender_org/mmd_tools/operators/material.py:353",
-                "extensions/blender_org/mmd_tools/operators/misc.py:200",
-                "extensions/blender_org/mmd_tools/operators/misc.py:246",
+                "extensions/blender_org/mmd_tools/operators/misc.py:205",
+                "extensions/blender_org/mmd_tools/operators/misc.py:251",
             ),
             (),
         ),
@@ -5642,13 +5678,13 @@ translations_tuple = (
     ),
     (
         ("*", "This operation will break existing f-curve/action."),
-        (("extensions/blender_org/mmd_tools/operators/misc.py:307",), ()),
+        (("extensions/blender_org/mmd_tools/operators/misc.py:312",), ()),
         ("ja_JP", "この操作は既存のFカーブ/アクションを破壊します", (False, ())),
         ("zh_HANS", "这一操作将破坏现有的函数曲线/动作", (False, ())),
     ),
     (
         ("*", "Click [OK] to run the operation."),
-        (("extensions/blender_org/mmd_tools/operators/misc.py:308",), ()),
+        (("extensions/blender_org/mmd_tools/operators/misc.py:313",), ()),
         ("ja_JP", "[OK]をクリックして操作を実行してください", (False, ())),
         ("zh_HANS", "点击[确定]来运行操作", (False, ())),
     ),
@@ -5660,13 +5696,13 @@ translations_tuple = (
     ),
     (
         ("*", "The model does not have any meshes"),
-        (("extensions/blender_org/mmd_tools/operators/misc.py:210",), ()),
+        (("extensions/blender_org/mmd_tools/operators/misc.py:215",), ()),
         ("ja_JP", "このモデルにはメッシュがありません", (False, ())),
         ("zh_HANS", "该模型不具有任何网格", (False, ())),
     ),
     (
         ("*", "Model Armature not found"),
-        (("extensions/blender_org/mmd_tools/operators/misc.py:251",), ()),
+        (("extensions/blender_org/mmd_tools/operators/misc.py:256",), ()),
         ("ja_JP", "モデルのアーマチュアが見つかりません", (False, ())),
         ("zh_HANS", "找不到模型的骨架", (False, ())),
     ),
@@ -6297,8 +6333,8 @@ translations_tuple = (
         ("Operator", "Fix Bone Order"),
         (
             (
-                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:568",
-                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:615",
+                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:600",
+                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:647",
             ),
             (),
         ),
@@ -6309,8 +6345,8 @@ translations_tuple = (
         ("*", "Total Bones: %d"),
         (
             (
-                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:614",
-                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:614",
+                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:646",
+                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:646",
             ),
             (),
         ),
@@ -6372,7 +6408,7 @@ translations_tuple = (
         ("*", "Select a MMD Model"),
         (
             (
-                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:582",
+                "extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:614",
                 "extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:22",
                 "extensions/blender_org/mmd_tools/panels/sidebar/joints.py:20",
                 "extensions/blender_org/mmd_tools/panels/sidebar/meshes_sorter.py:21",
@@ -6387,7 +6423,7 @@ translations_tuple = (
     ),
     (
         ("*", "The armature object of active MMD model can't be found"),
-        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:587",), ()),
+        (("extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:619",), ()),
         ("ja_JP", "選択中のMMDモデルのアーマチュアが見つかりません", (False, ())),
         ("zh_HANS", "找不到选中MMD模型的骨架", (False, ())),
     ),

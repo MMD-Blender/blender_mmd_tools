@@ -10,7 +10,6 @@ from bl_ext.blender_org.mmd_tools.utils import ItemOp, clearUnusedMeshes, conver
 
 
 class TestUtilsUnit(unittest.TestCase):
-
     def setUp(self):
         """Set up testing environment"""
         # Reset Blender scene to default state

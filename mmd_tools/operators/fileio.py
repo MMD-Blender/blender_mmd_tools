@@ -797,10 +797,15 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         description="Scaling factor for exporting the model",
         default=12.5,
     )
-    copy_textures: bpy.props.BoolProperty(
-        name="Copy textures",
-        description="Copy textures",
-        default=True,
+    copy_textures_mode: bpy.props.EnumProperty(
+        name="Copy Textures",
+        description="Choose how to handle texture files during export",
+        items=[
+            ("NONE", "Don't Copy", "Don't copy texture files", 0),
+            ("SKIP_EXISTING", "Copy (Skip Existing)", "Copy textures but skip files that already exist", 1),
+            ("OVERWRITE", "Copy (Overwrite)", "Copy textures and overwrite existing files", 2),
+        ],
+        default="SKIP_EXISTING",
     )
     sort_materials: bpy.props.BoolProperty(
         name="Sort Materials",
@@ -981,7 +986,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
                 meshes=meshes,
                 rigid_bodies=FnModel.iterate_rigid_body_objects(root),
                 joints=FnModel.iterate_joint_objects(root),
-                copy_textures=self.copy_textures,
+                copy_textures_mode=self.copy_textures_mode,
                 fix_bone_order=self.fix_bone_order,
                 overwrite_bone_morphs_from_action_pose=self.overwrite_bone_morphs_from_action_pose,
                 translate_in_presets=self.translate_in_presets,

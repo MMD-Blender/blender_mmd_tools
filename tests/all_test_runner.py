@@ -149,7 +149,7 @@ def run_test(blender_path, test_script, current_test_num, total_tests, previous_
         # Check if the test passed - specifically for unittest output
         output = result.stdout + result.stderr
         success_indicators = {"OK"}
-        failure_indicators = {"FAIL\n", "FAIL:", "ERROR\n", "ERROR:", "skipped", "FAILED", "failures=", "errors=", "skipped="}
+        failure_indicators = {"FAIL\n", "FAIL:", "ERROR\n", "ERROR:", "skipped", "FAILED", "failures=", "errors=", "skipped=", "Traceback"}
 
         has_success = any(indicator in output for indicator in success_indicators)
         has_failure = any(indicator in output for indicator in failure_indicators)
@@ -181,7 +181,7 @@ def print_summary_progress(iteration, total):
     """Print a simple progress bar for the overall progress"""
     progress_percent = iteration / float(total)
 
-    percent = (f"{100 * progress_percent:.1f}")
+    percent = f"{100 * progress_percent:.1f}"
     length = 30
     filled_length = int(length * progress_percent)
     bar = "█" * filled_length + "-" * (length - filled_length)

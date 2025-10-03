@@ -13,7 +13,7 @@ TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
 
 
-class TestPmxExportVertexMergeBug(unittest.TestCase):
+class TestPmxExportViewLayerExclusion(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Clean up output from previous tests"""
@@ -52,8 +52,8 @@ class TestPmxExportVertexMergeBug(unittest.TestCase):
         model = Model(root_obj)
         return list(model.meshes())
 
-    def test_merge_vertices_by_distance_standalone(self):
-        """Test merge vertices by distance operation causes PMX export failure"""
+    def test_export_with_excluded_view_layer_parts(self):
+        """Test PMX export failure when some model parts are excluded from View Layer"""
         input_files = self.__list_sample_files(("pmx",))
         assert len(input_files) >= 1, "No PMX sample files available"
 
@@ -70,21 +70,29 @@ class TestPmxExportVertexMergeBug(unittest.TestCase):
         root_obj = root_objects[0]
         meshes = self.__get_model_meshes(root_obj)
 
-        # Find a mesh with enough vertices
+        # Find a mesh to exclude from view layer
         target_mesh = None
         for mesh_obj in meshes:
-            if len(mesh_obj.data.vertices) > 100:
+            if mesh_obj.data and len(mesh_obj.data.vertices) > 10:
                 target_mesh = mesh_obj
                 break
 
-        assert target_mesh is not None, "No mesh with sufficient vertices found"
+        assert target_mesh is not None, "No suitable mesh found for exclusion test"
 
-        # Perform merge vertices by distance
-        bpy.context.view_layer.objects.active = target_mesh
-        bpy.ops.object.mode_set(mode="EDIT")
-        bpy.ops.mesh.select_all(action="SELECT")
-        bpy.ops.mesh.remove_doubles(threshold=0.0001)
-        bpy.ops.object.mode_set(mode="OBJECT")
+        # Create a new collection and move the mesh to it
+        excluded_collection = bpy.data.collections.new("ExcludedCollection")
+        bpy.context.scene.collection.children.link(excluded_collection)
+
+        # Remove mesh from current collections and add to new collection
+        for collection in target_mesh.users_collection:
+            collection.objects.unlink(target_mesh)
+        excluded_collection.objects.link(target_mesh)
+
+        # Exclude the collection from view layer (this removes the checkmark)
+        layer_collection = bpy.context.view_layer.layer_collection.children["ExcludedCollection"]
+        layer_collection.exclude = True
+
+        bpy.context.view_layer.update()
 
         # Setup export context
         bpy.ops.object.select_all(action="DESELECT")
@@ -92,8 +100,8 @@ class TestPmxExportVertexMergeBug(unittest.TestCase):
         bpy.context.view_layer.objects.active = root_obj
         bpy.context.view_layer.update()
 
-        # Export should fail - let it crash
-        output_pmx = os.path.join(TESTS_DIR, "output", "merge_bug_test.pmx")
+        # Export should fail with ReferenceError - let it crash
+        output_pmx = os.path.join(TESTS_DIR, "output", "view_layer_exclusion_test.pmx")
         bpy.ops.mmd_tools.export_pmx(filepath=output_pmx, scale=12.5, sort_materials=False, sort_vertices="NONE", log_level="ERROR")
 
 

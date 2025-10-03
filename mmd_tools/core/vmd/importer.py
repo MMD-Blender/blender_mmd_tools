@@ -85,8 +85,10 @@ class BoneConverter:
         if invert:
             self.__mat.invert()
         self.convert_interpolation = _InterpolationHelper(self.__mat).convert
+
     def convert_location(self, location):
         return (self.__mat @ Vector(location)) * self.__scale
+
     # # old implementation
     # def convert_rotation(self, rotation_xyzw):
     #     x, y, z, w = rotation_xyzw
@@ -293,7 +295,7 @@ class VMDImporter:
         kp0.handle_right_type = "FREE"
         kp1.handle_left_type = "FREE"
 
-        d = (kp1.co - kp0.co)
+        d = kp1.co - kp0.co
         dy = d.y
 
         # Reset handles if the value doesn't change much (dy is small enough) or the bezier is linear

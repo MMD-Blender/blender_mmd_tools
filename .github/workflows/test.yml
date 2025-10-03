@@ -169,11 +169,6 @@ jobs:
 
           blender --background --python verify_import.py
 
-      - name: Run critical tests with verbose output
-        run: |
-          echo "Running a few critical tests with full output for detailed debugging..."
-          blender --background -noaudio --python tests/test_vertex_color.py -- --verbose
-
       # - name: Conditionally disable hard test for specific Blender versions
       #   if: matrix.blender_version == '4.2' || matrix.blender_version == '4.3' || matrix.blender_version == '4.4' || matrix.blender_version == '4.5'
       #   run: |
@@ -181,6 +176,32 @@ jobs:
       #     mv tests/test_pmx_exporter_hard.py tests/test_pmx_exporter_hard.py.disabled
 
       - name: Run all tests
+        env:
+          PYTHONUNBUFFERED: 1
+          PYTHONDONTWRITEBYTECODE: 1
         run: |
-          echo "Running all tests with the test runner..."
-          blender --background -noaudio --python tests/all_test_runner.py -- --verbose
+          echo "Running all tests..."
+          # Disable immediate exit on error to ensure output is displayed
+          set +e
+          for test_file in tests/*.py; do
+            if [ "$(basename "$test_file")" = "all_test_runner.py" ]; then
+              continue
+            fi
+            echo ""
+            echo "========================================"
+            echo "Running: $test_file"
+            echo "========================================"
+
+            output=$(script -q -e -c "stdbuf -i0 -o0 -e0 blender --background -noaudio --python-use-system-env --python '$test_file' -- --verbose" /dev/null 2>&1)
+            exit_code=$?
+            echo "$output"
+
+            # Blender may exit with code 0 on script errors, so we check for "Traceback" as well.
+            if [ $exit_code -ne 0 ] || echo "$output" | grep -q "Traceback"; then
+              exit 1
+            fi
+
+            echo "========================================"
+            echo "Finished running: $test_file"
+            echo "========================================"
+          done

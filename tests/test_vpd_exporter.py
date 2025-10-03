@@ -17,7 +17,6 @@ OUTPUT_DIR = os.path.join(TESTS_DIR, "output")
 
 
 class TestVPDExporter(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         """Clean up output from previous tests"""

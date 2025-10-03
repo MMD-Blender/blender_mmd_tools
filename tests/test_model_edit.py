@@ -191,7 +191,6 @@ class TestModelEdit(unittest.TestCase):
             bpy.ops.mmd_tools.export_pmx(
                 filepath=export_path,
                 scale=1,
-                copy_textures=True,
                 sort_materials=False,
                 log_level="ERROR",
             )
@@ -519,7 +518,6 @@ class TestModelEdit(unittest.TestCase):
             bpy.ops.mmd_tools.export_pmx(
                 filepath=output_pmx,
                 scale=1,
-                copy_textures=True,
                 sort_materials=False,
                 log_level="ERROR",
             )

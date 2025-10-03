@@ -33,6 +33,26 @@ The following features are intentionally excluded from MMD Tools:
 - **Rigify compatibility**: Due to the complexity and maintenance burden, direct support for Rigify is not part of the core add-on. For users seeking advanced animation workflows with Rigify, we recommend community-developed solutions like the ones mentioned in the "Recommended Add-ons" section above.
 - **Material Library system**: Implementing a full-featured material library would be equivalent to building a separate add-on, which is outside the scope of this project. Instead, users can define their own custom default materials by editing the startup file. For example, the `MMDShaderDev` Node Group can be customized and saved in the Blender startup file (`File > Defaults > Save Startup File`), allowing it to be automatically applied to new MMD models without modifying the add-on itself.
 
+## Known Issues
+
+### Rigid Body Physics Limitations
+
+**Issue**: Blender's rigid body system has stability and performance issues when working with MMD physics.
+
+**Details**:
+- Blender's rigid body system is prone to crashes and has worse performance compared to MMD
+- Blender lacks collision mask functionality, requiring MMD Tools to use numerous rigid body constraints to simulate collision masks
+- This constraint-heavy approach further degrades performance
+- While MMD Tools provides `Assembly -> Physics` functionality, breast physics simulation doesn't closely match MMD behavior
+
+**Recommended Workaround**:
+For physics simulation, we recommend using [mmdbridge](https://github.com/rintrint/mmdbridge) and disabling Blender's rigid body physics entirely by clicking `Remove rigid body world` in Blender.
+
+**Benefits of this approach**:
+1. Significantly reduces Blender crashes
+2. Physics effects match MMD exactly without having to manually recreate breast physics
+3. Better overall performance
+
 ## Contributing
 MMD Tools needs contributions such as:
 

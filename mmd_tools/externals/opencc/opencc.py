@@ -169,6 +169,7 @@ class OpenCC:
         self._dict_init_done = False
         self.conversion = conversion
 
+
 #############################################
 
 
@@ -218,15 +219,15 @@ class StringTree:
             while working_stack:
                 curr = working_stack.pop()
                 value, lstring, rstring, test_len = self.__findMatch(curr.value, test_dict, curr.length_hint)
-                if (value):
+                if value:
                     curr.set_value(value)
                     curr.set_hint(None)
                     curr.set_matched(True)
-                    if (lstring):
+                    if lstring:
                         node = TreeNode(lstring, test_len)
                         working_stack.append(node)
                         curr.set_branch(TreeNode.LEFT, node)
-                    if (rstring):
+                    if rstring:
                         node = TreeNode(rstring, test_len)
                         working_stack.append(node)
                         curr.set_branch(TreeNode.RIGHT, node)

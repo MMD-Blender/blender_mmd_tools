@@ -10,6 +10,10 @@ def setupFrameRanges():
     e = base
 
     for action in bpy.data.actions:
+        # Skip orphaned actions
+        if action.users == 0:
+            continue
+
         # When create_new_action=False, multiple VMDs share the same action
         # Need to toggle use_frame_range to access frame ranges from both VMDs:
         # use_frame_range = True: gets range from the first imported VMD
