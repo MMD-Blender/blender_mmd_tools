@@ -629,7 +629,6 @@ class TestPmxExporter(unittest.TestCase):
                     bpy.ops.mmd_tools.export_pmx(
                         filepath=output_pmx,
                         scale=1.0,
-                        copy_textures=False,
                         sort_materials=False,
                         sort_vertices="NONE",
                         log_level="ERROR",

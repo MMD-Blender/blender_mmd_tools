@@ -10,7 +10,6 @@ from bl_ext.blender_org.mmd_tools.utils import ItemOp, clearUnusedMeshes, conver
 
 
 class TestUtilsUnit(unittest.TestCase):
-
     def setUp(self):
         """Set up testing environment"""
         # Reset Blender scene to default state
@@ -110,13 +109,13 @@ class TestUtilsUnit(unittest.TestCase):
 
         # Check if the bone is selected and active
         bpy.ops.object.mode_set(mode="POSE")
-        self.assertTrue(armature.data.bones[target_bone].select, "Target bone should be selected")
+        self.assertTrue(armature.pose.bones[target_bone].select, "Target bone should be selected")
         self.assertEqual(armature.data.bones.active, armature.data.bones[target_bone], "Target bone should be active")
 
         # Check if other bones are not selected
         for bone_name in bone_names:
             if bone_name != target_bone:
-                self.assertFalse(armature.data.bones[bone_name].select, f"Bone {bone_name} should not be selected")
+                self.assertFalse(armature.pose.bones[bone_name].select, f"Bone {bone_name} should not be selected")
 
     def test_convertNameToLR(self):
         """Test if convertNameToLR correctly converts Japanese left/right naming to Blender's L/R convention"""

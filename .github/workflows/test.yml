@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        blender_version: ["4.5", "4.4", "4.3", "4.2"]
+        blender_version: ["5.0", "4.5", "4.4", "4.3", "4.2"]
 
     steps:
       - name: Checkout
@@ -32,37 +32,61 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y jq > /dev/null 2>&1
 
-      - name: Download Blender release
+      - name: Download Blender
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "=== Download Blender release ==="
+          echo "=== Download Blender ==="
 
-          if [ "${{ matrix.blender_version }}" = "latest" ]; then
-            echo "Fetching latest Blender version..."
-            TAGS_RESPONSE=$(curl -s -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/blender/blender/tags)
-            LATEST_VERSION=$(echo "$TAGS_RESPONSE" | jq -r '.[0].name' | sed 's/^v//')
-          else
-            echo "Fetching latest ${{ matrix.blender_version }}.x version..."
-            TAGS_RESPONSE=$(curl -s -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/blender/blender/tags)
-            LATEST_VERSION=$(echo "$TAGS_RESPONSE" | jq -r '.[].name' | sed 's/^v//' | grep '^${{ matrix.blender_version }}\.' | sort -V | tail -1)
+          # Try to get official release from GitHub first
+          echo "Checking for official release: Blender ${{ matrix.blender_version }}.x"
+          TAGS_RESPONSE=$(curl -s -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/blender/blender/tags)
+          LATEST_VERSION=$(echo "$TAGS_RESPONSE" | jq -r '.[].name' | sed 's/^v//' | grep '^${{ matrix.blender_version }}\.' | sort -V | tail -1)
+
+          if [ -n "$LATEST_VERSION" ] && [ "$LATEST_VERSION" != "null" ]; then
+            # Download official release
+            BLENDER_URL="https://download.blender.org/release/Blender${{ matrix.blender_version }}/blender-${LATEST_VERSION}-linux-x64.tar.xz"
+            echo "Downloading official release: ${LATEST_VERSION}"
+            echo "URL: ${BLENDER_URL}"
+
+            if wget -q -O blender.tar.xz "${BLENDER_URL}"; then
+              echo "✓ Successfully downloaded official release"
+            else
+              echo "⚠ Official release download failed, trying daily build..."
+              LATEST_VERSION=""
+            fi
           fi
 
-          echo "Selected Blender version: ${LATEST_VERSION}"
-
+          # If no official release, get from daily builds API
           if [ -z "$LATEST_VERSION" ] || [ "$LATEST_VERSION" = "null" ]; then
-            echo "ERROR: Could not fetch version ${{ matrix.blender_version }} from GitHub API"
-            echo "Available versions:"
-            echo "$TAGS_RESPONSE" | jq -r '.[].name' | sed 's/^v//' | head -10
-            exit 1
+            echo "Fetching daily build for Blender ${{ matrix.blender_version }}..."
+
+            # Query API and filter with jq
+            DAILY_BUILD_URL=$(curl -s "https://builder.blender.org/download/daily/?format=json&v=2" | \
+              jq -r --arg version "${{ matrix.blender_version }}" \
+              '.[] | select(.version | startswith($version)) |
+               select(.platform == "linux") |
+               select(.architecture == "x86_64") |
+               select(.file_extension == "xz") |
+               .url' | head -1)
+
+            if [ -z "$DAILY_BUILD_URL" ]; then
+              echo "✗ ERROR: No build found for version ${{ matrix.blender_version }}"
+              echo "Available versions:"
+              echo "$TAGS_RESPONSE" | jq -r '.[].name' | sed 's/^v//' | head -10
+              exit 1
+            fi
+
+            echo "Found daily build: ${DAILY_BUILD_URL}"
+            echo "Downloading..."
+
+            if ! wget -q -O blender.tar.xz "${DAILY_BUILD_URL}"; then
+              echo "✗ ERROR: Failed to download daily build"
+              exit 1
+            fi
+
+            echo "✓ Successfully downloaded daily build"
           fi
-
-          BLENDER_MAJOR=$(echo $LATEST_VERSION | cut -d. -f1-2)
-          BLENDER_URL="https://download.blender.org/release/Blender${BLENDER_MAJOR}/blender-${LATEST_VERSION}-linux-x64.tar.xz"
-
-          echo "Downloading Blender ${LATEST_VERSION}..."
-          echo "${BLENDER_URL}"
-          wget -q -O blender.tar.xz "${BLENDER_URL}"
 
           echo "Extracting Blender..."
           tar -xf blender.tar.xz > /dev/null 2>&1
@@ -71,8 +95,8 @@ jobs:
           sudo mv blender-*/ /opt/blender > /dev/null 2>&1
           sudo ln -s /opt/blender/blender /usr/local/bin/blender > /dev/null 2>&1
 
-          echo "BLENDER_VERSION=${BLENDER_MAJOR}" >> $GITHUB_ENV
-          echo "Blender installation completed"
+          echo "BLENDER_VERSION=${{ matrix.blender_version }}" >> $GITHUB_ENV
+          echo "✓ Blender installation completed"
 
       - name: Install MMD Tools to Blender extensions directory
         run: |
@@ -169,11 +193,6 @@ jobs:
 
           blender --background --python verify_import.py
 
-      - name: Run critical tests with verbose output
-        run: |
-          echo "Running a few critical tests with full output for detailed debugging..."
-          blender --background -noaudio --python tests/test_vertex_color.py -- --verbose
-
       # - name: Conditionally disable hard test for specific Blender versions
       #   if: matrix.blender_version == '4.2' || matrix.blender_version == '4.3' || matrix.blender_version == '4.4' || matrix.blender_version == '4.5'
       #   run: |
@@ -181,6 +200,32 @@ jobs:
       #     mv tests/test_pmx_exporter_hard.py tests/test_pmx_exporter_hard.py.disabled
 
       - name: Run all tests
+        env:
+          PYTHONUNBUFFERED: 1
+          PYTHONDONTWRITEBYTECODE: 1
         run: |
-          echo "Running all tests with the test runner..."
-          blender --background -noaudio --python tests/all_test_runner.py -- --verbose
+          echo "Running all tests..."
+          # Disable immediate exit on error to ensure output is displayed
+          set +e
+          for test_file in tests/*.py; do
+            if [ "$(basename "$test_file")" = "all_test_runner.py" ]; then
+              continue
+            fi
+            echo ""
+            echo "========================================"
+            echo "Running: $test_file"
+            echo "========================================"
+
+            output=$(script -q -e -c "stdbuf -i0 -o0 -e0 blender --background -noaudio --python-use-system-env --python '$test_file' -- --verbose" /dev/null 2>&1)
+            exit_code=$?
+            echo "$output"
+
+            # Blender may exit with code 0 on script errors, so we check for "Traceback" as well.
+            if [ $exit_code -ne 0 ] || echo "$output" | grep -q "Traceback"; then
+              exit 1
+            fi
+
+            echo "========================================"
+            echo "Finished running: $test_file"
+            echo "========================================"
+          done

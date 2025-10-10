@@ -139,8 +139,8 @@ class TestBone(unittest.TestCase):
 
         # Clear selection and select specific bone
         for bone in pose_bones:
-            bone.bone.select = False
-        pose_bones["左腕"].bone.select = True
+            bone.select = False
+        pose_bones["左腕"].select = True
 
         # Test loading fixed axis
         FnBone.load_bone_fixed_axis(self.test_armature, enable=True)
@@ -185,8 +185,8 @@ class TestBone(unittest.TestCase):
 
         # Clear selection and select specific bone
         for bone in pose_bones:
-            bone.bone.select = False
-        pose_bones["左腕"].bone.select = True
+            bone.select = False
+        pose_bones["左腕"].select = True
 
         # Test loading local axes
         FnBone.load_bone_local_axes(self.test_armature, enable=True)

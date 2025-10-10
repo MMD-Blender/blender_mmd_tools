@@ -16,7 +16,6 @@ SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
 
 
 class TestVPDImporter(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         """Clean up output from previous tests"""
@@ -158,7 +157,8 @@ class TestVPDImporter(unittest.TestCase):
 
                         # Import using operator
                         result = bpy.ops.mmd_tools.import_vpd(
-                            filepath=vpd_file, scale=1.0,
+                            filepath=vpd_file,
+                            scale=1.0,
                         )
 
                         # Check result

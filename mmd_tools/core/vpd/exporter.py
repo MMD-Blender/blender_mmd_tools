@@ -69,9 +69,9 @@ class VPDExporter:
         pose_bones = armObj.pose.bones
         converters = self.__getConverters(pose_bones)
 
-        backup = {b: (b.matrix_basis.copy(), b.bone.select) for b in pose_bones}
+        backup = {b: (b.matrix_basis.copy(), b.select) for b in pose_bones}
         for b in pose_bones:
-            b.bone.select = False
+            b.select = False
 
         matrix_basis_map = {}
         if use_pose_mode:
@@ -99,7 +99,7 @@ class VPDExporter:
                         __export_index(i, os.path.join(folder, m.name + ".vpd"))
         finally:
             for b, bak in backup.items():
-                b.matrix_basis, b.bone.select = bak
+                b.matrix_basis, b.select = bak
 
     def __exportMorphs(self, meshObj):
         if meshObj is None:

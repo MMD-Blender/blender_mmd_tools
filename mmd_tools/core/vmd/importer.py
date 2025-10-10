@@ -10,6 +10,7 @@ import bpy
 from mathutils import Quaternion, Vector
 
 from ... import utils
+from ...compat import action_compat
 from .. import vmd
 from ..camera import MMDCamera
 from ..lamp import MMDLamp
@@ -85,8 +86,10 @@ class BoneConverter:
         if invert:
             self.__mat.invert()
         self.convert_interpolation = _InterpolationHelper(self.__mat).convert
+
     def convert_location(self, location):
         return (self.__mat @ Vector(location)) * self.__scale
+
     # # old implementation
     # def convert_rotation(self, rotation_xyzw):
     #     x, y, z, w = rotation_xyzw
@@ -293,7 +296,7 @@ class VMDImporter:
         kp0.handle_right_type = "FREE"
         kp1.handle_left_type = "FREE"
 
-        d = (kp1.co - kp0.co)
+        d = kp1.co - kp0.co
         dy = d.y
 
         # Reset handles if the value doesn't change much (dy is small enough) or the bezier is linear
@@ -316,14 +319,14 @@ class VMDImporter:
         kp.handle_right = kp.co + Vector((1, 0))
 
     @staticmethod
-    def __keyframe_insert_inner(fcurves: bpy.types.ActionFCurves, path: str, index: int, frame: float, value: float):
+    def __keyframe_insert_inner(fcurves: action_compat.FCurvesCollection, path: str, index: int, frame: float, value: float):
         fcurve = fcurves.find(path, index=index)
         if fcurve is None:
             fcurve = fcurves.new(path, index=index)
         fcurve.keyframe_points.insert(frame, value, options={"FAST"})
 
     @staticmethod
-    def __keyframe_insert(fcurves: bpy.types.ActionFCurves, path: str, frame: float, value: Union[int, float, Vector]):
+    def __keyframe_insert(fcurves: action_compat.FCurvesCollection, path: str, frame: float, value: Union[int, float, Vector]):
         if isinstance(value, (int, float)):
             VMDImporter.__keyframe_insert_inner(fcurves, path, 0, frame, value)
 
@@ -383,7 +386,7 @@ class VMDImporter:
         if not self.__use_nla:
             if target.animation_data.action:
                 return target.animation_data.action
-            target.animation_data.action = action
+            action_compat.assign_action_to_datablock(target, action)
         else:
             frame_current = bpy.context.scene.frame_current
             target_track: bpy.types.NlaTrack = target.animation_data.nla_tracks.new()
@@ -406,12 +409,12 @@ class VMDImporter:
 
         return bpy.data.actions.new(name=action_name)
 
-    def __get_or_create_fcurve(self, action, data_path, index, action_group_name=""):
+    def __get_or_create_fcurve(self, action, data_path, index, action_group_name="", id_type="OBJECT"):
         """Get existing F-Curve or create a new one."""
         fcurve = action.fcurves.find(data_path, index=index)
 
         if fcurve is None:
-            fcurve = action.fcurves.new(data_path=data_path, index=index, action_group=action_group_name)
+            fcurve = action_compat.new_fcurve(action, data_path, index=index, group_name=action_group_name, id_type=id_type)
         # Ensure F-Curve belongs to the correct action group
         elif action_group_name and (fcurve.group is None or fcurve.group.name != action_group_name):
             # Find or create the action group
@@ -617,7 +620,7 @@ class VMDImporter:
             logging.info("(mesh) frames:%5d  name: %s", len(keyFrames), name)
             shapeKey = shapeKeyDict[name]
             data_path = f'key_blocks["{shapeKey.name}"].value'
-            fcurve = self.__get_or_create_fcurve(action, data_path, 0)
+            fcurve = self.__get_or_create_fcurve(action, data_path, 0, id_type="KEY")
 
             original_count = len(fcurve.keyframe_points)
             fcurve.keyframe_points.add(len(keyFrames))

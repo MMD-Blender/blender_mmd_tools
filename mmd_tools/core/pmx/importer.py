@@ -83,7 +83,7 @@ class PMXImporter:
     def __createObjects(self):
         """Create main objects and link them to scene."""
         pmxModel = self.__model
-        obj_name = self.__safe_name(bpy.path.display_name(pmxModel.filepath), max_length=54)
+        obj_name = self.__safe_name(bpy.path.display_name_from_filepath(pmxModel.filepath), max_length=54)
         self.__rig = Model.create(pmxModel.name, pmxModel.name_e, self.__scale, obj_name)
         root = self.__rig.rootObject()
         mmd_root: MMDRoot = root.mmd_root
@@ -704,6 +704,8 @@ class PMXImporter:
 
         for morph in (x for x in self.__model.morphs if isinstance(x, pmx.VertexMorph)):
             shapeKey = self.__meshObj.shape_key_add(name=morph.name)
+            shapeKey.value = 0.0
+
             vtx_morph = mmd_root.vertex_morphs.add()
             vtx_morph.name = morph.name
             vtx_morph.name_e = morph.name_e
@@ -847,32 +849,16 @@ class PMXImporter:
         armModifier.show_render = armModifier.show_viewport = len(meshObj.data.vertices) > 0
 
     def __assignCustomNormals(self):
-        # Replaced problematic mesh.normals_split_custom_set() and normals_split_custom_set_from_vertices()
-        # with mesh.attributes.new("custom_normal", ...) and custom_normal_attr.data.foreach_set("vector", ...)
-        # to resolve Blender core bugs that corrupt custom normal data.
+        # NOTE: This uses the older Blender API instead of the newer mesh.attributes approach
+        # because it requires "INT16_2D" format for proper functionality.
+        # Manual calculation of normals in INT16_2D format is overly complex.
+        # The newer implementation was removed in commit [ad47b9a] due to these issues.
+        # The current implementation uses normals_split_custom_set() with 179-degree sharp edge
+        # marking as a workaround. While not ideal, this remains the most practical solution
+        # for preserving custom normals in most cases.
 
         mesh: bpy.types.Mesh = self.__meshObj.data
         logging.info("Setting custom normals...")
-
-        if self.__vertex_map:
-            verts, faces = self.__model.vertices, self.__model.faces
-            custom_normals = [(Vector(verts[i].normal).xzy).normalized() for f in faces for i in f]
-        else:
-            custom_normals = [(Vector(v.normal).xzy).normalized() for v in self.__model.vertices]
-            custom_normals = [custom_normals[loop.vertex_index] for loop in mesh.loops]
-
-        custom_normal_attr = mesh.attributes.get("custom_normal")
-        if not custom_normal_attr:
-            custom_normal_attr = mesh.attributes.new("custom_normal", "FLOAT_VECTOR", "CORNER")
-        flat_normals = [comp for vec in custom_normals for comp in vec]
-        custom_normal_attr.data.foreach_set("vector", flat_normals)
-
-        logging.info("   - Done!!")
-
-    def __assignCustomNormals_legacy(self):
-        mesh: bpy.types.Mesh = self.__meshObj.data
-        logging.info("Setting custom normals...")
-
         # CRITICAL: Mark sharp edges (based on angle) BEFORE setting custom normals
         # For mesh.normals_split_custom_set() to work as expected, two conditions must be met:
         # 1. The normal vectors must be non-zero (mentioned in Blender documentation)
@@ -940,6 +926,7 @@ class PMXImporter:
         self.__apply_bone_fixed_axis = args.get("apply_bone_fixed_axis", False)
         self.__bone_disp_mode = args.get("bone_disp_mode", "OCTAHEDRAL")
         self.__translator = args.get("translator")
+        self.__add_rigid_body_world = args.get("add_rigid_body_world", True)
 
         logging.info("****************************************")
         logging.info(" mmd_tools.import_pmx module")
@@ -962,10 +949,7 @@ class PMXImporter:
             self.__importMaterials()
             self.__importFaces()
             self.__meshObj.data.update()
-            if bpy.app.version < (6, 0):
-                self.__assignCustomNormals_legacy()
-            else:
-                self.__assignCustomNormals()
+            self.__assignCustomNormals()
             self.__storeVerticesSDEF()
 
         if "ARMATURE" in types:
@@ -1004,6 +988,10 @@ class PMXImporter:
             finally:
                 if rigidbody_world and original_enabled is not None:
                     rigidbody_world.enabled = original_enabled
+
+                # Remove the automatically created rigid body world if it was not intended
+                if not self.__add_rigid_body_world and rigidbody_world is None:
+                    bpy.ops.rigidbody.world_remove()
 
         if "DISPLAY" in types:
             self.__importDisplayFrames()

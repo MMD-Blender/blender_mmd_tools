@@ -104,8 +104,8 @@ class MMDBoneHandler(MMDDataHandlerABC):
         cls.prop_restorable(prop_row, mmd_translation_element, "name", pose_bone.name, index)
         cls.prop_restorable(prop_row, mmd_translation_element, "name_j", pose_bone.mmd_bone.name_j, index)
         cls.prop_restorable(prop_row, mmd_translation_element, "name_e", pose_bone.mmd_bone.name_e, index)
-        row.prop(pose_bone.bone, "select", text="", emboss=False, icon_only=True, icon="RESTRICT_SELECT_OFF" if pose_bone.bone.select else "RESTRICT_SELECT_ON")
-        row.prop(pose_bone.bone, "hide", text="", emboss=False, icon_only=True, icon="HIDE_ON" if pose_bone.bone.hide else "HIDE_OFF")
+        row.prop(pose_bone.bone, "select", text="", emboss=False, icon_only=True, icon="RESTRICT_SELECT_OFF" if pose_bone.select else "RESTRICT_SELECT_ON")
+        row.prop(pose_bone.bone, "hide", text="", emboss=False, icon_only=True)
 
     @classmethod
     def collect_data(cls, mmd_translation: "MMDTranslation"):
@@ -137,7 +137,7 @@ class MMDBoneHandler(MMDDataHandlerABC):
 
             pose_bone: bpy.types.PoseBone = mmd_translation_element.object.path_resolve(mmd_translation_element.data_path)
 
-            if cls.check_data_visible(filter_selected, filter_visible, pose_bone.bone.select, pose_bone.bone.hide):
+            if cls.check_data_visible(filter_selected, filter_visible, pose_bone.select, pose_bone.bone.hide):
                 continue
 
             if check_blank_name(mmd_translation_element.name_j, mmd_translation_element.name_e):
@@ -258,7 +258,7 @@ class MMDMaterialHandler(MMDDataHandlerABC):
         cls.prop_restorable(prop_row, mmd_translation_element, "name_j", material.mmd_material.name_j, index)
         cls.prop_restorable(prop_row, mmd_translation_element, "name_e", material.mmd_material.name_e, index)
         row.prop(mesh_object, "select", text="", emboss=False, icon_only=True, icon="RESTRICT_SELECT_OFF" if mesh_object.select_get() else "RESTRICT_SELECT_ON")
-        row.prop(mesh_object, "hide", text="", emboss=False, icon_only=True, icon="HIDE_ON" if mesh_object.hide_get() else "HIDE_OFF")
+        row.prop(mesh_object, "hide", text="", emboss=False, icon_only=True)
 
     MATERIAL_DATA_PATH_EXTRACT = re.compile(r"data\.materials\[(?P<index>\d*)\]")
 
@@ -347,7 +347,7 @@ class MMDDisplayHandler(MMDDataHandlerABC):
         cls.prop_disabled(prop_row, mmd_translation_element, "name")
         cls.prop_disabled(prop_row, mmd_translation_element, "name_e")
         row.prop(mmd_translation_element.object, "select", text="", emboss=False, icon_only=True, icon="RESTRICT_SELECT_OFF" if mmd_translation_element.object.select_get() else "RESTRICT_SELECT_ON")
-        row.prop(mmd_translation_element.object, "hide", text="", emboss=False, icon_only=True, icon="HIDE_ON" if mmd_translation_element.object.hide_get() else "HIDE_OFF")
+        row.prop(mmd_translation_element.object, "hide", text="", emboss=False, icon_only=True)
 
     DISPLAY_DATA_PATH_EXTRACT = re.compile(r"data\.collections\[(?P<index>\d*)\]")
 
@@ -429,7 +429,7 @@ class MMDPhysicsHandler(MMDDataHandlerABC):
         cls.prop_restorable(prop_row, mmd_translation_element, "name_j", mmd_object.name_j, index)
         cls.prop_restorable(prop_row, mmd_translation_element, "name_e", mmd_object.name_e, index)
         row.prop(obj, "select", text="", emboss=False, icon_only=True, icon="RESTRICT_SELECT_OFF" if obj.select_get() else "RESTRICT_SELECT_ON")
-        row.prop(obj, "hide", text="", emboss=False, icon_only=True, icon="HIDE_ON" if obj.hide_get() else "HIDE_OFF")
+        row.prop(obj, "hide", text="", emboss=False, icon_only=True)
 
     @classmethod
     def collect_data(cls, mmd_translation: "MMDTranslation"):
@@ -532,7 +532,7 @@ class MMDInfoHandler(MMDDataHandlerABC):
         cls.prop_disabled(prop_row, mmd_translation_element, "name")
         cls.prop_disabled(prop_row, mmd_translation_element, "name_e")
         row.prop(info_object, "select", text="", emboss=False, icon_only=True, icon="RESTRICT_SELECT_OFF" if info_object.select_get() else "RESTRICT_SELECT_ON")
-        row.prop(info_object, "hide", text="", emboss=False, icon_only=True, icon="HIDE_ON" if info_object.hide_get() else "HIDE_OFF")
+        row.prop(info_object, "hide", text="", emboss=False, icon_only=True)
 
     @classmethod
     def collect_data(cls, mmd_translation: "MMDTranslation"):

@@ -6,6 +6,7 @@ import logging
 import bpy
 from mathutils import Matrix
 
+from ...compat import action_compat
 from .. import vpd
 from ..vmd import importer
 
@@ -46,7 +47,7 @@ class VPDImporter:
         # Check if an action exists
         if armObj.animation_data.action is None:
             action = bpy.data.actions.new(name="PoseLib")
-            armObj.animation_data.action = action
+            action_compat.assign_action_to_datablock(armObj, action)
         else:
             action = armObj.animation_data.action
 
@@ -106,7 +107,7 @@ class VPDImporter:
         # Check if an action exists or create new one
         if meshObj.data.shape_keys.animation_data.action is None:
             action = bpy.data.actions.new(name=meshObj.name + "_ShapeKeys")
-            meshObj.data.shape_keys.animation_data.action = action
+            action_compat.assign_action_to_datablock(meshObj.data.shape_keys, action)
         else:
             action = meshObj.data.shape_keys.animation_data.action
 

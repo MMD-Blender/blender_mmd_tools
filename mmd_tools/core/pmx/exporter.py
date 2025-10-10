@@ -231,7 +231,7 @@ class __PmxExporter:
             logging.warning("  The texture file does not exist: %s", t.path)
         return len(self.__model.textures) - 1
 
-    def __copy_textures(self, output_dir, base_folder="", copy_textures=False):
+    def __copy_textures(self, output_dir, base_folder="", copy_textures_mode="NONE"):
         # Step 0: Store original paths for Step 2
         original_paths = {texture: texture.path for texture in self.__model.textures}
 
@@ -264,13 +264,16 @@ class __PmxExporter:
             texture.path = final_relative_path
 
         # Step 2: Copy textures
-        if copy_textures:
+        if copy_textures_mode in {"SKIP_EXISTING", "OVERWRITE"}:
             for texture in self.__model.textures:
                 src_path = original_paths[texture]
                 dest_relative_path = texture.path
-
                 # Reconstruct the absolute destination path from the PMX's new relative path
                 full_dest_path = os.path.abspath(os.path.join(output_dir, dest_relative_path))
+
+                if os.path.exists(full_dest_path) and copy_textures_mode == "SKIP_EXISTING":
+                    logging.info("Skipping copy for existing texture: '%s'", full_dest_path)
+                    continue
 
                 os.makedirs(os.path.dirname(full_dest_path), exist_ok=True)
 
@@ -1369,9 +1372,14 @@ class __PmxExporter:
         return _Mesh(material_faces, shape_key_names, material_names)
 
     def __loadMeshData(self, meshObj, bone_map):
+        # Check if object is excluded from view layer
+        if meshObj.name not in bpy.context.view_layer.objects:
+            logging.info("Skipping mesh excluded from view layer: %s", meshObj.name)
+            return _Mesh({}, [], {})
+
         # Check if mesh has valid geometry
         if not meshObj.data or len(meshObj.data.vertices) == 0:
-            logging.warning("Skipping empty mesh: %s", meshObj.name)
+            logging.info("Skipping empty mesh: %s", meshObj.name)
             return _Mesh({}, [], {})
 
         show_only_shape_key = meshObj.show_only_shape_key
@@ -1482,8 +1490,7 @@ class __PmxExporter:
         output_dir = os.path.dirname(filepath)
         import_folder = root.get("import_folder", "") if root else ""
         base_folder = FnContext.get_addon_preferences_attribute(FnContext.ensure_context(), "base_texture_folder", "")
-        copy_textures_enabled = args.get("copy_textures", False)
-        self.__copy_textures(output_dir, import_folder or base_folder, copy_textures=copy_textures_enabled)
+        self.__copy_textures(output_dir, import_folder or base_folder, copy_textures_mode=args.get("copy_textures_mode", "NONE"))
 
         # Output Changes in Vertex and Face Count
         original_vertex_count = 0

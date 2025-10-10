@@ -62,7 +62,7 @@ class CleanRiggingObjects(bpy.types.Operator):
 class BuildRig(bpy.types.Operator):
     bl_idname = "mmd_tools.build_rig"
     bl_label = "Build Rig"
-    bl_description = "Translate physics of selected object into format usable by Blender"
+    bl_description = "Translate physics of selected object into format usable by Blender\n\nWarning: May cause crashes and performance issues. Consider using mmdbridge instead for better stability and accurate physics simulation."
     bl_options = {"REGISTER", "UNDO", "INTERNAL"}
 
     non_collision_distance_scale: bpy.props.FloatProperty(

@@ -191,7 +191,6 @@ class TestModelEdit(unittest.TestCase):
             bpy.ops.mmd_tools.export_pmx(
                 filepath=export_path,
                 scale=1,
-                copy_textures=True,
                 sort_materials=False,
                 log_level="ERROR",
             )
@@ -269,7 +268,7 @@ class TestModelEdit(unittest.TestCase):
 
                 # Deselect all bones
                 for bone in armature.pose.bones:
-                    bone.bone.select = False
+                    bone.select = False
 
                 # Directly find and use the '頭' bone
                 head_bone = None
@@ -282,7 +281,7 @@ class TestModelEdit(unittest.TestCase):
                     self.fail(f"Could not find '頭' bone in model {model_root.name}")
 
                 print(f"Using bone '{head_bone.name}' for model separation in {model_root.name}")
-                head_bone.bone.select = True
+                head_bone.select = True
                 armature.data.bones.active = head_bone.bone
 
                 # Execute separation
@@ -385,7 +384,7 @@ class TestModelEdit(unittest.TestCase):
 
             # Deselect all bones
             for bone in first_model_arm.pose.bones:
-                bone.bone.select = False
+                bone.select = False
 
             # Find and select the '首' bone in the first model
             neck_bone = None
@@ -398,7 +397,7 @@ class TestModelEdit(unittest.TestCase):
                 self.fail("Could not find '首' bone in the first model's armature")
 
             # Select the neck bone and make it active
-            neck_bone.bone.select = True
+            neck_bone.select = True
             first_model_arm.data.bones.active = neck_bone.bone
 
             # Return to object mode
@@ -414,7 +413,7 @@ class TestModelEdit(unittest.TestCase):
 
             # Deselect all bones
             for bone in second_model_arm_with_head.pose.bones:
-                bone.bone.select = False
+                bone.select = False
 
             # Find and select the '頭' bone in the second model
             head_bone = None
@@ -427,7 +426,7 @@ class TestModelEdit(unittest.TestCase):
                 self.fail("Could not find '頭' bone in the second model's armature")
 
             # Select the head bone
-            head_bone.bone.select = True
+            head_bone.select = True
             second_model_arm_with_head.data.bones.active = head_bone.bone
 
             # Return to object mode
@@ -464,11 +463,11 @@ class TestModelEdit(unittest.TestCase):
 
             # Select the bones in the armatures
             for bone in first_model_arm.pose.bones:
-                bone.bone.select = False
-            neck_bone.bone.select = True
+                bone.select = False
+            neck_bone.select = True
             for bone in second_model_arm_with_head.pose.bones:
-                bone.bone.select = False
-            head_bone.bone.select = True
+                bone.select = False
+            head_bone.select = True
 
             selected_bones = context.selected_pose_bones
             print(f"Selected {len(selected_bones)} bones:")
@@ -519,7 +518,6 @@ class TestModelEdit(unittest.TestCase):
             bpy.ops.mmd_tools.export_pmx(
                 filepath=output_pmx,
                 scale=1,
-                copy_textures=True,
                 sort_materials=False,
                 log_level="ERROR",
             )

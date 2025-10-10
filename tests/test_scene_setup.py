@@ -161,60 +161,51 @@ class TestSceneSetup(unittest.TestCase):
         """Test that setupFrameRanges preserves original use_frame_range states"""
         bpy.context.scene.frame_current = 25
         bpy.context.scene.frame_start = 10
+        bpy.context.scene.frame_end = 50
 
-        # Create actions with different use_frame_range states
-        action1 = bpy.data.actions.new(name="Action1")
-        action1.use_frame_range = True
-        action1.frame_range = (1.0, 100.0)
+        print(f"BEFORE: frame_start={bpy.context.scene.frame_start}, frame_end={bpy.context.scene.frame_end}")
 
-        action2 = bpy.data.actions.new(name="Action2")
-        action2.frame_range = (75.0, 200.0)  # This automatically sets use_frame_range = True
+        def create_action(name, frame_range, use_frame_range):
+            """Create non-orphaned action"""
+            action = bpy.data.actions.new(name=name)
+            if frame_range:
+                action.frame_range = frame_range
+            action.use_frame_range = use_frame_range
 
-        action3 = bpy.data.actions.new(name="Action3")
-        action3.use_frame_range = False  # Keep this False (empty action)
+            bpy.ops.mesh.primitive_cube_add()
+            obj = bpy.context.active_object
+            if not obj.animation_data:
+                obj.animation_data_create()
+            obj.animation_data.action = action
+            return action
 
-        # Record BEFORE states
-        before_action1_state = action1.use_frame_range
-        before_action2_state = action2.use_frame_range
-        before_action3_state = action3.use_frame_range
+        # Create non-orphaned actions
+        action1 = create_action("Action1", (1.0, 100.0), True)
+        action2 = create_action("Action2", (75.0, 200.0), True)
+        action3 = create_action("Action3", None, False)
 
-        print("=== BEFORE setupFrameRanges ===")
-        print(f"action1.use_frame_range: {before_action1_state}")
-        print(f"action2.use_frame_range: {before_action2_state}")
-        print(f"action3.use_frame_range: {before_action3_state}")
+        # Verify actions have users
+        self.assertGreater(action1.users, 0)
+        self.assertGreater(action2.users, 0)
+        self.assertGreater(action3.users, 0)
+
+        # Record states before
+        before = [a.use_frame_range for a in (action1, action2, action3)]
 
         # Call setupFrameRanges
         auto_scene_setup.setupFrameRanges()
 
-        # Record AFTER states
-        after_action1_state = action1.use_frame_range
-        after_action2_state = action2.use_frame_range
-        after_action3_state = action3.use_frame_range
+        # Record states after
+        after = [a.use_frame_range for a in (action1, action2, action3)]
 
-        print("=== AFTER setupFrameRanges ===")
-        print(f"action1.use_frame_range: {after_action1_state}")
-        print(f"action2.use_frame_range: {after_action2_state}")
-        print(f"action3.use_frame_range: {after_action3_state}")
+        # Verify states restored
+        self.assertEqual(before, after, "use_frame_range states should be restored")
 
-        # Verify that setupFrameRanges RESTORED original states
-        self.assertEqual(after_action1_state, before_action1_state, "action1 use_frame_range state should be restored")
-        self.assertEqual(after_action2_state, before_action2_state, "action2 use_frame_range state should be restored")
-        self.assertEqual(after_action3_state, before_action3_state, "action3 use_frame_range state should be restored")
+        print(f"AFTER: frame_start={bpy.context.scene.frame_start}, frame_end={bpy.context.scene.frame_end}")
 
-        # Verify frame range calculation worked
-        # Expected: min of all ranges, max of all ranges
-        final_start = bpy.context.scene.frame_start
-        final_end = bpy.context.scene.frame_end
-
-        self.assertIsInstance(final_start, int)
-        self.assertIsInstance(final_end, int)
-        self.assertLessEqual(final_start, final_end)
-
-        # More specific verification based on expected behavior
-        # base = min(25, 10) = 10
-        # This should include ranges from all actions in both their states
-        self.assertLessEqual(final_start, 1)  # Should include action1's range
-        self.assertGreaterEqual(final_end, 200)  # Should include action2's range
+        # Verify frame range calculation
+        self.assertIn(bpy.context.scene.frame_start, (0, 1))
+        self.assertEqual(bpy.context.scene.frame_end, 200)
 
     def test_setupFrameRanges_toggle_mechanism_detailed(self):
         """Test the detailed toggle mechanism of setupFrameRanges"""

@@ -158,10 +158,10 @@ class TestDisplaySystem(unittest.TestCase):
         bpy.context.view_layer.objects.active = self.armature_object
         bpy.ops.object.mode_set(mode="POSE")
 
-        if bone_name in self.armature_object.data.bones:
-            bone = self.armature_object.data.bones[bone_name]
-            bone.select = True
-            self.armature_object.data.bones.active = bone
+        if bone_name in self.armature_object.pose.bones:
+            pose_bone = self.armature_object.pose.bones[bone_name]
+            pose_bone.select = True
+            self.armature_object.data.bones.active = self.armature_object.data.bones[bone_name]
 
         # Keep armature active and stay in pose mode for operation
         # Don't switch back to root object
@@ -678,5 +678,5 @@ class TestDisplaySystem(unittest.TestCase):
 if __name__ == "__main__":
     import sys
 
-    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
+    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else [])
     unittest.main(verbosity=1, exit=True)

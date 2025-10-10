@@ -13,6 +13,8 @@ from . import patch_library_overridable
 from .morph import BoneMorph, GroupMorph, MaterialMorph, UVMorph, VertexMorph
 from .translations import MMDTranslation
 
+IS_BLENDER_50_UP = bpy.app.version >= (5, 0)
+
 
 def __driver_variables(constraint: bpy.types.Constraint, path: str, index=-1):
     d = constraint.driver_add(path, index)
@@ -540,6 +542,14 @@ class MMDRoot(bpy.types.PropertyGroup):
             prop.hide_viewport = value
 
     @staticmethod
+    def __get_pose_bone_select(prop: bpy.types.PoseBone) -> bool:
+        return prop.bone.select
+
+    @staticmethod
+    def __set_pose_bone_select(prop: bpy.types.PoseBone, value: bool) -> None:
+        prop.bone.select = value
+
+    @staticmethod
     def register():
         bpy.types.Object.mmd_type = patch_library_overridable(
             bpy.props.EnumProperty(
@@ -589,9 +599,26 @@ class MMDRoot(bpy.types.PropertyGroup):
             ),
         )
 
+        if not IS_BLENDER_50_UP:
+            bpy.types.PoseBone.select = patch_library_overridable(
+                bpy.props.BoolProperty(
+                    name="Select",
+                    description="Pose bone selection state (compatibility layer for Blender 4.x, forwards to bone.select)",
+                    get=MMDRoot.__get_pose_bone_select,
+                    set=MMDRoot.__set_pose_bone_select,
+                    options={
+                        "SKIP_SAVE",
+                        "ANIMATABLE",
+                        "LIBRARY_EDITABLE",
+                    },
+                ),
+            )
+
     @staticmethod
     def unregister():
         del bpy.types.Object.hide
         del bpy.types.Object.select
         del bpy.types.Object.mmd_root
         del bpy.types.Object.mmd_type
+        if not IS_BLENDER_50_UP:
+            del bpy.types.PoseBone.select

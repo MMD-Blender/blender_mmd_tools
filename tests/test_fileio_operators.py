@@ -15,7 +15,6 @@ SAMPLES_DIR = os.path.join(os.path.dirname(TESTS_DIR), "samples")
 
 
 class TestFileIoOperators(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         """Clean up output from previous tests"""

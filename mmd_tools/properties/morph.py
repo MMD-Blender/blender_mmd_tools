@@ -124,10 +124,10 @@ def _bone_morph_data_set_bone(prop: "BoneMorphData", value: str):
         return
 
     if value not in arm.pose.bones.keys():
-        prop["bone_id"] = -1
+        prop.bone_id = -1
         return
     pose_bone = arm.pose.bones[value]
-    prop["bone_id"] = FnBone.get_or_assign_bone_id(pose_bone)
+    prop.bone_id = FnBone.get_or_assign_bone_id(pose_bone)
 
 
 def _bone_morph_data_update_location_or_rotation(prop: "BoneMorphData", _context):
@@ -142,7 +142,6 @@ def _bone_morph_data_update_location_or_rotation(prop: "BoneMorphData", _context
 
 
 class BoneMorphData(bpy.types.PropertyGroup):
-
     bone: bpy.props.StringProperty(
         name="Bone",
         description="Target bone",
@@ -189,35 +188,35 @@ class BoneMorph(_MorphBase, bpy.types.PropertyGroup):
 
 
 def _material_morph_data_get_material(prop: "MaterialMorphData"):
-    mat_p = prop.get("material_data", None)
-    if mat_p is not None:
-        return mat_p.name
+    mat_data = prop.get("material_data", None)
+    if mat_data is not None:
+        return mat_data.name
     return ""
 
 
 def _material_morph_data_set_material(prop: "MaterialMorphData", value: str):
     if value not in bpy.data.materials:
-        prop["material_data"] = None
-        prop["material_id"] = -1
+        prop.material_data = None
+        prop.material_id = -1
     else:
         mat = bpy.data.materials[value]
         fnMat = FnMaterial(mat)
-        prop["material_data"] = mat
-        prop["material_id"] = fnMat.material_id
+        prop.material_data = mat
+        prop.material_id = fnMat.material_id
 
 
 def _material_morph_data_set_related_mesh(prop: "MaterialMorphData", value: str):
     mesh = FnModel.find_mesh_object_by_name(prop.id_data, value)
     if mesh is not None:
-        prop["related_mesh_data"] = mesh.data
+        prop.related_mesh_data = mesh.data
     else:
-        prop["related_mesh_data"] = None
+        prop.related_mesh_data = None
 
 
 def _material_morph_data_get_related_mesh(prop):
-    mesh_p = prop.get("related_mesh_data", None)
-    if mesh_p is not None:
-        return mesh_p.name
+    mesh_data = prop.get("related_mesh_data", None)
+    if mesh_data is not None:
+        return mesh_data.name
     return ""
 
 
@@ -226,16 +225,15 @@ def _material_morph_data_update_modifiable_values(prop: "MaterialMorphData", _co
         return
     from ..core.shader import _MaterialMorph
 
-    mat = prop["material_data"]
-    if mat is not None:
-        _MaterialMorph.update_morph_inputs(mat, prop)
+    mat_data = prop.get("material_data", None)
+    if mat_data is not None:
+        _MaterialMorph.update_morph_inputs(mat_data, prop)
     else:
-        for mat in FnModel(prop.id_data).materials():
-            _MaterialMorph.update_morph_inputs(mat, prop)
+        for mat_data in FnModel(prop.id_data).materials():
+            _MaterialMorph.update_morph_inputs(mat_data, prop)
 
 
 class MaterialMorphData(bpy.types.PropertyGroup):
-
     related_mesh: bpy.props.StringProperty(
         name="Related Mesh",
         description="Stores a reference to the mesh where this morph data belongs to",

@@ -93,22 +93,11 @@ class TestBoneOrder(unittest.TestCase):
 
     def _fix_bone_order_initial(self):
         """Fix bone order after creating bones to ensure clean test state"""
-        print("=== Initial bone structure before fix ===")
-        for bone in self.armature_object.pose.bones:
-            if not getattr(bone, "is_mmd_shadow_bone", False):
-                print(f"Bone: {bone.name}, ID: {bone.mmd_bone.bone_id}")
-
         # Execute fix bone order operator to ensure clean state
         bpy.context.view_layer.objects.active = self.root_object
         result = bpy.ops.mmd_tools.fix_bone_order()
 
-        print(f"Fix bone order result: {result}")
         self.assertEqual(result, {"FINISHED"}, "Fix bone order should succeed in setup")
-
-        print("=== Bone structure after fix ===")
-        for bone in self.armature_object.pose.bones:
-            if not getattr(bone, "is_mmd_shadow_bone", False):
-                print(f"Bone: {bone.name}, ID: {bone.mmd_bone.bone_id}")
 
         # Verify bone IDs are now sequential
         valid_bones = [b for b in self.armature_object.pose.bones if not getattr(b, "is_mmd_shadow_bone", False) and b.mmd_bone.bone_id >= 0]
