@@ -1279,12 +1279,12 @@ msgstr ""
 msgid "Import model file(s) (.pmd, .pmx)"
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_model.add_rigid_body_world
-msgid "Add Rigid Body World"
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.enable_rigid_body_world
+msgid "Enable Rigid Body World"
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_model.add_rigid_body_world
-msgid "Automatically add Rigid Body World to the scene when importing physics."
+#. :src: bpy.types.MMD_TOOLS_OT_import_model.enable_rigid_body_world
+msgid "Automatically enable Rigid Body World to the scene when importing physics."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.apply_bone_fixed_axis

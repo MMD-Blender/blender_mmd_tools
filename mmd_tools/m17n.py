@@ -2152,17 +2152,17 @@ translations_tuple = (
         ("zh_HANS", "导入模型文件 (.pmd, .pmx)", (False, ())),
     ),
     (
-        ("*", "Add Rigid Body World"),
-        (("bpy.types.MMD_TOOLS_OT_import_model.add_rigid_body_world",), ()),
+        ("*", "Enable Rigid Body World"),
+        (("bpy.types.MMD_TOOLS_OT_import_model.enable_rigid_body_world",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "更新刚体世界", (True, ())),
     ),
     (
         (
             "*",
-            "Automatically add Rigid Body World to the scene when importing physics.",
+            "Automatically enable Rigid Body World to the scene when importing physics.",
         ),
-        (("bpy.types.MMD_TOOLS_OT_import_model.add_rigid_body_world",), ()),
+        (("bpy.types.MMD_TOOLS_OT_import_model.enable_rigid_body_world",), ()),
         ("ja_JP", "", (False, ())),
         ("zh_HANS", "", (False, ())),
     ),

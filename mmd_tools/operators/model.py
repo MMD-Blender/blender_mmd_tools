@@ -83,6 +83,9 @@ class BuildRig(bpy.types.Operator):
     )
 
     def execute(self, context):
+        if context.scene.rigidbody_world:
+            context.scene.rigidbody_world.enabled = True
+
         root_object = FnModel.find_root_object(context.active_object)
 
         with FnContext.temp_override_active_layer_collection(context, root_object):

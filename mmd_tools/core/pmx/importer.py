@@ -926,7 +926,7 @@ class PMXImporter:
         self.__apply_bone_fixed_axis = args.get("apply_bone_fixed_axis", False)
         self.__bone_disp_mode = args.get("bone_disp_mode", "OCTAHEDRAL")
         self.__translator = args.get("translator")
-        self.__add_rigid_body_world = args.get("add_rigid_body_world", True)
+        self.__enable_rigid_body_world = args.get("enable_rigid_body_world", True)
 
         logging.info("****************************************")
         logging.info(" mmd_tools.import_pmx module")
@@ -989,9 +989,9 @@ class PMXImporter:
                 if rigidbody_world and original_enabled is not None:
                     rigidbody_world.enabled = original_enabled
 
-                # Remove the automatically created rigid body world if it was not intended
-                if not self.__add_rigid_body_world and rigidbody_world is None:
-                    bpy.ops.rigidbody.world_remove()
+                # Disable the automatically enabled rigid body world if it was not intended
+                if not self.__enable_rigid_body_world and not original_enabled and bpy.context.scene.rigidbody_world is not None:
+                    bpy.context.scene.rigidbody_world.enabled = False
 
         if "DISPLAY" in types:
             self.__importDisplayFrames()

@@ -542,13 +542,26 @@ class FnMaterial:
             node_uv.location = node_shader.location + Vector((-5 * 210, -2.5 * 220))
             node_uv.node_tree = self.__get_shader_uv()
 
-        if not (node_shader.outputs["Shader"].is_linked or node_shader.outputs["Color"].is_linked or node_shader.outputs["Alpha"].is_linked):
+        shader_out_socket = node_shader.outputs.get("Shader")
+        color_out_socket = node_shader.outputs.get("Color")
+        alpha_out_socket = node_shader.outputs.get("Alpha")
+        shader_linked = shader_out_socket and shader_out_socket.is_linked
+        color_linked = color_out_socket and color_out_socket.is_linked
+        alpha_linked = alpha_out_socket and alpha_out_socket.is_linked
+        if not (shader_linked or color_linked or alpha_linked):
             node_output = next((n for n in nodes if isinstance(n, bpy.types.ShaderNodeOutputMaterial) and n.is_active_output), None)
             if node_output is None:
                 node_output: bpy.types.ShaderNodeOutputMaterial = nodes.new("ShaderNodeOutputMaterial")
                 node_output.is_active_output = True
             node_output.location = node_shader.location + Vector((400, 0))
-            links.new(node_shader.outputs["Shader"], node_output.inputs["Surface"])
+            if shader_out_socket:
+                links.new(shader_out_socket, node_output.inputs["Surface"])
+            elif color_out_socket:
+                links.new(color_out_socket, node_output.inputs["Surface"])
+            elif alpha_out_socket:
+                links.new(alpha_out_socket, node_output.inputs["Surface"])
+            else:
+                raise RuntimeError(f"Material '{mat.name}': The 'mmd_shader' node group is invalid or corrupted. It is missing all expected outputs ('Shader', 'Color', and 'Alpha'). Unable to link material output.")
 
         for name_id in ("Base", "Toon", "Sphere"):
             texture = self.__get_texture_node(f"mmd_{name_id.lower()}_tex")
