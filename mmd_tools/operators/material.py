@@ -236,8 +236,39 @@ class OpenTexture(Operator, _OpenTextureBase):
         return {"FINISHED"}
 
 
+class SetupTexture(Operator):
+    bl_idname = "mmd_tools.material_setup_texture"
+    bl_label = "Setup Texture"
+    bl_description = "Add main texture nodes for all materials. Enables copy & pasting texture paths in MMD Texture.\nWarning: Materials will turn pink. Use Texture Cleanup after assigning textures."
+    bl_options = {"REGISTER", "UNDO"}
+
+    @classmethod
+    def poll(cls, context):
+        return any(x.type == "MESH" for x in context.selected_objects)
+
+    def execute(self, context):
+        count = 0
+        for obj in context.selected_objects:
+            for i in obj.material_slots:
+                # usual checks
+                if not i.material:
+                    continue
+                if not i.material.use_nodes:
+                    i.material.use_nodes = True
+
+                # empty texture if one doesn't exist
+                mat = i.material
+                fnMat = FnMaterial(mat)
+                if fnMat.get_texture() is None:
+                    fnMat.create_texture("")
+                    count += 1
+        if count > 0:
+            self.report({"INFO"}, f"Added {count} empty texture nodes.")
+        return {"FINISHED"}
+
+
 class RemoveTexture(Operator):
-    """Create a texture for mmd model material."""
+    """Remove a texture for mmd model material."""
 
     bl_idname = "mmd_tools.material_remove_texture"
     bl_label = "Remove Texture"
@@ -248,6 +279,39 @@ class RemoveTexture(Operator):
         mat = context.active_object.active_material
         fnMat = FnMaterial(mat)
         fnMat.remove_texture()
+        return {"FINISHED"}
+
+
+class CleanupTexture(Operator):
+    bl_idname = "mmd_tools.material_cleanup_texture"
+    bl_label = "Cleanup Texture"
+    bl_description = "Remove unused texture nodes."
+    bl_options = {"REGISTER", "UNDO"}
+
+    @classmethod
+    def poll(cls, context):
+        return any(x.type == "MESH" for x in context.selected_objects)
+
+    def execute(self, context):
+        count = 0
+        for obj in context.selected_objects:
+            # usual checks
+            for i in obj.material_slots:
+                if not i.material:
+                    continue
+                if not i.material.use_nodes:
+                    i.material.use_nodes = True
+
+                # remove texture if it's empty
+                mat = i.material
+                fnMat = FnMaterial(mat)
+                tex = fnMat.get_texture()
+                if tex is not None and tex.image.filepath == "":
+                    fnMat.remove_texture()
+                    count += 1
+
+        if count > 0:
+            self.report({"INFO"}, f"Removed {count} texture nodes.")
         return {"FINISHED"}
 
 
