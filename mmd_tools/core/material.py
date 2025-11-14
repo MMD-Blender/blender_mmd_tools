@@ -455,8 +455,8 @@ class FnMaterial:
             if tex_node:
                 tex_node.name = "mmd_base_tex"
             else:
-                # Take the Base Color from BSDF if there's no texture
-                bsdf_node = next((n for n in m.node_tree.nodes if n.type.startswith("BSDF_")), None)
+                # Take the Base Color from BSDF or Emission if there's no texture
+                bsdf_node = next((n for n in m.node_tree.nodes if n.type == "EMISSION" or n.type.startswith("BSDF_")), None)
                 if bsdf_node:
                     base_color_input = bsdf_node.inputs.get("Base Color") or bsdf_node.inputs.get("Color")
                     if base_color_input:
@@ -490,7 +490,7 @@ class FnMaterial:
 
         # delete bsdf node if it's there
         if m.use_nodes:
-            nodes_to_remove = [n for n in m.node_tree.nodes if n.type == "BSDF_PRINCIPLED" or n.type.startswith("BSDF_")]
+            nodes_to_remove = [n for n in m.node_tree.nodes if n.type == "BSDF_PRINCIPLED" or n.type == "EMISSION" or n.type.startswith("BSDF_")]
             for n in nodes_to_remove:
                 m.node_tree.nodes.remove(n)
 
