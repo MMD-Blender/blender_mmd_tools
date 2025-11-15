@@ -286,7 +286,7 @@ class FnModel:
         """
         # Validate new_bone_id is non-negative
         if new_bone_id < 0:
-            logging.warning(f"Attempted to set negative bone_id ({new_bone_id}) for bone '{bone.name}'. Using 0 instead.")
+            logging.warning("Attempted to set negative bone_id (%s) for bone '%s'. Using 0 instead.", new_bone_id, bone.name)
             new_bone_id = 0
 
         # Check if new_bone_id is already in use
@@ -329,10 +329,10 @@ class FnModel:
 
         # Check for invalid bone IDs
         if id_a < 0:
-            logging.warning(f"Cannot swap bone '{bone_a.name}' with invalid bone_id ({id_a})")
+            logging.warning("Cannot swap bone '%s' with invalid bone_id (%s)", bone_a.name, id_a)
             return
         if id_b < 0:
-            logging.warning(f"Cannot swap bone '{bone_b.name}' with invalid bone_id ({id_b})")
+            logging.warning("Cannot swap bone '%s' with invalid bone_id (%s)", bone_b.name, id_b)
             return
 
         # If both bones have the same ID, no swap needed
@@ -353,10 +353,10 @@ class FnModel:
         Other bones shift positions to accommodate the change while preserving relative order.
         """
         if old_bone_id < 0:
-            logging.warning(f"Cannot shift bone with invalid old_bone_id ({old_bone_id})")
+            logging.warning("Cannot shift bone with invalid old_bone_id (%s)", old_bone_id)
             return
         if new_bone_id < 0:
-            logging.warning(f"Cannot shift bone to invalid new_bone_id ({new_bone_id})")
+            logging.warning("Cannot shift bone to invalid new_bone_id (%s)", new_bone_id)
             return
         if old_bone_id == new_bone_id:
             return
@@ -381,7 +381,7 @@ class FnModel:
 
         # If old_bone_id doesn't exist, return directly
         if old_pos is None or moving_bone is None:
-            logging.warning(f"Could not find bone with ID {old_bone_id}")
+            logging.warning("Could not find bone with ID %s", old_bone_id)
             return
 
         # If new_bone_id doesn't exist, use safe_change_bone_id instead
@@ -555,7 +555,7 @@ class FnModel:
         # Find armature
         armature = FnModel.find_armature_object(mmd_root_object)
         if not armature:
-            logging.warning(f"Armature not found for MMD model '{mmd_root_object.name}'")
+            logging.warning("Armature not found for MMD model '%s'", mmd_root_object.name)
             return 0
 
         pose_bones = armature.pose.bones
@@ -580,14 +580,14 @@ class FnModel:
                 mmd_bone.additional_transform_bone_id = -1
                 mmd_bone.is_additional_transform_dirty = True
                 cleaned_count += 1
-                logging.info(f"Cleaned invalid additional transform reference on bone '{bone.name}' (bone_id: {ref_bone_id} does not exist)")
+                logging.info("Cleaned invalid additional transform reference on bone '%s' (bone_id: %s does not exist)", bone.name, ref_bone_id)
 
             # --- Clean up Display Connection ---
             ref_bone_id = mmd_bone.display_connection_bone_id
             if ref_bone_id >= 0 and ref_bone_id not in valid_bone_ids:
                 mmd_bone.display_connection_bone_id = -1
                 cleaned_count += 1
-                logging.info(f"Cleaned invalid display connection reference on bone '{bone.name}' (bone_id: {ref_bone_id} does not exist)")
+                logging.info("Cleaned invalid display connection reference on bone '%s' (bone_id: %s does not exist)", bone.name, ref_bone_id)
 
         # Step 3: Clean up invalid references within Bone Morphs.
         if bone_morphs:
@@ -599,7 +599,7 @@ class FnModel:
                     if ref_bone_id >= 0 and ref_bone_id not in valid_bone_ids:
                         item.bone_id = -1
                         cleaned_count += 1
-                        logging.info(f"Cleaned invalid bone reference on morph '{morph.name}' (bone_id: {ref_bone_id} does not exist)")
+                        logging.info("Cleaned invalid bone reference on morph '%s' (bone_id: %s does not exist)", morph.name, ref_bone_id)
 
         return cleaned_count
 

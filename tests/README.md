@@ -4,7 +4,7 @@
 
 The test runner supports three launch methods:
 
-```
+```text
 # Method 1: From Blender
 blender --background -noaudio --python tests/all_test_runner.py -- --verbose
 
@@ -26,7 +26,8 @@ If any tests FAIL, run the individual test file to see detailed error informatio
 ## Running Individual Tests
 
 Run individual test scripts directly:
-```
+
+```text
 blender --background -noaudio --python tests/test_pmx_exporter.py -- --verbose
 blender --background -noaudio --python tests/test_vmd_exporter.py -- --verbose
 ...
@@ -47,7 +48,8 @@ PMX tests may fail under the following circumstances, which are considered norma
 If you encounter test failures due to these conditions, please verify your model.
 
 ## Test Coverage
-```
+
+```text
 C:.
 |   ✓ auto_load.py (test_utility_systems.py)
 |   ✓ auto_scene_setup.py (test_scene_setup.py)
@@ -96,13 +98,13 @@ C:.
 |           - __init__.py
 |
 +---operators
-|       ✗ animation.py
+|       ✓ animation.py (test_animation.py)
 |       ✓ camera.py (test_camera_system.py)
 |       ✓ display_item.py (test_display_system.py)
 |       ✓ fileio.py (test_fileio_operators.py)
 |       ✓ lamp.py (test_lamp_system.py)
 |       ✓ material.py (test_material_system.py)
-|       ✗ misc.py
+|       ✓ misc.py (test_misc.py)
 |       ✓ model.py (test_model_operators.py)
 |       ✓ model_edit.py (test_model_edit.py)
 |       ✓ model_validation.py (test_model_debug.py)
@@ -110,7 +112,7 @@ C:.
 |       ✓ rigid_body.py (test_rigid_body.py)
 |       ✓ sdef.py (test_sdef_system.py)
 |       ✗ translations.py
-|       ✗ view.py
+|       ✓ view.py (test_view.py)
 |       - __init__.py
 |
 +---panels
@@ -120,7 +122,7 @@ C:.
 |   |   ✓ prop_material.py (test_material_system.py)
 |   |   ✗ prop_object.py
 |   |   ✗ prop_physics.py
-|   |   ✗ shading.py
+|   |   ✓ shading.py (test_view.py)
 |   |   - __init__.py
 |   |
 |   \---sidebar

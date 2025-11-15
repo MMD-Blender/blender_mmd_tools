@@ -42,7 +42,7 @@ class TestPmxImportTime(unittest.TestCase):
         import_types = {"MESH", "ARMATURE", "PHYSICS", "MORPHS", "DISPLAY"}
 
         print("\n=== PMX Import Time Test ===")
-        print("Import types: %s" % str(import_types))
+        print(f"Import types: {str(import_types)}")
 
         total_time = 0
         successful_imports = 0
@@ -102,5 +102,5 @@ class TestPmxImportTime(unittest.TestCase):
 if __name__ == "__main__":
     import sys
 
-    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
+    sys.argv = [__file__] + (sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else [])
     unittest.main(verbosity=1, exit=True)

@@ -208,7 +208,7 @@ class IK:
         self.ik_child_bones = []
 
     def __str__(self):
-        return "<IK bone: %d, target: %d, chain: %s, iter: %d, weight: %f, ik_children: %s" % (self.bone, self.target_bone, self.ik_chain, self.iterations, self.control_weight, self.ik_child_bones)
+        return f"<IK bone: {self.bone}, target: {self.target_bone}, chain: {self.ik_chain}, iter: {self.iterations}, weight: {self.weight}, ik_children: {self.ik_children}"
 
     def load(self, fs):
         self.bone = fs.readUnsignedShort()

@@ -453,12 +453,15 @@ class FnBone:
                 remove_constraint(constraints, name)
                 return
             c = TransformConstraintOp.create(constraints, name, map_type)
-            # FIXME: Some bones require specific rotation modes to match MMD behavior.
-            # Currently using hardcoded bone names as a temporary solution.
+            c.target = p_bone.id_data
+            # NOTE: 肩C bones require reversed euler order to match MMD behavior
             # See https://github.com/MMD-Blender/blender_mmd_tools/issues/242
             if bone_name in {"左肩C", "右肩C", "肩C.L", "肩C.R", "肩C_L", "肩C_R"}:
-                c.from_rotation_mode = "ZYX"  # Best matches MMD behavior for shoulder bones
-            c.target = p_bone.id_data
+                c.from_rotation_mode = "ZYX"  # Best matches MMD behavior for 肩C bones
+            else:
+                c.from_rotation_mode = "XYZ"  # Explicitly set to "XYZ" instead of "AUTO"
+            c.to_euler_order = "XYZ"  # Explicitly set to "XYZ" instead of "AUTO"
+            c.mix_mode_rot = "AFTER"  # Use "AFTER" instead of "ADD" to match MMD behavior
             shadow_bone.add_constraint(c)
             TransformConstraintOp.update_min_max(c, value, influence)
 

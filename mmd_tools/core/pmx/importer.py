@@ -14,6 +14,7 @@ from mathutils import Matrix, Vector
 
 from ... import bpyutils, utils
 from ...bpyutils import FnContext
+from ...compat.action_compat import IS_BLENDER_50_UP
 from ...operators.misc import MoveObject
 from .. import pmx
 from ..bone import FnBone
@@ -370,7 +371,7 @@ class PMXImporter:
                 c = ik_bone.constraints.new(type="LIMIT_ROTATION")
                 c.mute = True
                 c.influence = 0
-                c.name = "mmd_ik_limit_custom%d" % idx
+                c.name = f"mmd_ik_limit_custom{idx}"
                 use_limits = c.use_limit_x = c.use_limit_y = c.use_limit_z = i.maximumAngle is not None
                 if use_limits:
                     minimum, maximum = self.convertIKLimitAngles(i.minimumAngle, i.maximumAngle, pose_bones[i.target].bone.matrix_local)
@@ -425,7 +426,10 @@ class PMXImporter:
             elif b_bone.name in specialTipBones:
                 mmd_bone.is_tip = True
 
-            b_bone.bone.hide = not pmx_bone.visible  # or mmd_bone.is_tip
+            if IS_BLENDER_50_UP:
+                b_bone.hide = not pmx_bone.visible  # or mmd_bone.is_tip
+            else:
+                b_bone.bone.hide = not pmx_bone.visible  # or mmd_bone.is_tip
 
             if not pmx_bone.isRotatable:
                 b_bone.lock_rotation = [True, True, True]
@@ -472,13 +476,13 @@ class PMXImporter:
             rot_data = rigid.rotation
             size_data = rigid.size
             if any(math.isnan(val) for val in loc_data):
-                logging.warning(f"Rigid body '{rigid.name}' has invalid location data, using default location")
+                logging.warning("Rigid body '%s' has invalid location data, using default location", rigid.name)
                 loc_data = (0.0, 0.0, 0.0)
             if any(math.isnan(val) for val in rot_data):
-                logging.warning(f"Rigid body '{rigid.name}' has invalid rotation data, using default rotation")
+                logging.warning("Rigid body '%s' has invalid rotation data, using default rotation", rigid.name)
                 rot_data = (0.0, 0.0, 0.0)
             if any(math.isnan(val) for val in size_data):
-                logging.warning(f"Rigid body '{rigid.name}' has invalid size data, using default size")
+                logging.warning("Rigid body '%s' has invalid size data, using default size", rigid.name)
                 size_data = (1.0, 1.0, 1.0)
             loc = Vector(loc_data).xzy * self.__scale
             rot = Vector(rot_data).xzy * -1
@@ -879,7 +883,7 @@ class PMXImporter:
         total_edges = len(mesh.edges)
         sharp_edges = sum(1 for edge in mesh.edges if edge.use_edge_sharp)
         percentage = (sharp_edges / total_edges) * 100 if total_edges > 0 else 0
-        logging.info(f"   - Marked {sharp_edges}/{total_edges} ({percentage:.2f}%) sharp edges with angle: 179 degrees")
+        logging.info("   - Marked %s/%s (%.2f%%) sharp edges with angle: 179 degrees", sharp_edges, total_edges, percentage)
         if self.__vertex_map:
             verts, faces = self.__model.vertices, self.__model.faces
             custom_normals = [(Vector(verts[i].normal).xzy).normalized() for f in faces for i in f]
@@ -926,7 +930,7 @@ class PMXImporter:
         self.__apply_bone_fixed_axis = args.get("apply_bone_fixed_axis", False)
         self.__bone_disp_mode = args.get("bone_disp_mode", "OCTAHEDRAL")
         self.__translator = args.get("translator")
-        self.__add_rigid_body_world = args.get("add_rigid_body_world", True)
+        self.__enable_rigid_body_world = args.get("enable_rigid_body_world", True)
 
         logging.info("****************************************")
         logging.info(" mmd_tools.import_pmx module")
@@ -989,9 +993,9 @@ class PMXImporter:
                 if rigidbody_world and original_enabled is not None:
                     rigidbody_world.enabled = original_enabled
 
-                # Remove the automatically created rigid body world if it was not intended
-                if not self.__add_rigid_body_world and rigidbody_world is None:
-                    bpy.ops.rigidbody.world_remove()
+                # Disable the automatically enabled rigid body world if it was not intended
+                if not self.__enable_rigid_body_world and not original_enabled and bpy.context.scene.rigidbody_world is not None:
+                    bpy.context.scene.rigidbody_world.enabled = False
 
         if "DISPLAY" in types:
             self.__importDisplayFrames()

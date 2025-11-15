@@ -78,7 +78,7 @@ class MMDToolsModelSetupPanel(PT_PanelBase, bpy.types.Panel):
         row.operator("mmd_tools.morph_slider_setup", text="", icon="TRASH").type = "UNBIND"
 
         row = grid.row(align=True)
-        row.active = getattr(context.scene.rigidbody_world, "enabled", False)
+        row.active = context.scene.rigidbody_world is not None
 
         mmd_root = mmd_root_object.mmd_root
         if not mmd_root.is_built:

@@ -320,10 +320,10 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
         description="The diffuse color factor of texture slot for .spa textures",
         default=1.0,
     )
-    add_rigid_body_world: bpy.props.BoolProperty(
-        name="Add Rigid Body World",
-        description="Automatically add Rigid Body World to the scene when importing physics.",
-        default=True,
+    enable_rigid_body_world: bpy.props.BoolProperty(
+        name="Enable Rigid Body World",
+        description="Automatically enable Rigid Body World to the scene when importing physics.",
+        default=False,
     )
     log_level: bpy.props.EnumProperty(
         name="Log level",
@@ -391,7 +391,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
                 use_mipmap=self.use_mipmap,
                 sph_blend_factor=self.sph_blend_factor,
                 spa_blend_factor=self.spa_blend_factor,
-                add_rigid_body_world=self.add_rigid_body_world,
+                enable_rigid_body_world=self.enable_rigid_body_world,
             )
             self.report({"INFO"}, f'Imported MMD model from "{self.filepath}"')
         except Exception:
@@ -655,6 +655,9 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
 
         # STEP 2: Reset all properties to default states
         for obj in objects_to_process:
+            # NOTE: Intentionally omitted resetting the state of obj.mmd_root.show_meshes
+            # This is because when importing animations, users usually expect only the bones' poses and morphs to be reset.
+            # See https://github.com/MMD-Blender/blender_mmd_tools/issues/290
             if obj.type == "ARMATURE":
                 # Reset armature pose
                 for bone in obj.pose.bones:
@@ -663,21 +666,14 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
                     bone.rotation_euler = (0.0, 0.0, 0.0)
                     bone.rotation_axis_angle = (0.0, 0.0, 1.0, 0.0)
                     bone.scale = (1.0, 1.0, 1.0)
-
                     # Reset IK settings to default
                     if hasattr(bone, "mmd_ik_toggle"):
                         bone.mmd_ik_toggle = True
-
             elif obj.type == "MESH" and getattr(obj.data, "shape_keys", None):
                 # Reset mesh morphs
                 for shape_key in obj.data.shape_keys.key_blocks:
                     if shape_key.name != "Basis":  # Don't reset basis shape key
                         shape_key.value = 0.0
-
-            elif hasattr(obj, "mmd_type") and obj.mmd_type == "ROOT":
-                # Reset root display state
-                if hasattr(obj, "mmd_root") and hasattr(obj.mmd_root, "show_meshes"):
-                    obj.mmd_root.show_meshes = True  # Default to show meshes
 
 
 class ImportVpd(Operator, ImportHelper, PreferencesMixin):
@@ -1206,3 +1202,96 @@ class ExportVpd(Operator, ExportHelper, PreferencesMixin):
             err_msg = traceback.format_exc()
             self.report({"ERROR"}, err_msg)
         return {"FINISHED"}
+
+
+# --- Drag and Drop Handlers ---
+
+
+class MMD_FH_PMX(bpy.types.FileHandler):
+    bl_idname = "MMD_FH_PMX"
+    bl_label = "MMD PMX/PMD Model"
+    bl_import_operator = "mmd_tools.import_model"
+    bl_file_extensions = ".pmx;.pmd"
+    bl_file_filter = "*.pmx;*.pmd"
+    bl_description = "Import MMD PMX/PMD Model by dropping into Blender"
+
+    @classmethod
+    def poll_drop(cls, context):
+        return context.area and context.area.type in {"VIEW_3D", "FILE_BROWSER"}
+
+    def import_drop(self, context, filepath=None, files=None, **kwargs):
+        if files:
+            for f in files:
+                bpy.ops.mmd_tools.import_model(filepath=f["name"])
+        elif filepath:
+            bpy.ops.mmd_tools.import_model(filepath=filepath)
+        return {"FINISHED"}
+
+
+class MMD_FH_VMD(bpy.types.FileHandler):
+    bl_idname = "MMD_FH_VMD"
+    bl_label = "MMD VMD Animation"
+    bl_import_operator = "mmd_tools.import_vmd"
+    bl_file_extensions = ".vmd"
+    bl_file_filter = "*.vmd"
+    bl_description = "Import MMD VMD Animation by dropping into Blender"
+
+    @classmethod
+    def poll_drop(cls, context):
+        return context.area and context.area.type in {"VIEW_3D", "FILE_BROWSER"}
+
+    def import_drop(self, context, filepath=None, files=None, **kwargs):
+        if files:
+            for f in files:
+                bpy.ops.mmd_tools.import_vmd(filepath=f["name"])
+        elif filepath:
+            bpy.ops.mmd_tools.import_vmd(filepath=filepath)
+        return {"FINISHED"}
+
+
+class MMD_FH_VPD(bpy.types.FileHandler):
+    bl_idname = "MMD_FH_VPD"
+    bl_label = "MMD VPD Pose"
+    bl_import_operator = "mmd_tools.import_vpd"
+    bl_file_extensions = ".vpd"
+    bl_file_filter = "*.vpd"
+    bl_description = "Import MMD VPD Pose by dropping into Blender"
+
+    @classmethod
+    def poll_drop(cls, context):
+        return context.area and context.area.type in {"VIEW_3D", "FILE_BROWSER"}
+
+    def import_drop(self, context, filepath=None, files=None, **kwargs):
+        if files:
+            for f in files:
+                bpy.ops.mmd_tools.import_vpd(filepath=f["name"])
+        elif filepath:
+            bpy.ops.mmd_tools.import_vpd(filepath=filepath)
+        return {"FINISHED"}
+
+
+# --- Keymap Registration ---
+
+
+addon_keymaps = []
+
+
+def register():
+    wm = bpy.context.window_manager
+    kc = wm.keyconfigs.addon
+    if not kc:
+        return
+
+    # Assign Ctrl + E as the hotkey for PMX export.
+    km = kc.keymaps.new(name="Screen", space_type="EMPTY")
+    kmi = km.keymap_items.new("mmd_tools.export_pmx", "E", "PRESS", ctrl=True, alt=False)
+    addon_keymaps.append((km, kmi))
+
+
+def unregister():
+    for km, kmi in addon_keymaps:
+        try:
+            km.keymap_items.remove(kmi)
+        except Exception:
+            pass
+    addon_keymaps.clear()

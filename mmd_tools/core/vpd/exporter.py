@@ -120,7 +120,7 @@ class VPDExporter:
         mesh = args.get("mesh")
         filepath = args.get("filepath", "")
         self.__scale = args.get("scale", 1.0)
-        self.__osm_name = "%s.osm" % args.get("model_name")
+        self.__osm_name = f'{args.get("model_name")}.osm'
 
         pose_type = args.get("pose_type", "CURRENT")
         if pose_type == "CURRENT":

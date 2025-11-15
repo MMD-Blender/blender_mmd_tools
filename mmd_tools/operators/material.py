@@ -361,7 +361,7 @@ class EdgePreviewSetup(Operator):
 
             scale = 0.2 * getattr(root, Props.empty_display_size)
             counts = sum(self.__create_toon_edge(obj, scale) for obj in FnModel.iterate_mesh_objects(root))
-            self.report({"INFO"}, "Created %d toon edge(s)" % counts)
+            self.report({"INFO"}, f"Created {counts} toon edge(s)")
         return {"FINISHED"}
 
     def __clean_toon_edge(self, obj):

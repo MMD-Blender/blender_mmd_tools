@@ -14,6 +14,7 @@ import bpy
 from mathutils import Euler, Matrix, Vector
 
 from ...bpyutils import FnContext
+from ...compat.action_compat import IS_BLENDER_50_UP
 from ...operators.misc import MoveObject
 from ...utils import saferelpath
 from .. import pmx
@@ -291,9 +292,9 @@ class __PmxExporter:
                         with open(full_dest_path, "wb") as f:
                             f.write(packed_image.packed_file.data)
                     except PermissionError:
-                        logging.warning(f"Permission denied. Could not write texture to '{full_dest_path}'. Skipping.")
+                        logging.warning("Permission denied. Could not write texture to '%s'. Skipping.", full_dest_path)
                     except Exception as e:
-                        logging.exception(f"An unexpected error occurred while writing packed texture: {e}")
+                        logging.exception("An unexpected error occurred while writing packed texture: %s", e)
 
                 # If not packed, handle existing external files by copying them
                 elif os.path.isfile(src_path):
@@ -302,9 +303,9 @@ class __PmxExporter:
                         try:
                             shutil.copy2(src_path, full_dest_path)
                         except PermissionError:
-                            logging.warning(f"Permission denied. Could not copy texture to '{full_dest_path}'. Skipping.")
+                            logging.warning("Permission denied. Could not copy texture to '%s'. Skipping.", full_dest_path)
                         except Exception as e:
-                            logging.exception(f"An unexpected error occurred while copying external texture: {e}")
+                            logging.exception("An unexpected error occurred while copying external texture: %s", e)
                 else:
                     logging.warning("Source for texture '%s' not found. Cannot copy.", src_path)
 
@@ -397,15 +398,25 @@ class __PmxExporter:
                 pmx_bone.name = mmd_bone.name_j or bone.name
                 pmx_bone.name_e = mmd_bone.name_e
 
-                pmx_bone.hasAdditionalRotate = mmd_bone.has_additional_rotation
-                pmx_bone.hasAdditionalLocation = mmd_bone.has_additional_location
-                pmx_bone.additionalTransform = [mmd_bone.additional_transform_bone, mmd_bone.additional_transform_influence]
+                if mmd_bone.additional_transform_bone:
+                    pmx_bone.hasAdditionalRotate = mmd_bone.has_additional_rotation
+                    pmx_bone.hasAdditionalLocation = mmd_bone.has_additional_location
+                    pmx_bone.additionalTransform = [mmd_bone.additional_transform_bone, mmd_bone.additional_transform_influence]
+                else:
+                    if mmd_bone.has_additional_rotation or mmd_bone.has_additional_location:
+                        logging.warning("Bone %s: Additional Transform is enabled but no target bone is specified. Automatically disabling.", p_bone.name)
+                    pmx_bone.hasAdditionalRotate = False
+                    pmx_bone.hasAdditionalLocation = False
+                    pmx_bone.additionalTransform = ["", 1.0]
 
                 pmx_bone.location = __to_pmx_location(p_bone.head)
                 pmx_bone.parent = bone.parent
                 # Determine bone visibility: visible if not hidden and either has no collections or belongs to at least one visible collection
                 # This logic is the same as Blender's
-                pmx_bone.visible = not bone.hide and (not bone.collections or any(collection.is_visible for collection in bone.collections))
+                if IS_BLENDER_50_UP:
+                    pmx_bone.visible = not p_bone.hide and (not bone.collections or any(collection.is_visible for collection in bone.collections))
+                else:
+                    pmx_bone.visible = not bone.hide and (not bone.collections or any(collection.is_visible for collection in bone.collections))
                 pmx_bone.isControllable = mmd_bone.is_controllable
                 pmx_bone.isMovable = not all(p_bone.lock_location)
                 pmx_bone.isRotatable = not all(p_bone.lock_rotation)
@@ -496,7 +507,7 @@ class __PmxExporter:
         if ik_export_option == "IGNORE_ALL":
             unused_counts = 3
         else:
-            ik_limit_custom = next((c for c in custom_bone.constraints if c.type == "LIMIT_ROTATION" and c.name == "mmd_ik_limit_custom%d" % len(ik_links)), None)
+            ik_limit_custom = next((c for c in custom_bone.constraints if c.type == "LIMIT_ROTATION" and c.name == f"mmd_ik_limit_custom{len(ik_links)}"), None)
             ik_limit_override = next((c for c in pose_bone.constraints if c.type == "LIMIT_ROTATION" and not c.mute), None)
 
             for i, axis in enumerate("xyz"):
@@ -889,13 +900,13 @@ class __PmxExporter:
         for obj in rigid_bodies:
             t, r, s = obj.matrix_world.decompose()
             if any(math.isnan(val) for val in t):
-                logging.warning(f"Rigid body '{obj.name}' has invalid position coordinates, using default position")
+                logging.warning("Rigid body '%s' has invalid position coordinates, using default position", obj.name)
                 t = Vector((0.0, 0.0, 0.0))
             if any(math.isnan(val) for val in r):
-                logging.warning(f"Rigid body '{obj.name}' has invalid rotation coordinates, using default rotation")
+                logging.warning("Rigid body '%s' has invalid rotation coordinates, using default rotation", obj.name)
                 r = Euler((0.0, 0.0, 0.0), "YXZ")
             if any(math.isnan(val) for val in s):
-                logging.warning(f"Rigid body '{obj.name}' has invalid scale coordinates, using default scale")
+                logging.warning("Rigid body '%s' has invalid scale coordinates, using default scale", obj.name)
                 s = Vector((1.0, 1.0, 1.0))
             r = r.to_euler("YXZ")
             rb = obj.rigid_body
@@ -1181,10 +1192,13 @@ class __PmxExporter:
             ]
 
         # Extract vertex colors as ADD UV2
+        # TODO: Replace base_mesh.vertex_colors with base_mesh.color_attributes
         vertex_colors = None
         vertex_colors_data = None
         if self.__export_vertex_colors_as_adduv2:
             vertex_colors = base_mesh.vertex_colors.active
+            if vertex_colors is None and len(base_mesh.vertex_colors) > 0:
+                vertex_colors = base_mesh.vertex_colors[0]
             if vertex_colors:
                 vertex_colors_data = [c.color for c in vertex_colors.data]
 
@@ -1262,11 +1276,11 @@ class __PmxExporter:
         # Export additional UV layers
         for uv_n, uv_tex in enumerate(bl_add_uvs):
             if uv_n > 3:
-                logging.warning(f" * extra addUV{uv_n + 1} ({uv_tex.name}) are not supported")
+                logging.warning(" * extra addUV%s (%s) are not supported", uv_n + 1, uv_tex.name)
                 continue
             uv_data = _UVWrapper(uv_tex.data)
             zw_data = base_mesh.uv_layers.get("_" + uv_tex.name, None)
-            logging.info(f" # exporting addUV{uv_n + 1}: {uv_tex.name} [zw: {zw_data.name if zw_data else zw_data}]")
+            logging.info(" # exporting addUV%s: %s [zw: %s]", uv_n + 1, uv_tex.name, zw_data.name if zw_data else zw_data)
             if zw_data:
                 zw_data = _UVWrapper(zw_data.data)
             else:
@@ -1405,7 +1419,7 @@ class __PmxExporter:
             if root.mmd_root.name:
                 self.__model.name = root.mmd_root.name
             else:
-                logging.warning(f"Model name is empty, using root object name '{root.name}' instead")
+                logging.warning("Model name is empty, using root object name '%s' instead", root.name)
                 self.__model.name = root.name
             self.__model.name_e = root.mmd_root.name_e
             txt = bpy.data.texts.get(root.mmd_root.comment_text, None)

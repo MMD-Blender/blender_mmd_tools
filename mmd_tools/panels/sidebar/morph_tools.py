@@ -189,6 +189,7 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
 
         row = col.row(align=True)
         row.operator("mmd_tools.convert_bone_morph_to_vertex_morph", text="Convert To Vertex Morph", icon="SHAPEKEY_DATA")
+        row.operator("mmd_tools.batch_convert_bone_morph_to_vertex_morph", text="", icon="LINENUMBERS_ON")
 
         col.label(text=bpy.app.translations.pgettext_iface("Bone Offsets (%d)") % len(morph.data))
         data = self._template_morph_offset_list(col, morph, "MMD_TOOLS_UL_BoneMorphOffsets")
@@ -232,6 +233,7 @@ class MMDMorphToolsPanel(PT_ProductionPanelBase, bpy.types.Panel):
     def _draw_group_data(self, context, rig, col, morph):
         row = col.row(align=True)
         row.operator("mmd_tools.convert_group_morph_to_vertex_morph", text="Convert To Vertex Morph", icon="SHAPEKEY_DATA")
+        row.operator("mmd_tools.batch_convert_group_morph_to_vertex_morph", text="", icon="LINENUMBERS_ON")
 
         col.label(text=bpy.app.translations.pgettext_iface("Group Offsets (%d)") % len(morph.data))
         item = self._template_morph_offset_list(col, morph, "MMD_TOOLS_UL_GroupMorphOffsets")

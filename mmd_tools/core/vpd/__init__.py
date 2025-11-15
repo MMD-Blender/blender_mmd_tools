@@ -33,12 +33,7 @@ class File:
         self.morphs = []  # MikuMikuMoving
 
     def __repr__(self):
-        return "<File %s, osm %s, bones %d, morphs %d>" % (
-            self.filepath,
-            self.osm_name,
-            len(self.bones),
-            len(self.morphs),
-        )
+        return f"<File {self.filepath}, osm {self.osm_name}, bones {len(self.bones)}, morphs {len(self.morphs)}>"
 
     def load(self, **args):
         path = args["filepath"]
@@ -92,19 +87,21 @@ class File:
             fout.write("Vocaloid Pose Data file\r\n")
 
             fout.write("\r\n")
-            fout.write("%s;\t\t// 親ファイル名\r\n" % self.osm_name)
-            fout.write("%d;\t\t\t\t// 総ポーズボーン数\r\n" % len(self.bones))
+            fout.write(f"{self.osm_name};\t\t// 親ファイル名\r\n")
+            fout.write(f"{len(self.bones)};\t\t\t\t// 総ポーズボーン数\r\n")
             fout.write("\r\n")
 
             for i, b in enumerate(self.bones):
-                fout.write("Bone%d{%s\r\n" % (i, b.bone_name))
-                fout.write("  %f,%f,%f;\t\t\t\t// trans x,y,z\r\n" % tuple(b.location))
-                fout.write("  %f,%f,%f,%f;\t\t// Quaternion x,y,z,w\r\n" % tuple(b.rotation))
+                fout.write(f"Bone{i}{{{b.bone_name}\r\n")
+                x, y, z = b.location
+                fout.write(f"  {x},{y},{z};\t\t\t\t// trans x,y,z\r\n")
+                x, y, z, w = b.rotation
+                fout.write(f"  {x},{y},{z},{w};\t\t// Quaternion x,y,z,w\r\n")
                 fout.write("}\r\n")
                 fout.write("\r\n")
 
             for i, m in enumerate(self.morphs):
-                fout.write("Morph%d{%s\r\n" % (i, m.morph_name))
-                fout.write("  %f;\t\t\t\t// weight\r\n" % m.weight)
+                fout.write(f"Morph{i}{{{m.morph_name}\r\n")
+                fout.write(f"  {m.weight:f};\t\t\t\t// weight\r\n")
                 fout.write("}\r\n")
                 fout.write("\r\n")

@@ -464,7 +464,7 @@ class GroupMorphOffset(bpy.types.PropertyGroup):
         ],
         default="vertex_morphs",
     )
-    factor: bpy.props.FloatProperty(name="Factor", description="Factor", soft_min=0, soft_max=1, precision=3, step=0.1, default=0)
+    factor: bpy.props.FloatProperty(name="Factor", description="Factor", soft_min=0, soft_max=1, precision=3, step=0.1, default=1)
 
 
 class GroupMorph(_MorphBase, bpy.types.PropertyGroup):

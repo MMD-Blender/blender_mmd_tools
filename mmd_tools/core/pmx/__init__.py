@@ -97,7 +97,7 @@ class FileReadStream(FileStream):
 
     def readStr(self):
         length = self.readInt()
-        buf, = struct.unpack("<%ds" % length, self.__fin.read(length))
+        buf, = struct.unpack(f"<{length}s", self.__fin.read(length))
         return str(buf, self.header().encoding.charset, errors="replace")
 
     def readFloat(self):
@@ -202,7 +202,7 @@ class Encoding:
         elif isinstance(arg, int):
             t = list(filter(lambda x: x[0] == arg, self._MAP))
             if len(t) == 0:
-                raise ValueError("invalid index %d" % arg)
+                raise ValueError(f"invalid index {arg}")
         else:
             raise ValueError("invalid argument type")
         t = t[0]
@@ -311,16 +311,7 @@ class Header:
         fs.writeByte(self.rigid_index_size)
 
     def __repr__(self):
-        return "<Header encoding %s, uvs %d, vtx %d, tex %d, mat %d, bone %d, morph %d, rigid %d>" % (
-            str(self.encoding),
-            self.additional_uvs,
-            self.vertex_index_size,
-            self.texture_index_size,
-            self.material_index_size,
-            self.bone_index_size,
-            self.morph_index_size,
-            self.rigid_index_size,
-        )
+        return f"<Header encoding {self.encoding}, uvs {self.additional_uvs}, vtx {self.vertex_index_size}, tex {self.texture_index_size}, mat {self.material_index_size}, bone {self.bone_index_size}, morph {self.morph_index_size}, rigid {self.rigidbody_index_size}>"
 
 
 class Model:

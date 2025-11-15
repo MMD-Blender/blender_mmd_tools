@@ -91,7 +91,7 @@ class FnSDEF:
     @classmethod
     def __find_vertices(cls, obj):
         if not cls.has_sdef_data(obj):
-            logging.debug(f"SDEF vertex search skipped for '{obj.name}': No SDEF data found")
+            logging.debug("SDEF vertex search skipped for '%s': No SDEF data found", obj.name)
             return {}
 
         vertices = {}
@@ -129,7 +129,7 @@ class FnSDEF:
     @classmethod
     def driver_function_wrap(cls, obj_name, bulk_update, use_skip, use_scale):
         if obj_name not in bpy.data.objects:
-            logging.warning(f"SDEF driver wrap: Object '{obj_name}' not found")
+            logging.warning("SDEF driver wrap: Object '%s' not found", obj_name)
             return 0.0
         obj = bpy.data.objects[obj_name]
         shapekey = obj.data.shape_keys.key_blocks[cls.SHAPEKEY_NAME]
@@ -138,7 +138,7 @@ class FnSDEF:
     @classmethod
     def driver_function(cls, shapekey, obj_name, bulk_update, use_skip, use_scale):
         if obj_name not in bpy.data.objects:
-            logging.warning(f"SDEF driver: Object '{obj_name}' not found, driver will be inactive")
+            logging.warning("SDEF driver: Object '%s' not found, driver will be inactive", obj_name)
             return 0.0
         obj = bpy.data.objects[obj_name]
         if getattr(shapekey.id_data, "is_evaluated", False):
@@ -267,7 +267,7 @@ class FnSDEF:
         # Unbind first
         cls.unbind(obj)
         if not cls.has_sdef_data(obj):
-            logging.debug(f"SDEF bind skipped for '{obj.name}': No SDEF data found")
+            logging.debug("SDEF bind skipped for '%s': No SDEF data found", obj.name)
             return False
         # Create the shapekey for the driver
         shapekey = obj.shape_key_add(name=cls.SHAPEKEY_NAME, from_mix=False)

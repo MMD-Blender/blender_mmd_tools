@@ -107,11 +107,7 @@ class TranslateMMDModel(bpy.types.Operator):
         translator = self.__translator
         txt = translator.save_fails()
         if translator.fails:
-            self.report(
-                {"WARNING"},
-                "Failed to translate %d names, see '%s' in text editor"
-                % (len(translator.fails), txt.name),
-            )
+            self.report({"WARNING"}, f"Failed to translate {len(translator.fails)} names, see '{txt.name}' in text editor")
         return {"FINISHED"}
 
     def translate(self, name_j, name_e):
@@ -398,12 +394,7 @@ class ExecuteTranslationBatchOperator(bpy.types.Operator):
 
         fails, text = FnTranslations.execute_translation_batch(root)
         if fails:
-            self.report(
-                {"WARNING"},
-                "Failed to translate %d names, see '%s' in text editor"
-                % (len(fails), text.name),
-            )
-
+            self.report({"WARNING"}, f"Failed to translate {len(fails)} names, see '{text.name}' in text editor")
         return {"FINISHED"}
 
 
