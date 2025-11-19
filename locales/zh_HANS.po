@@ -372,7 +372,7 @@ msgstr "装配物理时创建的额外非碰撞约束的距离比例"
 
 #. :src: bpy.types.MMD_TOOLS_OT_change_mmd_ik_loop_factor
 #: extensions/blender_org/mmd_tools/panels/prop_object.py:34
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:163
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:166
 msgctxt "Operator"
 msgid "Change MMD IK Loop Factor"
 msgstr "改变MMD IK循环系数"
@@ -1681,6 +1681,15 @@ msgstr "移除关节"
 msgid "Deletes the currently selected Joint"
 msgstr "删除当前选中的关节"
 
+#. :src: bpy.types.MMD_TOOLS_OT_material_cleanup_texture
+msgctxt "Operator"
+msgid "Cleanup Texture"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_material_cleanup_texture
+msgid "Remove unused texture nodes."
+msgstr ""
+
 #. :src: bpy.types.MMD_TOOLS_OT_material_morph_offset_init
 msgctxt "Operator"
 msgid "Init Material Offset"
@@ -1733,6 +1742,17 @@ msgstr "移除纹理"
 #. :src: bpy.types.MMD_TOOLS_OT_material_remove_texture
 msgid "Remove main texture of active material"
 msgstr "移除活动材质的主纹理"
+
+#. :src: bpy.types.MMD_TOOLS_OT_material_setup_texture
+msgctxt "Operator"
+msgid "Setup Texture"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_material_setup_texture
+msgid ""
+"Add main texture nodes for all materials. Enables copy & pasting texture paths in MMD Texture.\n"
+"Warning: Materials will turn pink. Use Texture Cleanup after assigning textures."
+msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_merge_materials
 msgctxt "Operator"
@@ -3406,13 +3426,21 @@ msgstr ""
 msgid "Same Texture '': Merged materials [] into ''"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/material.py:353
+#: extensions/blender_org/mmd_tools/operators/material.py:266
+msgid "Added  empty texture nodes."
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/operators/material.py:314
+msgid "Removed  texture nodes."
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/operators/material.py:417
 #: extensions/blender_org/mmd_tools/operators/misc.py:205
 #: extensions/blender_org/mmd_tools/operators/misc.py:251
 msgid "Select a MMD model"
 msgstr "选择 MMD 模型"
 
-#: extensions/blender_org/mmd_tools/operators/material.py:364
+#: extensions/blender_org/mmd_tools/operators/material.py:428
 msgid "Created  toon edge(s)"
 msgstr "已创建  条卡通边缘"
 
@@ -3420,8 +3448,8 @@ msgstr "已创建  条卡通边缘"
 msgid " * Failed to change to Cycles render engine."
 msgstr " * 未能改变至 Cycles 渲染引擎"
 
-#: extensions/blender_org/mmd_tools/operators/material.py:301
-#: extensions/blender_org/mmd_tools/operators/material.py:326
+#: extensions/blender_org/mmd_tools/operators/material.py:365
+#: extensions/blender_org/mmd_tools/operators/material.py:390
 msgid "Materials not found"
 msgstr "找不到材质"
 
@@ -4083,11 +4111,21 @@ msgctxt "Operator"
 msgid "Convert to MMD"
 msgstr "转换给MMD"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:160
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:158
+msgctxt "Operator"
+msgid "Setup Textures"
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:159
+msgctxt "Operator"
+msgid "Texture Cleanup"
+msgstr ""
+
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:163
 msgid "Misc:"
 msgstr "杂项:"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:162
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:165
 msgctxt "Operator"
 msgid "(Experimental) Global Translation"
 msgstr "(实验性) 全局翻译"
