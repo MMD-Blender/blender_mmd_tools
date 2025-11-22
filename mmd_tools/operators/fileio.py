@@ -4,6 +4,7 @@
 import logging
 import os
 import re
+import sys
 import time
 import traceback
 
@@ -1283,8 +1284,13 @@ def register():
 
     # Assign Ctrl + E as the hotkey for PMX export.
     km = kc.keymaps.new(name="Screen", space_type="EMPTY")
-    kmi = km.keymap_items.new("mmd_tools.export_pmx", "E", "PRESS", ctrl=True, alt=False)
+    kmi = km.keymap_items.new("mmd_tools.export_pmx", "E", "PRESS", ctrl=True)
     addon_keymaps.append((km, kmi))
+    # Also assign Command + E on macOS for consistency with Blender
+    if sys.platform == "darwin":
+        km = kc.keymaps.new(name="Screen", space_type="EMPTY")
+        kmi = km.keymap_items.new("mmd_tools.export_pmx", "E", "PRESS", oskey=True)
+        addon_keymaps.append((km, kmi))
 
 
 def unregister():

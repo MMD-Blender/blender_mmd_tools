@@ -124,14 +124,11 @@ class TestVMDImporter(unittest.TestCase):
         mesh_obj = bpy.context.active_object
         mesh_obj.name = "TestMesh"
 
-        bpy.ops.object.shape_key_add(from_mix=False)
+        mesh_obj.shape_key_add(name="Basis", from_mix=False)
 
         shape_key_names = ["まばたき", "笑い", "ウィンク"]
         for name in shape_key_names:
-            bpy.ops.object.shape_key_add(from_mix=False)
-            shape_key = mesh_obj.data.shape_keys.key_blocks[-1]
-            shape_key.name = name
-
+            shape_key = mesh_obj.shape_key_add(name=name, from_mix=False)
             for i, v in enumerate(mesh_obj.data.vertices):
                 if i % 2 == 0:
                     shape_key.data[i].co.x += 0.2

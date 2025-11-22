@@ -191,7 +191,7 @@ class TestMiscOperators(unittest.TestCase):
         mesh = self.__create_test_mesh("MeshWithShapeKeys")
 
         # Add shape keys
-        mesh.shape_key_add(name="Basis")
+        mesh.shape_key_add(name="Basis", from_mix=False)
         sk1 = mesh.shape_key_add(name="Key1")
         sk2 = mesh.shape_key_add(name="Key2")
 
@@ -220,7 +220,7 @@ class TestMiscOperators(unittest.TestCase):
         mesh = self.__create_test_mesh("MeshWithOnlyBasis")
 
         # Add only Basis and an identical key
-        mesh.shape_key_add(name="Basis")
+        mesh.shape_key_add(name="Basis", from_mix=False)
         mesh.shape_key_add(name="IdenticalKey")
 
         # Select mesh

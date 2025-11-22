@@ -369,7 +369,7 @@ class TestUtilitySystems(unittest.TestCase):
         bpy.ops.object.mode_set(mode="OBJECT")
 
         # Add shape key
-        mesh_obj.shape_key_add(name="Basis")
+        mesh_obj.shape_key_add(name="Basis", from_mix=False)
         shape_key = mesh_obj.shape_key_add(name="TestKey")
 
         # Test shape key removal

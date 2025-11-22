@@ -237,14 +237,12 @@ class TestVPDExporter(unittest.TestCase):
         mesh_obj = bpy.context.active_object
         mesh_obj.name = "TestMesh"
 
-        # Add shape keys
-        bpy.ops.object.shape_key_add(from_mix=False)  # Add basis key
+        # Add basis shape key
+        mesh_obj.shape_key_add(name="Basis", from_mix=False)
 
         # Add a few shape keys (morphs)
         for name in ["Smile", "Sad", "Angry"]:
-            bpy.ops.object.shape_key_add(from_mix=False)
-            shape_key = mesh_obj.data.shape_keys.key_blocks[-1]
-            shape_key.name = name
+            shape_key = mesh_obj.shape_key_add(name=name, from_mix=False)
 
             # Modify some vertices to make the shape key do something
             for i, v in enumerate(mesh_obj.data.vertices):

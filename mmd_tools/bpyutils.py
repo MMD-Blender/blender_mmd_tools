@@ -282,6 +282,26 @@ class FnObject:
         raise NotImplementedError("This class is not expected to be instantiated.")
 
     @staticmethod
+    def mesh_add_shape_key(mesh_object: bpy.types.Object, name: str, from_mix: bool = True) -> bpy.types.ShapeKey:
+        """Add a shape key to the mesh object.
+        Note:
+            Blender 5.0+ changed the default shape key value from 0.0 to 1.0.
+            This function explicitly sets value to 0.0 for consistent behavior.
+        """
+        assert isinstance(mesh_object.data, bpy.types.Mesh)
+        shape_key = mesh_object.shape_key_add(name=name, from_mix=from_mix)
+        shape_key.value = 0.0
+        return shape_key
+
+    @staticmethod
+    def mesh_ensure_basis_shape_key(mesh_object: bpy.types.Object) -> bpy.types.ShapeKey:
+        """Ensure the mesh has a basis shape key, create if not exists."""
+        assert isinstance(mesh_object.data, bpy.types.Mesh)
+        if mesh_object.data.shape_keys is None:
+            return mesh_object.shape_key_add(name="Basis", from_mix=False)
+        return mesh_object.data.shape_keys.key_blocks[0]
+
+    @staticmethod
     def mesh_remove_shape_key(mesh_object: bpy.types.Object, shape_key: bpy.types.ShapeKey):
         assert isinstance(mesh_object.data, bpy.types.Mesh)
 
