@@ -3,10 +3,10 @@
 
 from bpy.types import Panel
 
-from ..core.lamp import MMDLamp
+from ..core.light import MMDLight
 
 
-class MMDLampPanel(Panel):
+class MMDLightPanel(Panel):
     bl_idname = "OBJECT_PT_mmd_tools_light"
     bl_label = "MMD Light Tools"
     bl_space_type = "PROPERTIES"
@@ -16,20 +16,20 @@ class MMDLampPanel(Panel):
     @classmethod
     def poll(cls, context):
         obj = context.active_object
-        return obj is not None and (MMDLamp.isLamp(obj) or MMDLamp.isMMDLamp(obj))
+        return obj is not None and (MMDLight.isLight(obj) or MMDLight.isMMDLight(obj))
 
     def draw(self, context):
         obj = context.active_object
 
         layout = self.layout
 
-        if MMDLamp.isMMDLamp(obj):
-            mmd_lamp = MMDLamp(obj)
-            # empty = mmd_lamp.object()
-            lamp = mmd_lamp.lamp()
+        if MMDLight.isMMDLight(obj):
+            mmd_light = MMDLight(obj)
+            # empty = mmd_light.object()
+            light = mmd_light.light()
 
             c = layout.column()
-            c.prop(lamp.data, "color")
-            c.prop(lamp, "location", text="Light Source")
+            c.prop(light.data, "color")
+            c.prop(light, "location", text="Light Source")
         else:
-            layout.operator("mmd_tools.convert_to_mmd_lamp", text="Convert")
+            layout.operator("mmd_tools.convert_to_mmd_light", text="Convert")

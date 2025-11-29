@@ -141,7 +141,8 @@ class FnMaterial:
             img_filepath = bpy.path.abspath(image.filepath)  # image.filepath_from_user()
             if img_filepath == filepath:
                 return True
-            # pylint: disable=bare-except
+            if not os.path.exists(img_filepath) or not os.path.exists(filepath):
+                return False
             try:
                 return os.path.samefile(img_filepath, filepath)
             except Exception as e:
@@ -151,11 +152,10 @@ class FnMaterial:
     def _load_image(self, filepath):
         img = next((i for i in bpy.data.images if self.__same_image_file(i, filepath)), None)
         if img is None:
-            # pylint: disable=bare-except
             try:
                 img = bpy.data.images.load(filepath)
             except Exception:
-                logging.warning("Cannot create a texture for %s. No such file.", filepath)
+                logging.warning("Cannot load texture '%s': No such file", filepath)
                 img = bpy.data.images.new(os.path.basename(filepath), 1, 1)
                 img.source = "FILE"
                 img.filepath = filepath

@@ -25,8 +25,7 @@ class FnMorph:
         if len(shape_key_names) < 1:
             return
         assert FnContext.get_active_object(FnContext.ensure_context()) == obj
-        if obj.data.shape_keys is None:
-            bpy.ops.object.shape_key_add()
+        FnObject.mesh_ensure_basis_shape_key(mesh_object=obj)
 
         def __move_to_bottom(key_blocks, name):
             obj.active_shape_key_index = key_blocks.find(name)
@@ -35,7 +34,7 @@ class FnMorph:
         key_blocks = obj.data.shape_keys.key_blocks
         for name in shape_key_names:
             if name not in key_blocks:
-                obj.shape_key_add(name=name, from_mix=False)
+                FnObject.mesh_add_shape_key(mesh_object=obj, name=name, from_mix=False)
             elif len(key_blocks) > 1:
                 __move_to_bottom(key_blocks, name)
 
@@ -118,7 +117,7 @@ class FnMorph:
 
         mesh_object.active_shape_key_index = key_blocks.find(src_name)
         mesh_object.show_only_shape_key, last = True, mesh_object.show_only_shape_key
-        mesh_object.shape_key_add(name=dest_name, from_mix=True)
+        FnObject.mesh_add_shape_key(mesh_object=mesh_object, name=dest_name, from_mix=True)
         mesh_object.show_only_shape_key = last
         mesh_object.active_shape_key_index = key_blocks.find(dest_name)
 
@@ -332,7 +331,7 @@ class _MorphSlider:
             obj.parent = root
             FnContext.link_object(FnContext.ensure_context(), obj)
         if obj and obj.data.shape_keys is None:
-            key = obj.shape_key_add(name="--- morph sliders ---")
+            key = FnObject.mesh_add_shape_key(mesh_object=obj, name="--- morph sliders ---", from_mix=False)
             key.mute = True
             obj.active_shape_key_index = 0
         if binded and obj and obj.data.shape_keys.key_blocks[0].mute:
@@ -380,7 +379,7 @@ class _MorphSlider:
             # if name[-1] == '\\': # fix driver's bug???
             #    m.name = name = name + ' '
             if name and name not in morph_sliders:
-                obj.shape_key_add(name=name, from_mix=False)
+                FnObject.mesh_add_shape_key(mesh_object=obj, name=name, from_mix=False)
 
     @staticmethod
     def __driver_variables(id_data, path, index=-1):
@@ -514,7 +513,7 @@ class _MorphSlider:
                 else:
                     name_bind = f"mmd_bind{hash(morph_sliders[kb_name])}"
                     if name_bind not in key_blocks:
-                        mesh_object.shape_key_add(name=name_bind, from_mix=False)
+                        FnObject.mesh_add_shape_key(mesh_object=mesh_object, name=name_bind, from_mix=False)
                     kb_bind = key_blocks[name_bind]
                     kb_bind.relative_key = kb
                 kb_bind.slider_min = -10

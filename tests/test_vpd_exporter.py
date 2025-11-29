@@ -237,14 +237,12 @@ class TestVPDExporter(unittest.TestCase):
         mesh_obj = bpy.context.active_object
         mesh_obj.name = "TestMesh"
 
-        # Add shape keys
-        bpy.ops.object.shape_key_add(from_mix=False)  # Add basis key
+        # Add basis shape key
+        mesh_obj.shape_key_add(name="Basis", from_mix=False)
 
         # Add a few shape keys (morphs)
         for name in ["Smile", "Sad", "Angry"]:
-            bpy.ops.object.shape_key_add(from_mix=False)
-            shape_key = mesh_obj.data.shape_keys.key_blocks[-1]
-            shape_key.name = name
+            shape_key = mesh_obj.shape_key_add(name=name, from_mix=False)
 
             # Modify some vertices to make the shape key do something
             for i, v in enumerate(mesh_obj.data.vertices):
@@ -503,7 +501,14 @@ class TestVPDExporter(unittest.TestCase):
                                 self.assertTrue(os.path.getsize(pose_file_path) > 0, f"Pose file {file} is empty")
 
                         # Only assert if markers should have been created
-                        if hasattr(armature, "animation_data") and armature.animation_data and hasattr(armature.animation_data, "action") and armature.animation_data.action and hasattr(armature.animation_data.action, "pose_markers") and len(armature.animation_data.action.pose_markers) > 0:
+                        if (
+                            hasattr(armature, "animation_data")
+                            and armature.animation_data
+                            and hasattr(armature.animation_data, "action")
+                            and armature.animation_data.action
+                            and hasattr(armature.animation_data.action, "pose_markers")
+                            and len(armature.animation_data.action.pose_markers) > 0
+                        ):
                             self.assertTrue(found_pose_files, "No pose files created for ALL export")
 
                     print(f"ok Successfully tested: pose_type={pose_type}, use_pose_mode={use_pose_mode}")

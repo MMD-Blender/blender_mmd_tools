@@ -11,7 +11,7 @@ from mathutils import Euler, Quaternion
 
 from .. import vmd
 from ..camera import MMDCamera
-from ..lamp import MMDLamp
+from ..light import MMDLight
 from ..vmd.importer import _FnBezier
 
 
@@ -454,48 +454,48 @@ class VMDExporter:
         logging.info("(camera) frames:%5d  name: %s", len(vmd_cam_anim), mmd_cam.name)
         return vmd_cam_anim
 
-    def __exportLampAnimation(self, lampObj):
-        if lampObj is None:
+    def __exportLightAnimation(self, lightObj):
+        if lightObj is None:
             return None
-        if not MMDLamp.isMMDLamp(lampObj):
-            logging.warning('[WARNING] lamp "%s" is not MMDLamp', lampObj.name)
+        if not MMDLight.isMMDLight(lightObj):
+            logging.warning('[WARNING] light "%s" is not MMDLight', lightObj.name)
             return None
 
-        lamp_rig = MMDLamp(lampObj)
-        mmd_lamp = lamp_rig.object()
-        lamp = lamp_rig.lamp()
+        light_rig = MMDLight(lightObj)
+        mmd_light = light_rig.object()
+        light = light_rig.light()
 
-        vmd_lamp_anim = vmd.LampAnimation()
+        vmd_light_anim = vmd.LightAnimation()
 
-        data = list(lamp.data.color) + list(lamp.location)
-        lamp_curves = [_FCurve(i) for i in data]  # r, g, b, x, y, z
+        data = list(light.data.color) + list(light.location)
+        light_curves = [_FCurve(i) for i in data]  # r, g, b, x, y, z
 
-        animation_data = lamp.data.animation_data
+        animation_data = light.data.animation_data
         if animation_data and animation_data.action:
             for fcurve in animation_data.action.fcurves:
                 if fcurve.data_path == "color":  # r, g, b
-                    lamp_curves[fcurve.array_index].setFCurve(fcurve)
+                    light_curves[fcurve.array_index].setFCurve(fcurve)
 
-        animation_data = lamp.animation_data
+        animation_data = light.animation_data
         if animation_data and animation_data.action:
             for fcurve in animation_data.action.fcurves:
                 if fcurve.data_path == "location":  # x, y, z
-                    lamp_curves[3 + fcurve.array_index].setFCurve(fcurve)
+                    light_curves[3 + fcurve.array_index].setFCurve(fcurve)
 
-        for frame_number, r, g, b, x, y, z in self.__allFrameKeys(lamp_curves):
-            key = vmd.LampKeyFrameKey()
+        for frame_number, r, g, b, x, y, z in self.__allFrameKeys(light_curves):
+            key = vmd.LightKeyFrameKey()
             key.frame_number = frame_number - self.__frame_start
             key.color = [r[0], g[0], b[0]]
             key.direction = [-x[0], -z[0], -y[0]]
-            vmd_lamp_anim.append(key)
-        logging.info("(lamp) frames:%5d  name: %s", len(vmd_lamp_anim), mmd_lamp.name)
-        return vmd_lamp_anim
+            vmd_light_anim.append(key)
+        logging.info("(light) frames:%5d  name: %s", len(vmd_light_anim), mmd_light.name)
+        return vmd_light_anim
 
     def export(self, **args):
         armature = args.get("armature")
         mesh = args.get("mesh")
         camera = args.get("camera")
-        lamp = args.get("lamp")
+        light = args.get("light")
         filepath = args.get("filepath", "")
 
         self.__scale = args.get("scale", 1.0)
@@ -518,10 +518,10 @@ class VMDExporter:
             vmdFile.propertyAnimation = self.__exportPropertyAnimation(armature)
             vmdFile.save(filepath=filepath)
 
-        elif camera or lamp:
+        elif camera or light:
             vmdFile = vmd.File()
             vmdFile.header = vmd.Header()
             vmdFile.header.model_name = "カメラ・照明"
             vmdFile.cameraAnimation = self.__exportCameraAnimation(camera)
-            vmdFile.lampAnimation = self.__exportLampAnimation(lamp)
+            vmdFile.lightAnimation = self.__exportLightAnimation(light)
             vmdFile.save(filepath=filepath)

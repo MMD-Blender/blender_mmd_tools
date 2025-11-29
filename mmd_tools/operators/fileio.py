@@ -4,6 +4,7 @@
 import logging
 import os
 import re
+import sys
 import time
 import traceback
 
@@ -13,7 +14,7 @@ from bpy_extras.io_utils import ExportHelper, ImportHelper
 
 from .. import auto_scene_setup
 from ..core.camera import MMDCamera
-from ..core.lamp import MMDLamp
+from ..core.light import MMDLight
 from ..core.model import FnModel, Model
 from ..core.pmd import importer as pmd_importer
 from ..core.pmx import exporter as pmx_exporter
@@ -214,7 +215,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.import_model"
     bl_label = "Import Model File (.pmd, .pmx)"
     bl_description = "Import model file(s) (.pmd, .pmx)"
-    bl_options = {"REGISTER", "UNDO", "PRESET"}
+    bl_options = {"UNDO", "PRESET"}
 
     files: bpy.props.CollectionProperty(type=OperatorFileListElement, options={"HIDDEN", "SKIP_SAVE"})
     directory: bpy.props.StringProperty(maxlen=1024, subtype="DIR_PATH", options={"HIDDEN", "SKIP_SAVE"})
@@ -269,7 +270,7 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
     )
     fix_ik_links: bpy.props.BoolProperty(
         name="Fix IK Links",
-        description="Fix IK links to be blender suitable",
+        description="Fix IK links to be blender suitable. This aligns heads and tails across the bone chain.",
         default=False,
     )
     ik_loop_factor: bpy.props.IntProperty(
@@ -339,11 +340,10 @@ class ImportPmx(Operator, ImportHelper, PreferencesMixin):
 
     def invoke(self, context, event):
         self.load_preferences_on_invoke(context, "default_pmx_import_preset")
-        return super().invoke(context, event)
+        return self.invoke_popup(context)
 
     def cancel(self, context):
         self.restore_preferences_on_cancel()
-        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def execute(self, context):
         try:
@@ -408,7 +408,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.import_vmd"
     bl_label = "Import VMD File (.vmd)"
     bl_description = "Import a VMD file to selected objects (.vmd)\nBehavior varies depending on the selected object:\n- Select the root (cross under the model): imports both armature and morph animations\n- Select the model: imports only morph animation\n- Select the armature: imports only armature animation"
-    bl_options = {"REGISTER", "UNDO", "PRESET"}
+    bl_options = {"UNDO", "PRESET"}
 
     files: bpy.props.CollectionProperty(type=OperatorFileListElement, options={"HIDDEN", "SKIP_SAVE"})
     directory: bpy.props.StringProperty(maxlen=1024, subtype="DIR_PATH", options={"HIDDEN", "SKIP_SAVE"})
@@ -483,14 +483,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         description="When the interval between camera keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing between rapid camera cuts.",
         default=True,
     )
-    detect_lamp_changes: bpy.props.BoolProperty(
-        # TODO: Update all instances of "lamp" to "light" throughout the repository to align with Blender 2.80+ API changes.
-        # This includes:
-        #   - Variable names and references
-        #   - Class/type checks (LAMP -> LIGHT)
-        #   - Documentation and comments
-        #   - Function parameters and return values
-        # This change is necessary since Blender 2.80 renamed the "Lamp" type to "Light".
+    detect_light_changes: bpy.props.BoolProperty(
         name="Detect Light Cut",
         description="When the interval between light keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing during sudden lighting changes.",
         default=True,
@@ -513,11 +506,10 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
 
     def invoke(self, context, event):
         self.load_preferences_on_invoke(context, "default_vmd_import_preset")
-        return super().invoke(context, event)
+        return self.invoke_popup(context)
 
     def cancel(self, context):
         self.restore_preferences_on_cancel()
-        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def draw(self, context):
         layout = self.layout
@@ -534,7 +526,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
         layout.prop(self, "use_pose_mode")
         layout.prop(self, "use_mirror")
         layout.prop(self, "detect_camera_changes")
-        layout.prop(self, "detect_lamp_changes")
+        layout.prop(self, "detect_light_changes")
 
         layout.prop(self, "update_scene_settings")
 
@@ -589,7 +581,7 @@ class ImportVmd(Operator, ImportHelper, PreferencesMixin):
                     use_mirror=self.use_mirror,
                     use_nla=self.use_nla,
                     detect_camera_changes=self.detect_camera_changes,
-                    detect_lamp_changes=self.detect_lamp_changes,
+                    detect_light_changes=self.detect_light_changes,
                 )
 
                 for i in selected_objects:
@@ -680,7 +672,7 @@ class ImportVpd(Operator, ImportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.import_vpd"
     bl_label = "Import VPD File (.vpd)"
     bl_description = "Import VPD file(s) to selected rig's Action Pose (.vpd)\nBehavior varies depending on the selected object:\n- Select the root (cross under the model): applies both armature pose and morphs\n- Select the model: applies only morphs\n- Select the armature: applies only armature pose"
-    bl_options = {"REGISTER", "UNDO", "PRESET"}
+    bl_options = {"UNDO", "PRESET"}
 
     files: bpy.props.CollectionProperty(type=OperatorFileListElement, options={"HIDDEN", "SKIP_SAVE"})
     directory: bpy.props.StringProperty(maxlen=1024, subtype="DIR_PATH", options={"HIDDEN", "SKIP_SAVE"})
@@ -731,11 +723,10 @@ class ImportVpd(Operator, ImportHelper, PreferencesMixin):
 
     def invoke(self, context, event):
         self.load_preferences_on_invoke(context, "default_vpd_import_preset")
-        return super().invoke(context, event)
+        return self.invoke_popup(context)
 
     def cancel(self, context):
         self.restore_preferences_on_cancel()
-        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def draw(self, context):
         layout = self.layout
@@ -788,7 +779,7 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.export_pmx"
     bl_label = "Export PMX File (.pmx)"
     bl_description = "Export selected MMD model(s) to PMX file(s) (.pmx)"
-    bl_options = {"PRESET"}
+    bl_options = {"UNDO", "PRESET"}
 
     filename_ext = ".pmx"
     filter_glob: bpy.props.StringProperty(default="*.pmx", options={"HIDDEN"})
@@ -847,8 +838,18 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
         name="Normal Handling",
         description="Choose how to handle normals during export. This affects vertex count, edge count, and mesh topology by splitting vertices and edges to preserve split normals.",
         items=[
-            ("PRESERVE_ALL_NORMALS", "Preserve All Normals", "Export existing normals without any changes. When using this option, please verify if the vertex count of the exported model has significantly increased or is within a reasonable range. Avoid exporting an overly fragmented model.", 0),
-            ("SMOOTH_ALL_NORMALS", "Smooth All Normals", "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count. When using this option, please verify whether the exported model is excessively smooth.", 1),
+            (
+                "PRESERVE_ALL_NORMALS",
+                "Preserve All Normals",
+                "Export existing normals without any changes. When using this option, please verify if the vertex count of the exported model has significantly increased or is within a reasonable range. Avoid exporting an overly fragmented model.",
+                0,
+            ),
+            (
+                "SMOOTH_ALL_NORMALS",
+                "Smooth All Normals",
+                "Force smooths all normals, ignoring any sharp edges. This will result in a completely smooth-shaded model and minimum vertex count. When using this option, please verify whether the exported model is excessively smooth.",
+                1,
+            ),
         ],
         default="PRESERVE_ALL_NORMALS",
     )
@@ -922,7 +923,6 @@ class ExportPmx(Operator, ExportHelper, PreferencesMixin):
 
     def cancel(self, context):
         self.restore_preferences_on_cancel()
-        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def execute(self, context):
         try:
@@ -1004,7 +1004,7 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.export_vmd"
     bl_label = "Export VMD File (.vmd)"
     bl_description = "Export motion data of active object to a VMD file (.vmd)\nBehavior varies depending on the active object:\n- Active object is the root (cross under the model): exports both armature and morph animations\n- Active object is the model: exports only morph animation\n- Active object is the armature: exports only armature animation"
-    bl_options = {"PRESET"}
+    bl_options = {"UNDO", "PRESET"}
 
     filename_ext = ".vmd"
     filter_glob: bpy.props.StringProperty(default="*.vmd", options={"HIDDEN"})
@@ -1052,7 +1052,7 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
             return True
         if obj.mmd_type == "NONE" and (obj.type == "ARMATURE" or getattr(obj.data, "shape_keys", None)):
             return True
-        if MMDCamera.isMMDCamera(obj) or MMDLamp.isMMDLamp(obj):
+        if MMDCamera.isMMDCamera(obj) or MMDLight.isMMDLight(obj):
             return True
 
         return False
@@ -1063,7 +1063,6 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
 
     def cancel(self, context):
         self.restore_preferences_on_cancel()
-        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def execute(self, context):
         logger = logging.getLogger()
@@ -1098,8 +1097,8 @@ class ExportVmd(Operator, ExportHelper, PreferencesMixin):
                 for i in context.selected_objects:
                     if MMDCamera.isMMDCamera(i):
                         params["camera"] = i
-                    elif MMDLamp.isMMDLamp(i):
-                        params["lamp"] = i
+                    elif MMDLight.isMMDLight(i):
+                        params["light"] = i
 
             start_time = time.time()
             vmd_exporter.VMDExporter().export(**params)
@@ -1118,7 +1117,7 @@ class ExportVpd(Operator, ExportHelper, PreferencesMixin):
     bl_idname = "mmd_tools.export_vpd"
     bl_label = "Export VPD File (.vpd)"
     bl_description = "Export active rig's Action Pose to VPD file(s) (.vpd)\nBehavior varies depending on the active object:\n- Active object is the root (cross under the model): exports both armature pose and morphs\n- Active object is the model: exports only morphs\n- Active object is the armature: exports only armature pose"
-    bl_options = {"PRESET"}
+    bl_options = {"UNDO", "PRESET"}
 
     filename_ext = ".vpd"
     filter_glob: bpy.props.StringProperty(default="*.vpd", options={"HIDDEN"})
@@ -1164,7 +1163,6 @@ class ExportVpd(Operator, ExportHelper, PreferencesMixin):
 
     def cancel(self, context):
         self.restore_preferences_on_cancel()
-        return super().cancel(context) if hasattr(super(), "cancel") else None
 
     def draw(self, context):
         layout = self.layout
@@ -1218,14 +1216,6 @@ class MMD_FH_PMX(bpy.types.FileHandler):
     def poll_drop(cls, context):
         return context.area and context.area.type in {"VIEW_3D", "FILE_BROWSER"}
 
-    def import_drop(self, context, filepath=None, files=None, **kwargs):
-        if files:
-            for f in files:
-                bpy.ops.mmd_tools.import_model(filepath=f["name"])
-        elif filepath:
-            bpy.ops.mmd_tools.import_model(filepath=filepath)
-        return {"FINISHED"}
-
 
 class MMD_FH_VMD(bpy.types.FileHandler):
     bl_idname = "MMD_FH_VMD"
@@ -1239,14 +1229,6 @@ class MMD_FH_VMD(bpy.types.FileHandler):
     def poll_drop(cls, context):
         return context.area and context.area.type in {"VIEW_3D", "FILE_BROWSER"}
 
-    def import_drop(self, context, filepath=None, files=None, **kwargs):
-        if files:
-            for f in files:
-                bpy.ops.mmd_tools.import_vmd(filepath=f["name"])
-        elif filepath:
-            bpy.ops.mmd_tools.import_vmd(filepath=filepath)
-        return {"FINISHED"}
-
 
 class MMD_FH_VPD(bpy.types.FileHandler):
     bl_idname = "MMD_FH_VPD"
@@ -1259,14 +1241,6 @@ class MMD_FH_VPD(bpy.types.FileHandler):
     @classmethod
     def poll_drop(cls, context):
         return context.area and context.area.type in {"VIEW_3D", "FILE_BROWSER"}
-
-    def import_drop(self, context, filepath=None, files=None, **kwargs):
-        if files:
-            for f in files:
-                bpy.ops.mmd_tools.import_vpd(filepath=f["name"])
-        elif filepath:
-            bpy.ops.mmd_tools.import_vpd(filepath=filepath)
-        return {"FINISHED"}
 
 
 # --- Keymap Registration ---
@@ -1283,8 +1257,13 @@ def register():
 
     # Assign Ctrl + E as the hotkey for PMX export.
     km = kc.keymaps.new(name="Screen", space_type="EMPTY")
-    kmi = km.keymap_items.new("mmd_tools.export_pmx", "E", "PRESS", ctrl=True, alt=False)
+    kmi = km.keymap_items.new("mmd_tools.export_pmx", "E", "PRESS", ctrl=True)
     addon_keymaps.append((km, kmi))
+    # Also assign Command + E on macOS for consistency with Blender
+    if sys.platform == "darwin":
+        km = kc.keymaps.new(name="Screen", space_type="EMPTY")
+        kmi = km.keymap_items.new("mmd_tools.export_pmx", "E", "PRESS", oskey=True)
+        addon_keymaps.append((km, kmi))
 
 
 def unregister():

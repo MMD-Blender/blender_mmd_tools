@@ -110,7 +110,7 @@ class FnSDEF:
                     # preprocessing
                     w0, w1 = bgs[0].weight, bgs[1].weight
                     # w0 + w1 == 1
-                    w0 /= (w0 + w1)
+                    w0 /= w0 + w1
                     w1 = 1 - w0
 
                     c, r0, r1 = sdef_c[i].co, sdef_r0[i].co, sdef_r1[i].co
@@ -270,7 +270,7 @@ class FnSDEF:
             logging.debug("SDEF bind skipped for '%s': No SDEF data found", obj.name)
             return False
         # Create the shapekey for the driver
-        shapekey = obj.shape_key_add(name=cls.SHAPEKEY_NAME, from_mix=False)
+        shapekey = FnObject.mesh_add_shape_key(mesh_object=obj, name=cls.SHAPEKEY_NAME, from_mix=False)
         cls.__init_cache(obj, shapekey)
         cls.__sdef_muted(obj, shapekey)
         cls.register_driver_function()

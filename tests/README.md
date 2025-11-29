@@ -68,7 +68,7 @@ C:.
 |   |   ✓ bone.py (test_bone.py)
 |   |   ✓ camera.py (test_camera_system.py)
 |   |   ✓ exceptions.py (test_utility_systems.py)
-|   |   ✓ lamp.py (test_lamp_system.py)
+|   |   ✓ light.py (test_light_system.py)
 |   |   ✓ material.py (test_material_system.py)
 |   |   ✓ model.py (used in multiple test files)
 |   |   ✓ morph.py (test_morph_system.py)
@@ -102,7 +102,7 @@ C:.
 |       ✓ camera.py (test_camera_system.py)
 |       ✓ display_item.py (test_display_system.py)
 |       ✓ fileio.py (test_fileio_operators.py)
-|       ✓ lamp.py (test_lamp_system.py)
+|       ✓ light.py (test_light_system.py)
 |       ✓ material.py (test_material_system.py)
 |       ✓ misc.py (test_misc.py)
 |       ✓ model.py (test_model_operators.py)
@@ -118,7 +118,7 @@ C:.
 +---panels
 |   |   ✓ prop_bone.py (test_bone.py)
 |   |   ✓ prop_camera.py (test_camera_system.py)
-|   |   ✓ prop_lamp.py (test_lamp_system.py)
+|   |   ✓ prop_light.py (test_light_system.py)
 |   |   ✓ prop_material.py (test_material_system.py)
 |   |   ✗ prop_object.py
 |   |   ✗ prop_physics.py

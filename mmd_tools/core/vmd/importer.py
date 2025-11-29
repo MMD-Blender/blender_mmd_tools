@@ -14,7 +14,7 @@ from ... import utils
 from ...compat import action_compat
 from .. import vmd
 from ..camera import MMDCamera
-from ..lamp import MMDLamp
+from ..light import MMDLight
 
 
 class FlipPose:
@@ -308,13 +308,13 @@ class HasAnimationData:
 
 
 class VMDImporter:
-    def __init__(self, filepath, scale=1.0, bone_mapper=None, use_pose_mode=False, convert_mmd_camera=True, convert_mmd_lamp=True, frame_margin=5, use_mirror=False, use_nla=False, detect_camera_changes=True, detect_lamp_changes=True):
+    def __init__(self, filepath, scale=1.0, bone_mapper=None, use_pose_mode=False, convert_mmd_camera=True, convert_mmd_light=True, frame_margin=5, use_mirror=False, use_nla=False, detect_camera_changes=True, detect_light_changes=True):
         self.__vmdFile = vmd.File()
         self.__vmdFile.load(filepath=filepath)
         logging.debug(str(self.__vmdFile.header))
         self.__scale = scale
         self.__convert_mmd_camera = convert_mmd_camera
-        self.__convert_mmd_lamp = convert_mmd_lamp
+        self.__convert_mmd_light = convert_mmd_light
         self.__bone_mapper = bone_mapper
         self.__bone_util_cls = BoneConverterPoseMode if use_pose_mode else BoneConverter
         self.__frame_start = bpy.context.scene.frame_current
@@ -322,7 +322,7 @@ class VMDImporter:
         self.__mirror = use_mirror
         self.__use_nla = use_nla
         self.__detect_camera_changes = detect_camera_changes
-        self.__detect_lamp_changes = detect_lamp_changes
+        self.__detect_light_changes = detect_light_changes
 
     @staticmethod
     def __minRotationDiff(prev_q, curr_q):
@@ -770,7 +770,7 @@ class VMDImporter:
         self.__assign_action(cameraObj, distance_action)
 
     @staticmethod
-    def detectLampChange(fcurve):
+    def detectLightChange(fcurve):
         frames = list(fcurve.keyframe_points)
         frameCount = len(frames)
         frames.sort(key=lambda x: x.co[0])
@@ -781,35 +781,35 @@ class VMDImporter:
                 if n.co[0] - f.co[0] <= 1.0:
                     f.interpolation = "CONSTANT"
 
-    def __assignToLamp(self, lampObj, action_name=None):
-        mmdLampInstance = MMDLamp.convertToMMDLamp(lampObj, self.__scale)
-        mmdLamp = mmdLampInstance.object()
-        lampObj = mmdLampInstance.lamp()
+    def __assignToLight(self, lightObj, action_name=None):
+        mmdLightInstance = MMDLight.convertToMMDLight(lightObj, self.__scale)
+        mmdLight = mmdLightInstance.object()
+        lightObj = mmdLightInstance.light()
 
-        lampAnim = self.__vmdFile.lampAnimation
-        logging.info("(lamp) frames:%5d  name: %s", len(lampAnim), mmdLamp.name)
-        if len(lampAnim) < 1:
+        lightAnim = self.__vmdFile.lightAnimation
+        logging.info("(light) frames:%5d  name: %s", len(lightAnim), mmdLight.name)
+        if len(lightAnim) < 1:
             return
 
-        action_name = action_name or mmdLamp.name
-        color_action = self.__get_or_create_action(lampObj.data, action_name + "_color")
-        location_action = self.__get_or_create_action(lampObj, action_name + "_loc")
+        action_name = action_name or mmdLight.name
+        color_action = self.__get_or_create_action(lightObj.data, action_name + "_color")
+        location_action = self.__get_or_create_action(lightObj, action_name + "_loc")
 
         def _identity(i):
             return i
 
         _loc = _MirrorMapper.get_location if self.__mirror else _identity
-        for keyFrame in lampAnim:
+        for keyFrame in lightAnim:
             frame = keyFrame.frame_number + self.__frame_start + self.__frame_margin
             self.__keyframe_insert(color_action.fcurves, "color", frame, Vector(keyFrame.color))
             self.__keyframe_insert(location_action.fcurves, "location", frame, Vector(_loc(keyFrame.direction)).xzy * -1)
 
-        if self.__detect_lamp_changes:
+        if self.__detect_light_changes:
             for fcurve in location_action.fcurves:
-                self.detectLampChange(fcurve)
+                self.detectLightChange(fcurve)
 
-        self.__assign_action(lampObj.data, color_action)
-        self.__assign_action(lampObj, location_action)
+        self.__assign_action(lightObj.data, color_action)
+        self.__assign_action(lightObj, location_action)
 
     def assign(self, obj, action_name=None):
         if obj is None:
@@ -819,16 +819,16 @@ class VMDImporter:
 
         if MMDCamera.isMMDCamera(obj):
             self.__assignToCamera(obj, action_name + "_camera")
-        elif MMDLamp.isMMDLamp(obj):
-            self.__assignToLamp(obj, action_name + "_lamp")
+        elif MMDLight.isMMDLight(obj):
+            self.__assignToLight(obj, action_name + "_light")
         elif getattr(obj.data, "shape_keys", None):
             self.__assignToMesh(obj, action_name + "_facial")
         elif obj.type == "ARMATURE":
             self.__assignToArmature(obj, action_name + "_bone")
         elif obj.type == "CAMERA" and self.__convert_mmd_camera:
             self.__assignToCamera(obj, action_name + "_camera")
-        elif obj.type == "LIGHT" and self.__convert_mmd_lamp:
-            self.__assignToLamp(obj, action_name + "_lamp")
+        elif obj.type == "LIGHT" and self.__convert_mmd_light:
+            self.__assignToLight(obj, action_name + "_light")
         elif obj.mmd_type == "ROOT":
             self.__assignToRoot(obj, action_name + "_display")
         else:

@@ -52,7 +52,7 @@ class FileReadStream(FileStream):
     def __readIndex(self, size, typedict):
         index = None
         if size in typedict:
-            index, = struct.unpack(typedict[size], self.__fin.read(size))
+            (index,) = struct.unpack(typedict[size], self.__fin.read(size))
         else:
             raise ValueError(f"invalid data size {str(size)}")
         return index
@@ -84,38 +84,38 @@ class FileReadStream(FileStream):
 
     # READ / WRITE methods for general types
     def readInt(self):
-        v, = struct.unpack("<i", self.__fin.read(4))
+        (v,) = struct.unpack("<i", self.__fin.read(4))
         return v
 
     def readShort(self):
-        v, = struct.unpack("<h", self.__fin.read(2))
+        (v,) = struct.unpack("<h", self.__fin.read(2))
         return v
 
     def readUnsignedShort(self):
-        v, = struct.unpack("<H", self.__fin.read(2))
+        (v,) = struct.unpack("<H", self.__fin.read(2))
         return v
 
     def readStr(self):
         length = self.readInt()
-        buf, = struct.unpack(f"<{length}s", self.__fin.read(length))
+        (buf,) = struct.unpack(f"<{length}s", self.__fin.read(length))
         return str(buf, self.header().encoding.charset, errors="replace")
 
     def readFloat(self):
-        v, = struct.unpack("<f", self.__fin.read(4))
+        (v,) = struct.unpack("<f", self.__fin.read(4))
         return v
 
     def readVector(self, size):
         return struct.unpack("<" + "f" * size, self.__fin.read(4 * size))
 
     def readByte(self):
-        v, = struct.unpack("<B", self.__fin.read(1))
+        (v,) = struct.unpack("<B", self.__fin.read(1))
         return v
 
     def readBytes(self, length):
         return self.__fin.read(length)
 
     def readSignedByte(self):
-        v, = struct.unpack("<b", self.__fin.read(1))
+        (v,) = struct.unpack("<b", self.__fin.read(1))
         return v
 
 
@@ -566,14 +566,20 @@ class Model:
         fs.writeStr(self.comment)
         fs.writeStr(self.comment_e)
 
-        logging.info("""exportings pmx model data...
+        logging.info(
+            """exportings pmx model data...
 name: %s
 name(english): %s
 comment:
 %s
 comment(english):
 %s
-""", self.name, self.name_e, self.comment, self.comment_e)
+""",
+            self.name,
+            self.name_e,
+            self.comment,
+            self.comment_e,
+        )
 
         logging.info("exporting vertices... %d", len(self.vertices))
         fs.writeInt(len(self.vertices))

@@ -221,11 +221,11 @@ class MMD_TOOLS_UL_MMDTranslationElementIndex(bpy.types.UIList):
         active_propname,
         index: int,
     ):
-        mmd_translation_element: MMDTranslationElement = data.translation_elements[
-            mmd_translation_element_index.value
-        ]
+        mmd_translation_element: MMDTranslationElement = data.translation_elements[mmd_translation_element_index.value]
         MMD_DATA_TYPE_TO_HANDLERS[mmd_translation_element.type].draw_item(
-            layout, mmd_translation_element, index,
+            layout,
+            mmd_translation_element,
+            index,
         )
 
 
@@ -240,14 +240,8 @@ class RestoreMMDDataReferenceOperator(bpy.types.Operator):
 
     def execute(self, context: bpy.types.Context):
         root_object = FnModel.find_root_object(context.active_object)
-        mmd_translation_element_index = (
-            root_object.mmd_root.translation.filtered_translation_element_indices[
-                self.index
-            ].value
-        )
-        mmd_translation_element = root_object.mmd_root.translation.translation_elements[
-            mmd_translation_element_index
-        ]
+        mmd_translation_element_index = root_object.mmd_root.translation.filtered_translation_element_indices[self.index].value
+        mmd_translation_element = root_object.mmd_root.translation.translation_elements[mmd_translation_element_index]
         setattr(mmd_translation_element, self.prop_name, self.restore_value)
 
         return {"FINISHED"}
@@ -275,7 +269,10 @@ class GlobalTranslationPopup(bpy.types.Operator):
         group = row.row(align=True, heading="is Blank:")
         group.alignment = "RIGHT"
         group.prop(
-            mmd_translation, "filter_japanese_blank", toggle=True, text="Japanese",
+            mmd_translation,
+            "filter_japanese_blank",
+            toggle=True,
+            text="Japanese",
         )
         group.prop(mmd_translation, "filter_english_blank", toggle=True, text="English")
 
@@ -312,10 +309,7 @@ class GlobalTranslationPopup(bpy.types.Operator):
         row.label(text="", icon="RESTRICT_SELECT_OFF")
         row.label(text="", icon="HIDE_OFF")
 
-        if (
-            len(mmd_translation.filtered_translation_element_indices)
-            > DEFAULT_SHOW_ROW_COUNT
-        ):
+        if len(mmd_translation.filtered_translation_element_indices) > DEFAULT_SHOW_ROW_COUNT:
             row.label(text="", icon="BLANK1")
 
         col.template_list(
@@ -495,10 +489,7 @@ class ImportTranslationCSVOperator(bpy.types.Operator):
                     )
                     return {"CANCELLED"}
 
-                visible_indices = [
-                    i.value
-                    for i in mmd_translation.filtered_translation_element_indices
-                ]
+                visible_indices = [i.value for i in mmd_translation.filtered_translation_element_indices]
                 translation_elements_list = list(mmd_translation.translation_elements)
                 row_count = 0
 

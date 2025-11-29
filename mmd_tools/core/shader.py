@@ -301,9 +301,12 @@ class _MaterialMorph:
         __blend_color_add("Diffuse", (pos_x, +0.0))
         __blend_color_add("Specular", (pos_x, -0.5))
 
-        combine_reflect1_alpha1_edge1 = ng.new_node("ShaderNodeCombineRGB", (-2, -1.5))
-        combine_reflect2_alpha2_edge2 = ng.new_node("ShaderNodeCombineRGB", (-2, -1.75))
-        separate_reflect_alpha_edge = ng.new_node("ShaderNodeSeparateRGB", (pos_x + 2, -1.5))
+        combine_reflect1_alpha1_edge1 = ng.new_node("ShaderNodeCombineColor", (-2, -1.5))
+        combine_reflect1_alpha1_edge1.mode = "RGB"
+        combine_reflect2_alpha2_edge2 = ng.new_node("ShaderNodeCombineColor", (-2, -1.75))
+        combine_reflect2_alpha2_edge2.mode = "RGB"
+        separate_reflect_alpha_edge = ng.new_node("ShaderNodeSeparateColor", (pos_x + 2, -1.5))
+        separate_reflect_alpha_edge.mode = "RGB"
 
         __add_sockets("Reflect", combine_reflect1_alpha1_edge1.inputs[0], combine_reflect2_alpha2_edge2.inputs[0], separate_reflect_alpha_edge.outputs[0])
         __add_sockets("Alpha", combine_reflect1_alpha1_edge1.inputs[1], combine_reflect2_alpha2_edge2.inputs[1], separate_reflect_alpha_edge.outputs[1])
@@ -317,9 +320,12 @@ class _MaterialMorph:
         links.new(combine_reflect2_alpha2_edge2.outputs[0], node_mix.inputs[2])
         links.new(node_mix.outputs[0], separate_reflect_alpha_edge.inputs[0])
 
-        combine_base1a_toon1a_sphere1a = ng.new_node("ShaderNodeCombineRGB", (-2, -2.0))
-        combine_base2a_toon2a_sphere2a = ng.new_node("ShaderNodeCombineRGB", (-2, -2.25))
-        separate_basea_toona_spherea = ng.new_node("ShaderNodeSeparateRGB", (pos_x + 2, -2.0))
+        combine_base1a_toon1a_sphere1a = ng.new_node("ShaderNodeCombineColor", (-2, -2.0))
+        combine_base1a_toon1a_sphere1a.mode = "RGB"
+        combine_base2a_toon2a_sphere2a = ng.new_node("ShaderNodeCombineColor", (-2, -2.25))
+        combine_base2a_toon2a_sphere2a.mode = "RGB"
+        separate_basea_toona_spherea = ng.new_node("ShaderNodeSeparateColor", (pos_x + 2, -2.0))
+        separate_basea_toona_spherea.mode = "RGB"
 
         node_mix = ng.new_mix_node("MULTIPLY" if use_mul else "ADD", (pos_x + 1, -2.0))
         links.new(node_input.outputs["Fac"], node_mix.inputs[0])

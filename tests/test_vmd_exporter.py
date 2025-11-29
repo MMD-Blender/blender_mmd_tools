@@ -462,7 +462,18 @@ class TestVmdExporter(unittest.TestCase):
                     mesh_obj.select_set(True)
 
                 # Import VMD motion
-                bpy.ops.mmd_tools.import_vmd(files=[{"name": os.path.basename(vmd_file)}], directory=os.path.dirname(vmd_file), scale=0.08, margin=0, bone_mapper="PMX", use_pose_mode=False, use_mirror=False, update_scene_settings=True, create_new_action=True, use_nla=False)
+                bpy.ops.mmd_tools.import_vmd(
+                    files=[{"name": os.path.basename(vmd_file)}],
+                    directory=os.path.dirname(vmd_file),
+                    scale=0.08,
+                    margin=0,
+                    bone_mapper="PMX",
+                    use_pose_mode=False,
+                    use_mirror=False,
+                    update_scene_settings=True,
+                    create_new_action=True,
+                    use_nla=False,
+                )
                 print("    VMD imported successfully")
 
                 # Export VMD motion

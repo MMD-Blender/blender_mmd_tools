@@ -13,7 +13,7 @@ import bpy
 from mathutils import Matrix, Vector
 
 from ... import bpyutils, utils
-from ...bpyutils import FnContext
+from ...bpyutils import FnContext, FnObject
 from ...compat.action_compat import IS_BLENDER_50_UP
 from ...operators.misc import MoveObject
 from .. import pmx
@@ -106,14 +106,6 @@ class PMXImporter:
         self.__meshObj.parent = self.__armObj
         FnContext.link_object(self.__targetContext, self.__meshObj)
 
-    def __createBasisShapeKey(self):
-        if self.__meshObj.data.shape_keys:
-            assert len(self.__meshObj.data.vertices) > 0
-            assert len(self.__meshObj.data.shape_keys.key_blocks) > 1
-            return
-        FnContext.set_active_object(self.__targetContext, self.__meshObj)
-        bpy.ops.object.shape_key_add()
-
     def __importVertexGroup(self):
         vgroups = self.__meshObj.vertex_groups
         self.__vertexGroupTable = [vgroups.new(name=i.name) for i in self.__model.bones] or [vgroups.new(name="NO BONES")]
@@ -173,10 +165,10 @@ class PMXImporter:
         if len(self.__sdefVertices) < 1:
             return
 
-        self.__createBasisShapeKey()
-        sdefC = self.__meshObj.shape_key_add(name="mmd_sdef_c")
-        sdefR0 = self.__meshObj.shape_key_add(name="mmd_sdef_r0")
-        sdefR1 = self.__meshObj.shape_key_add(name="mmd_sdef_r1")
+        FnObject.mesh_ensure_basis_shape_key(mesh_object=self.__meshObj)
+        sdefC = FnObject.mesh_add_shape_key(mesh_object=self.__meshObj, name="mmd_sdef_c", from_mix=False)
+        sdefR0 = FnObject.mesh_add_shape_key(mesh_object=self.__meshObj, name="mmd_sdef_r0", from_mix=False)
+        sdefR1 = FnObject.mesh_add_shape_key(mesh_object=self.__meshObj, name="mmd_sdef_r1", from_mix=False)
         for i, pv in self.__sdefVertices.items():
             w = pv.weight.weights
             sdefC.data[i].co = Vector(w.c).xzy * self.__scale
@@ -696,7 +688,7 @@ class PMXImporter:
     def __importVertexMorphs(self):
         mmd_root = self.__root.mmd_root
         categories = self.CATEGORIES
-        self.__createBasisShapeKey()
+        FnObject.mesh_ensure_basis_shape_key(mesh_object=self.__meshObj)
 
         # Pre-fetch basis coordinates for batch processing
         basis_coords = []
@@ -707,8 +699,7 @@ class PMXImporter:
             basis_shape.data.foreach_get("co", basis_coords)
 
         for morph in (x for x in self.__model.morphs if isinstance(x, pmx.VertexMorph)):
-            shapeKey = self.__meshObj.shape_key_add(name=morph.name)
-            shapeKey.value = 0.0
+            shapeKey = FnObject.mesh_add_shape_key(mesh_object=self.__meshObj, name=morph.name, from_mix=False)
 
             vtx_morph = mmd_root.vertex_morphs.add()
             vtx_morph.name = morph.name
@@ -1095,8 +1086,6 @@ class _PMXCleaner:
             return None
 
         # clean face
-        # def face_key_func(f):
-        #     return frozenset(vertex_map[x][0] for x in f)
         def face_key_func(f):
             return frozenset({vertex_map[x][0]: tuple(pmx_vertices[x].uv) for x in f}.items())
         cls.__clean_pmx_faces(pmx_model.faces, pmx_model.materials, face_key_func)

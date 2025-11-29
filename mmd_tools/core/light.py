@@ -6,29 +6,29 @@ import bpy
 from ..bpyutils import FnContext, Props
 
 
-class MMDLamp:
+class MMDLight:
     def __init__(self, obj):
-        if MMDLamp.isLamp(obj):
+        if MMDLight.isLight(obj):
             obj = obj.parent
         if obj and obj.type == "EMPTY" and obj.mmd_type == "LIGHT":
             self.__emptyObj = obj
         else:
-            raise ValueError(f"{str(obj)} is not MMDLamp")
+            raise ValueError(f"{str(obj)} is not MMDLight")
 
     @staticmethod
-    def isLamp(obj):
-        return obj and obj.type in {"LIGHT", "LAMP"}
+    def isLight(obj):
+        return obj and obj.type == "LIGHT"
 
     @staticmethod
-    def isMMDLamp(obj):
-        if MMDLamp.isLamp(obj):
+    def isMMDLight(obj):
+        if MMDLight.isLight(obj):
             obj = obj.parent
         return obj and obj.type == "EMPTY" and obj.mmd_type == "LIGHT"
 
     @staticmethod
-    def convertToMMDLamp(lampObj, scale=1.0):
-        if MMDLamp.isMMDLamp(lampObj):
-            return MMDLamp(lampObj)
+    def convertToMMDLight(lightObj, scale=1.0):
+        if MMDLight.isMMDLight(lightObj):
+            return MMDLight(lightObj)
 
         empty = bpy.data.objects.new(name="MMD_Light", object_data=None)
         FnContext.link_object(FnContext.ensure_context(), empty)
@@ -40,26 +40,26 @@ class MMDLamp:
         empty.mmd_type = "LIGHT"
         empty.location = (0, 0, 11 * scale)
 
-        lampObj.parent = empty
-        lampObj.data.color = (0.602, 0.602, 0.602)
-        lampObj.location = (0.5, -0.5, 1.0)
-        lampObj.rotation_mode = "XYZ"
-        lampObj.rotation_euler = (0, 0, 0)
-        lampObj.lock_rotation = (True, True, True)
+        lightObj.parent = empty
+        lightObj.data.color = (0.602, 0.602, 0.602)
+        lightObj.location = (0.5, -0.5, 1.0)
+        lightObj.rotation_mode = "XYZ"
+        lightObj.rotation_euler = (0, 0, 0)
+        lightObj.lock_rotation = (True, True, True)
 
-        constraint = lampObj.constraints.new(type="TRACK_TO")
-        constraint.name = "mmd_lamp_track"
+        constraint = lightObj.constraints.new(type="TRACK_TO")
+        constraint.name = "mmd_light_track"
         constraint.target = empty
         constraint.track_axis = "TRACK_NEGATIVE_Z"
         constraint.up_axis = "UP_Y"
 
-        return MMDLamp(empty)
+        return MMDLight(empty)
 
     def object(self):
         return self.__emptyObj
 
-    def lamp(self):
+    def light(self):
         for i in self.__emptyObj.children:
-            if MMDLamp.isLamp(i):
+            if MMDLight.isLight(i):
                 return i
         raise KeyError

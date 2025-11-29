@@ -209,6 +209,37 @@ class FnRigidBody:
             context.view_layer.objects.active = obj
             bpy.ops.rigidbody.constraint_add(type="GENERIC_SPRING")
 
+        # NOTE: MMD uses Bullet 2.75, which may behave differently from newer versions
+        # https://code.google.com/archive/p/bullet/downloads?page=3
+        # https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/bullet/bullet-2.75.zip
+        #
+        # In MMD, constraints are "soft".
+        # Rigid bodies can move elastically even when translation limits are locked (constraint min == max).
+        # Breast physics rely on this behavior.
+        # Software with soft constraints: MMD, PMXEditor
+        #
+        # In Blender, constraints are "hard".
+        # Rigid bodies strictly follow limits, causing them to freeze when locked.
+        # This results in PMX model breast physics not working in Blender.
+        # Software with hard constraints: Blender, NexGiMa, MMM, nanoem
+        #
+        # To fully replicate MMD's behavior,
+        # the same btContactSolverInfo, btConstraintSolverType, and btGeneric6DofSpringConstraint parameters are required.
+        # However, Blender does not expose these low-level Bullet settings.
+        #
+        # Possible workaround: Set limit_min > limit_max to allow Bullet to permit movement,
+        # or slightly separate limit_min and limit_max to create a range,
+        # then use appropriate spring_stiffness and damping settings to create elastic
+        # behavior that approximates MMD's soft constraints.
+        # Example settings:
+        # limit_lin_lower = 1
+        # limit_lin_upper = 0
+        # spring_type = "SPRING2"
+        # spring_stiffness = 700
+        # spring_damping = 10
+        #
+        # Reference: https://rgba.blog.jp/archives/10475342.html
+
         rigid_body_constraint = obj.rigid_body_constraint
         rigid_body_constraint.disable_collisions = False
         rigid_body_constraint.use_limit_ang_x = True

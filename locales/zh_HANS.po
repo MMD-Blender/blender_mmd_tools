@@ -578,16 +578,16 @@ msgstr "烘焙动画时至摄像机源的最小距离"
 msgid "Scaling factor for initializing the camera"
 msgstr "初始化相机的比例系数"
 
-#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_light
 msgctxt "Operator"
 msgid "Convert to MMD Light"
 msgstr "转换为MMD灯光"
 
-#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_light
 msgid "Create a light rig for MMD"
 msgstr "创建 MMD 光源绑定"
 
-#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp.scale
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_light.scale
 msgid "Scaling factor for initializing the light"
 msgstr "初始化灯光的比例系数"
 
@@ -1335,8 +1335,8 @@ msgid "Fix IK Links"
 msgstr "修复IK关联"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_ik_links
-msgid "Fix IK links to be blender suitable"
-msgstr "修复逆向运动学关联，使其适合被 Blender 处理"
+msgid "Fix IK links to be blender suitable. This aligns heads and tails across the bone chain."
+msgstr "修复逆向运动学关联，使其适合被 Blender 处理。此操作修正骨链骨骼间的头尾对齐。"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.ik_loop_factor
 msgid "IK Loop Factor"
@@ -1516,11 +1516,11 @@ msgstr "检测镜头切换"
 msgid "When the interval between camera keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing between rapid camera cuts."
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_lamp_changes
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_light_changes
 msgid "Detect Light Cut"
 msgstr "检测灯光切换"
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_lamp_changes
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_light_changes
 msgid "When the interval between light keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing during sudden lighting changes."
 msgstr ""
 
@@ -3400,12 +3400,12 @@ msgstr "选择MMD刚体"
 msgid "Imported MMD model from \"\""
 msgstr "已从\"%s\"导入 MMD 模型"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:958
+#: extensions/blender_org/mmd_tools/operators/fileio.py:948
 #, fuzzy
 msgid "[Skipped] The armature object of MMD model \"\" can't be found"
 msgstr "[跳过] 找不到 MMD 模型\"%s\"的骨架数据"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:990
+#: extensions/blender_org/mmd_tools/operators/fileio.py:980
 #, fuzzy
 msgid "Exported MMD model \"\" to \"\""
 msgstr "已导出 MMD 模型\"%s\"至\"%s\""
@@ -3497,35 +3497,35 @@ msgstr ""
 msgid "Batch conversion complete: Converted  bone morphs."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:1132
+#: extensions/blender_org/mmd_tools/operators/morph.py:1128
 msgid "Successfully converted vertex morphs in group to vertex morph '' and added to facial display frame"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:1179
+#: extensions/blender_org/mmd_tools/operators/morph.py:1175
 msgid "Batch conversion complete: Converted  group morphs."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:295
-#: extensions/blender_org/mmd_tools/operators/morph.py:359
+#: extensions/blender_org/mmd_tools/operators/morph.py:296
+#: extensions/blender_org/mmd_tools/operators/morph.py:360
 msgid "You need to choose a Related Mesh first"
 msgstr "请首先选择关联的网格"
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:299
-#: extensions/blender_org/mmd_tools/operators/morph.py:363
+#: extensions/blender_org/mmd_tools/operators/morph.py:300
+#: extensions/blender_org/mmd_tools/operators/morph.py:364
 msgid "The model mesh can't be found"
 msgstr "找不到模型的网格"
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:368
+#: extensions/blender_org/mmd_tools/operators/morph.py:369
 #, fuzzy
 msgid "Material \"\" not found"
 msgstr "找不到材质\"%s\""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:373
+#: extensions/blender_org/mmd_tools/operators/morph.py:374
 #, fuzzy
 msgid "Temporary material \"\" is in use"
 msgstr "临时材质\"%s\"已占用"
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:797
+#: extensions/blender_org/mmd_tools/operators/morph.py:798
 msgid "No active bone morph"
 msgstr ""
 
@@ -3541,32 +3541,32 @@ msgstr ""
 msgid "The group morph does not contain any vertex morphs to convert"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:305
+#: extensions/blender_org/mmd_tools/operators/morph.py:306
 msgid "Material not found"
 msgstr "找不到材质"
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:583
+#: extensions/blender_org/mmd_tools/operators/morph.py:584
 msgid "Please select a mesh object"
 msgstr "选择网格物体"
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:597
+#: extensions/blender_org/mmd_tools/operators/morph.py:598
 msgid "Invalid uv index: "
 msgstr "无效 UV 索引: "
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:607
+#: extensions/blender_org/mmd_tools/operators/morph.py:608
 msgid "Failed to create a temporary uv layer"
 msgstr "无法创建临时 UV 层"
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:731
+#: extensions/blender_org/mmd_tools/operators/morph.py:732
 #, fuzzy
 msgid " * UV map \"\" not found"
 msgstr " * 找不到 UV 贴图 \"%s\""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:823
+#: extensions/blender_org/mmd_tools/operators/morph.py:824
 msgid "Failed to create morph slider system"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:832
+#: extensions/blender_org/mmd_tools/operators/morph.py:833
 msgid "Bone morph '' not found in morph sliders"
 msgstr ""
 
@@ -3578,7 +3578,7 @@ msgstr ""
 msgid "Error during conversion: "
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:326
+#: extensions/blender_org/mmd_tools/operators/morph.py:327
 msgid "An unexpected error happened"
 msgstr "发生了非预期的错误"
 
@@ -3586,7 +3586,7 @@ msgstr "发生了非预期的错误"
 msgid "No armature modifier found on mesh ''"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:432
+#: extensions/blender_org/mmd_tools/operators/morph.py:433
 #, fuzzy
 msgid "Base material for  was not found"
 msgstr "找不到 %s 的基础材质"
@@ -3765,12 +3765,12 @@ msgid "Distance"
 msgstr "距离"
 
 #: extensions/blender_org/mmd_tools/panels/prop_camera.py:43
-#: extensions/blender_org/mmd_tools/panels/prop_lamp.py:35
+#: extensions/blender_org/mmd_tools/panels/prop_light.py:35
 msgctxt "Operator"
 msgid "Convert"
 msgstr "转换"
 
-#: extensions/blender_org/mmd_tools/panels/prop_lamp.py:33
+#: extensions/blender_org/mmd_tools/panels/prop_light.py:33
 msgid "Light Source"
 msgstr "光源"
 
@@ -3845,58 +3845,58 @@ msgctxt "Operator"
 msgid "Reset"
 msgstr "重设"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:276
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:279
 msgid "Migrating from old vertex group ordering to bone_id system"
 msgstr "从旧的顶点组排序迁移至新的骨骼 ID 系统"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:301
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:304
 msgid "Successfully migrated  bones from vertex groups to bone_id system"
 msgstr "成功从旧的顶点组排序迁移至新的骨骼 ID 系统"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:315
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:318
 msgid "Cleaning invalid bone references..."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:600
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:647
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:615
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:662
 msgctxt "Operator"
 msgid "Fix Bone Order"
 msgstr "修复骨骼顺序"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:646
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:661
 msgid "Total Bones: %d"
 msgstr "骨骼数量: %d"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:33
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:75
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:35
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:77
 msgid "Bone ID is invalid (-1). Please click 'Fix Bone Order' button first to assign proper bone IDs."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:163
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:165
 msgid "Cleaned  invalid bone reference(s)."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:199
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:201
 msgid "Bone order did not converge after 10 iterations"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:251
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:254
 msgid "Converting layer collections to MMD collections"
 msgstr "将分层集合转换为 MMD 集合"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:319
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:322
 msgid "Operation cancelled: No active MMD model found."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:325
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:328
 msgid "Successfully cleaned or removed  invalid bone reference(s)."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:327
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:330
 msgid "No invalid bone references were found."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:614
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:629
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:22
 #: extensions/blender_org/mmd_tools/panels/sidebar/joints.py:20
 #: extensions/blender_org/mmd_tools/panels/sidebar/meshes_sorter.py:21
@@ -3906,7 +3906,7 @@ msgstr ""
 msgid "Select a MMD Model"
 msgstr "选择一个MMD模型"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:619
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:634
 msgid "The armature object of active MMD model can't be found"
 msgstr "找不到选中MMD模型的骨架"
 

@@ -162,7 +162,7 @@ class CameraKeyFrameKey:
         return f"<CameraKeyFrameKey frame {str(self.frame_number)}, distance {str(self.distance)}, loc {str(self.location)}, rot {str(self.rotation)}, angle {str(self.angle)}, persp {str(self.persp)}>"
 
 
-class LampKeyFrameKey:
+class LightKeyFrameKey:
     # Use __slots__ for better performance
     __slots__ = ("frame_number", "color", "direction")
 
@@ -182,7 +182,7 @@ class LampKeyFrameKey:
         fin.write(struct.pack("<fff", *self.direction))
 
     def __repr__(self):
-        return f"<LampKeyFrameKey frame {str(self.frame_number)}, color {str(self.color)}, direction {str(self.direction)}>"
+        return f"<LightKeyFrameKey frame {str(self.frame_number)}, color {str(self.color)}, direction {str(self.direction)}>"
 
 
 class SelfShadowFrameKey:
@@ -322,13 +322,13 @@ class CameraAnimation(_AnimationListBase):
         return CameraKeyFrameKey
 
 
-class LampAnimation(_AnimationListBase):
+class LightAnimation(_AnimationListBase):
     def __init__(self):
         _AnimationListBase.__init__(self)
 
     @staticmethod
     def frameClass():
-        return LampKeyFrameKey
+        return LightKeyFrameKey
 
 
 class SelfShadowAnimation(_AnimationListBase):
@@ -356,7 +356,7 @@ class File:
         self.boneAnimation = None
         self.shapeKeyAnimation = None
         self.cameraAnimation = None
-        self.lampAnimation = None
+        self.lightAnimation = None
         self.selfShadowAnimation = None
         self.propertyAnimation = None
 
@@ -369,7 +369,7 @@ class File:
             self.boneAnimation = BoneAnimation()
             self.shapeKeyAnimation = ShapeKeyAnimation()
             self.cameraAnimation = CameraAnimation()
-            self.lampAnimation = LampAnimation()
+            self.lightAnimation = LightAnimation()
             self.selfShadowAnimation = SelfShadowAnimation()
             self.propertyAnimation = PropertyAnimation()
 
@@ -378,11 +378,11 @@ class File:
                 self.boneAnimation.load(fin)
                 self.shapeKeyAnimation.load(fin)
                 self.cameraAnimation.load(fin)
-                self.lampAnimation.load(fin)
+                self.lightAnimation.load(fin)
                 self.selfShadowAnimation.load(fin)
                 self.propertyAnimation.load(fin)
             except struct.error:
-                pass  # no valid camera/lamp data
+                pass  # no valid camera/light data
 
     def save(self, **args):
         path = args.get("filepath", self.filepath)
@@ -391,7 +391,7 @@ class File:
         boneAnimation = self.boneAnimation or BoneAnimation()
         shapeKeyAnimation = self.shapeKeyAnimation or ShapeKeyAnimation()
         cameraAnimation = self.cameraAnimation or CameraAnimation()
-        lampAnimation = self.lampAnimation or LampAnimation()
+        lightAnimation = self.lightAnimation or LightAnimation()
         selfShadowAnimation = self.selfShadowAnimation or SelfShadowAnimation()
         propertyAnimation = self.propertyAnimation or PropertyAnimation()
 
@@ -400,6 +400,6 @@ class File:
             boneAnimation.save(fin)
             shapeKeyAnimation.save(fin)
             cameraAnimation.save(fin)
-            lampAnimation.save(fin)
+            lightAnimation.save(fin)
             selfShadowAnimation.save(fin)
             propertyAnimation.save(fin)

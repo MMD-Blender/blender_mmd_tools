@@ -124,14 +124,11 @@ class TestVMDImporter(unittest.TestCase):
         mesh_obj = bpy.context.active_object
         mesh_obj.name = "TestMesh"
 
-        bpy.ops.object.shape_key_add(from_mix=False)
+        mesh_obj.shape_key_add(name="Basis", from_mix=False)
 
         shape_key_names = ["まばたき", "笑い", "ウィンク"]
         for name in shape_key_names:
-            bpy.ops.object.shape_key_add(from_mix=False)
-            shape_key = mesh_obj.data.shape_keys.key_blocks[-1]
-            shape_key.name = name
-
+            shape_key = mesh_obj.shape_key_add(name=name, from_mix=False)
             for i, v in enumerate(mesh_obj.data.vertices):
                 if i % 2 == 0:
                     shape_key.data[i].co.x += 0.2
@@ -171,19 +168,19 @@ class TestVMDImporter(unittest.TestCase):
 
         return camera
 
-    def _create_mmd_lamp(self):
-        """Create an MMD lamp"""
+    def _create_mmd_light(self):
+        """Create an MMD light"""
         bpy.ops.object.light_add(type="POINT")
         light = bpy.context.active_object
         light.name = "TestLight"
 
         try:
-            bpy.ops.mmd_tools.convert_to_mmd_lamp()
+            bpy.ops.mmd_tools.convert_to_mmd_light()
             for obj in bpy.context.selected_objects:
                 if obj.type == "EMPTY" and obj != light:
                     return obj
         except Exception:
-            empty = bpy.data.objects.new("TestMMDLamp", None)
+            empty = bpy.data.objects.new("TestMMDLight", None)
             bpy.context.collection.objects.link(empty)
             empty.parent = None
             light.parent = empty
@@ -224,7 +221,7 @@ class TestVMDImporter(unittest.TestCase):
 
         return action
 
-    def _create_full_test_scene(self, with_shape_keys=True, with_camera=True, with_lamp=True):
+    def _create_full_test_scene(self, with_shape_keys=True, with_camera=True, with_light=True):
         """Create a complete test scene with all components"""
         # Create model root
         root = bpy.data.objects.new("TestRoot", None)
@@ -269,18 +266,18 @@ class TestVMDImporter(unittest.TestCase):
                     camera = mmd_camera.children[0]
                     self._create_animation_data(camera, "location", [Vector((0, -10, 0)), Vector((0, -5, 0)), Vector((0, -15, 0))], [1, 10, 20])
 
-        # Create MMD lamp
-        mmd_lamp = None
-        if with_lamp:
-            mmd_lamp = self._create_mmd_lamp()
-            if mmd_lamp:
-                self._create_animation_data(mmd_lamp, "location", [Vector((0, 0, 0)), Vector((1, 1, 1)), Vector((0, 0, 0))], [1, 10, 20])
+        # Create MMD light
+        mmd_light = None
+        if with_light:
+            mmd_light = self._create_mmd_light()
+            if mmd_light:
+                self._create_animation_data(mmd_light, "location", [Vector((0, 0, 0)), Vector((1, 1, 1)), Vector((0, 0, 0))], [1, 10, 20])
 
-                if mmd_lamp.children and mmd_lamp.children[0].type == "LIGHT":
-                    light = mmd_lamp.children[0]
+                if mmd_light.children and mmd_light.children[0].type == "LIGHT":
+                    light = mmd_light.children[0]
                     self._create_animation_data(light.data, "color", [Vector((1, 1, 1)), Vector((1, 0, 0)), Vector((1, 1, 1))], [1, 10, 20])
 
-        return {"root": root, "armature": armature, "mesh": mesh_obj, "camera": mmd_camera, "lamp": mmd_lamp}
+        return {"root": root, "armature": armature, "mesh": mesh_obj, "camera": mmd_camera, "light": mmd_light}
 
     def _create_model_from_pmx(self, pmx_file):
         """Create a model from a PMX file"""
@@ -378,23 +375,23 @@ class TestVMDImporter(unittest.TestCase):
 
         return changes_detected
 
-    def _test_lamp_animation(self, lamp_obj, test_frames=None):
-        """Test lamp animation and return number of detected changes"""
-        if not lamp_obj:
+    def _test_light_animation(self, light_obj, test_frames=None):
+        """Test light animation and return number of detected changes"""
+        if not light_obj:
             return 0
 
         if test_frames is None:
             test_frames = [1, 50, 100, 150, 200]
 
         changes_detected = 0
-        initial_loc = lamp_obj.location.copy()
+        initial_loc = light_obj.location.copy()
 
         for frame in test_frames:
             if frame <= bpy.context.scene.frame_end:
                 bpy.context.scene.frame_set(frame)
                 bpy.context.view_layer.update()
 
-                loc_diff = (lamp_obj.location - initial_loc).length
+                loc_diff = (light_obj.location - initial_loc).length
 
                 if loc_diff > 0.001:
                     changes_detected += 1
@@ -465,11 +462,11 @@ class TestVMDImporter(unittest.TestCase):
                 results["fcurves"] = len(action.fcurves)
                 results["animation_detected"] = self._test_camera_animation(target_obj)
 
-        elif obj_type == "lamp":
+        elif obj_type == "light":
             if target_obj.animation_data and target_obj.animation_data.action:
                 action = target_obj.animation_data.action
                 results["fcurves"] = len(action.fcurves)
-                results["animation_detected"] = self._test_lamp_animation(target_obj)
+                results["animation_detected"] = self._test_light_animation(target_obj)
 
         # Restore frame
         bpy.context.scene.frame_set(original_frame)
@@ -499,17 +496,17 @@ class TestVMDImporter(unittest.TestCase):
         self.assertEqual(importer._VMDImporter__scale, 1.0)
         self.assertFalse(importer._VMDImporter__bone_util_cls == BoneConverterPoseMode)
         self.assertTrue(importer._VMDImporter__convert_mmd_camera)
-        self.assertTrue(importer._VMDImporter__convert_mmd_lamp)
+        self.assertTrue(importer._VMDImporter__convert_mmd_light)
         expected_margin = 5 if importer._VMDImporter__frame_start in {0, 1} else 0
         self.assertEqual(importer._VMDImporter__frame_margin, expected_margin)
         self.assertFalse(importer._VMDImporter__mirror)
 
         # Test custom initialization
-        importer = VMDImporter(filepath=filepath, scale=10.0, use_pose_mode=True, convert_mmd_camera=False, convert_mmd_lamp=False, frame_margin=10, use_mirror=True)
+        importer = VMDImporter(filepath=filepath, scale=10.0, use_pose_mode=True, convert_mmd_camera=False, convert_mmd_light=False, frame_margin=10, use_mirror=True)
         self.assertEqual(importer._VMDImporter__scale, 10.0)
         self.assertTrue(importer._VMDImporter__bone_util_cls == BoneConverterPoseMode)
         self.assertFalse(importer._VMDImporter__convert_mmd_camera)
-        self.assertFalse(importer._VMDImporter__convert_mmd_lamp)
+        self.assertFalse(importer._VMDImporter__convert_mmd_light)
         expected_custom_margin = 10 if importer._VMDImporter__frame_start in {0, 1} else 0
         self.assertEqual(importer._VMDImporter__frame_margin, expected_custom_margin)
         self.assertTrue(importer._VMDImporter__mirror)
@@ -762,28 +759,28 @@ class TestVMDImporter(unittest.TestCase):
 
             self._cleanup_animation(mmd_camera, "camera")
 
-    def test_vmd_import_to_lamp(self):
-        """Test VMD importing to a lamp"""
+    def test_vmd_import_to_light(self):
+        """Test VMD importing to a light"""
         vmd_files = self._list_sample_files("vmd", "vmd")
         if not vmd_files:
             self.fail("No VMD sample files found for testing")
 
-        mmd_lamp = self._create_mmd_lamp()
-        if not mmd_lamp:
-            self.fail("Could not create MMD lamp for testing")
+        mmd_light = self._create_mmd_light()
+        if not mmd_light:
+            self.fail("Could not create MMD light for testing")
 
         for filepath in vmd_files[:1]:
-            results = self._perform_vmd_import_test(mmd_lamp, filepath, "lamp")
+            results = self._perform_vmd_import_test(mmd_light, filepath, "light")
 
             if results["fcurves"] > 0:
-                print("Lamp animation data was created")
-                print(f"Lamp has {results['fcurves']} FCurves")
+                print("Light animation data was created")
+                print(f"Light has {results['fcurves']} FCurves")
                 if results["animation_detected"] > 0:
-                    print(f"Import resulted in {results['animation_detected']} lamp property changes")
+                    print(f"Import resulted in {results['animation_detected']} light property changes")
             else:
-                print("No lamp animation data created - VMD may not contain lamp animation")
+                print("No light animation data created - VMD may not contain light animation")
 
-            self._cleanup_animation(mmd_lamp, "lamp")
+            self._cleanup_animation(mmd_light, "light")
 
     def test_vmd_import_with_real_model(self):
         """Test VMD importing with real PMX/PMD models if available"""
@@ -832,14 +829,14 @@ class TestVMDImporter(unittest.TestCase):
             self.fail(f"Real model import test failed with error: {str(e)}")
 
     def test_vmd_import_full_setup(self):
-        """Test importing VMD to a complete setup with armature, mesh, camera and lamp"""
+        """Test importing VMD to a complete setup with armature, mesh, camera and light"""
         vmd_files = self._list_sample_files("vmd", "vmd")
         if not vmd_files:
             self.fail("No VMD sample files found for full setup test")
 
-        test_objects = self._create_full_test_scene(with_shape_keys=True, with_camera=True, with_lamp=True)
+        test_objects = self._create_full_test_scene(with_shape_keys=True, with_camera=True, with_light=True)
 
-        results = {"bone_changes": 0, "shape_key_changes": 0, "camera_changes": 0, "lamp_changes": 0}
+        results = {"bone_changes": 0, "shape_key_changes": 0, "camera_changes": 0, "light_changes": 0}
 
         print("Testing VMD import on full setup...")
 
@@ -875,21 +872,21 @@ class TestVMDImporter(unittest.TestCase):
                 else:
                     print("  Camera: No animation data - VMD may not contain camera animation")
 
-            elif obj_type == "lamp":
-                test_results = self._perform_vmd_import_test(obj, vmd_files[0], "lamp")
-                results["lamp_changes"] = test_results["animation_detected"] or test_results["fcurves"]
+            elif obj_type == "light":
+                test_results = self._perform_vmd_import_test(obj, vmd_files[0], "light")
+                results["light_changes"] = test_results["animation_detected"] or test_results["fcurves"]
                 if test_results["fcurves"] > 0:
-                    print(f"  ✓ Lamp: {test_results['fcurves']} FCurves created")
+                    print(f"  ✓ Light: {test_results['fcurves']} FCurves created")
                     if test_results["animation_detected"] > 0:
-                        print(f"  ✓ Lamp animation working: {test_results['animation_detected']} transform changes detected")
+                        print(f"  ✓ Light animation working: {test_results['animation_detected']} transform changes detected")
                 else:
-                    print("  Lamp: No animation data - VMD may not contain lamp animation")
+                    print("  Light: No animation data - VMD may not contain light animation")
 
         print("\nFull setup import resulted in:")
         print(f" - {results['bone_changes']} bone changes/FCurves")
         print(f" - {results['shape_key_changes']} shape key changes/FCurves")
         print(f" - {results['camera_changes']} camera cut/FCurves")
-        print(f" - {results['lamp_changes']} lamp changes/FCurves")
+        print(f" - {results['light_changes']} light changes/FCurves")
 
         total_animation = sum(results.values())
         if total_animation > 0:
@@ -1002,7 +999,18 @@ class TestVMDImporter(unittest.TestCase):
         armature.select_set(True)
 
         # First import with create_new_action=False
-        bpy.ops.mmd_tools.import_vmd(files=[{"name": os.path.basename(vmd_files[0])}], directory=os.path.dirname(vmd_files[0]), scale=0.08, margin=0, bone_mapper="PMX", use_pose_mode=False, use_mirror=False, update_scene_settings=False, create_new_action=False, use_nla=False)
+        bpy.ops.mmd_tools.import_vmd(
+            files=[{"name": os.path.basename(vmd_files[0])}],
+            directory=os.path.dirname(vmd_files[0]),
+            scale=0.08,
+            margin=0,
+            bone_mapper="PMX",
+            use_pose_mode=False,
+            use_mirror=False,
+            update_scene_settings=False,
+            create_new_action=False,
+            use_nla=False,
+        )
 
         first_action = None
         if armature.animation_data:
@@ -1010,7 +1018,18 @@ class TestVMDImporter(unittest.TestCase):
             self.assertIsNotNone(first_action, "First action should be created")
 
         # Second import with create_new_action=True
-        bpy.ops.mmd_tools.import_vmd(files=[{"name": os.path.basename(vmd_files[0])}], directory=os.path.dirname(vmd_files[0]), scale=0.08, margin=0, bone_mapper="PMX", use_pose_mode=False, use_mirror=False, update_scene_settings=False, create_new_action=True, use_nla=False)
+        bpy.ops.mmd_tools.import_vmd(
+            files=[{"name": os.path.basename(vmd_files[0])}],
+            directory=os.path.dirname(vmd_files[0]),
+            scale=0.08,
+            margin=0,
+            bone_mapper="PMX",
+            use_pose_mode=False,
+            use_mirror=False,
+            update_scene_settings=False,
+            create_new_action=True,
+            use_nla=False,
+        )
 
         if armature.animation_data and first_action:
             second_action = armature.animation_data.action
@@ -1022,7 +1041,7 @@ class TestVMDImporter(unittest.TestCase):
             self.assertIsNotNone(second_action, "New action should be created when create_new_action=True")
 
     def test_vmd_import_detect_changes(self):
-        """Test VMD importing with detect_camera_changes and detect_lamp_changes options"""
+        """Test VMD importing with detect_camera_changes and detect_light_changes options"""
         vmd_files = self._list_sample_files("vmd", "vmd")
         if not vmd_files:
             self.fail("No VMD sample files found for detect changes test")
@@ -1041,19 +1060,19 @@ class TestVMDImporter(unittest.TestCase):
             else:
                 print("No camera animation data created - VMD may not contain camera animation")
 
-        # Test with detect_lamp_changes
-        mmd_lamp = self._create_mmd_lamp()
-        if mmd_lamp:
-            importer = VMDImporter(filepath=vmd_files[0], detect_lamp_changes=True)
-            importer.assign(mmd_lamp)
+        # Test with detect_light_changes
+        mmd_light = self._create_mmd_light()
+        if mmd_light:
+            importer = VMDImporter(filepath=vmd_files[0], detect_light_changes=True)
+            importer.assign(mmd_light)
 
-            if mmd_lamp.animation_data:
-                if mmd_lamp.animation_data.action:
-                    print("Lamp action was created with detect_lamp_changes=True")
+            if mmd_light.animation_data:
+                if mmd_light.animation_data.action:
+                    print("Light action was created with detect_light_changes=True")
                 else:
-                    print("Lamp animation data exists but no action - VMD may not contain lamp animation")
+                    print("Light animation data exists but no action - VMD may not contain light animation")
             else:
-                print("No lamp animation data created - VMD may not contain lamp animation")
+                print("No light animation data created - VMD may not contain light animation")
 
 
 if __name__ == "__main__":

@@ -578,16 +578,16 @@ msgstr ""
 msgid "Scaling factor for initializing the camera"
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_light
 msgctxt "Operator"
 msgid "Convert to MMD Light"
 msgstr "MMDライトへ変換"
 
-#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_light
 msgid "Create a light rig for MMD"
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_lamp.scale
+#. :src: bpy.types.MMD_TOOLS_OT_convert_to_mmd_light.scale
 msgid "Scaling factor for initializing the light"
 msgstr ""
 
@@ -1345,7 +1345,7 @@ msgid "Fix IK Links"
 msgstr "IKリンクを修正"
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.fix_ik_links
-msgid "Fix IK links to be blender suitable"
+msgid "Fix IK links to be blender suitable. This aligns heads and tails across the bone chain."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_import_model.ik_loop_factor
@@ -1531,11 +1531,11 @@ msgstr ""
 msgid "When the interval between camera keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing between rapid camera cuts."
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_lamp_changes
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_light_changes
 msgid "Detect Light Cut"
 msgstr ""
 
-#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_lamp_changes
+#. :src: bpy.types.MMD_TOOLS_OT_import_vmd.detect_light_changes
 msgid "When the interval between light keyframes is 1 frame, change the interpolation to CONSTANT. This is useful when making a 60fps video, as it helps prevent unwanted smoothing during sudden lighting changes."
 msgstr ""
 
@@ -3431,11 +3431,11 @@ msgstr "MMD剛体選択"
 msgid "Imported MMD model from \"\""
 msgstr "MMDモデルを \"%s\" からインポートしました"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:958
+#: extensions/blender_org/mmd_tools/operators/fileio.py:948
 msgid "[Skipped] The armature object of MMD model \"\" can't be found"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:990
+#: extensions/blender_org/mmd_tools/operators/fileio.py:980
 #, fuzzy
 msgid "Exported MMD model \"\" to \"\""
 msgstr "MMDモデル \"%s\" を \"%s\" にエクスポートしました"
@@ -3527,34 +3527,34 @@ msgstr ""
 msgid "Batch conversion complete: Converted  bone morphs."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:1132
+#: extensions/blender_org/mmd_tools/operators/morph.py:1128
 msgid "Successfully converted vertex morphs in group to vertex morph '' and added to facial display frame"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:1179
+#: extensions/blender_org/mmd_tools/operators/morph.py:1175
 msgid "Batch conversion complete: Converted  group morphs."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:295
-#: extensions/blender_org/mmd_tools/operators/morph.py:359
+#: extensions/blender_org/mmd_tools/operators/morph.py:296
+#: extensions/blender_org/mmd_tools/operators/morph.py:360
 msgid "You need to choose a Related Mesh first"
 msgstr "まず関連するメッシュを選んでください"
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:299
-#: extensions/blender_org/mmd_tools/operators/morph.py:363
+#: extensions/blender_org/mmd_tools/operators/morph.py:300
+#: extensions/blender_org/mmd_tools/operators/morph.py:364
 msgid "The model mesh can't be found"
 msgstr "モデルのメッシュが見つかりません"
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:368
+#: extensions/blender_org/mmd_tools/operators/morph.py:369
 #, fuzzy
 msgid "Material \"\" not found"
 msgstr "マテリアル \"%s\" が見つかりません"
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:373
+#: extensions/blender_org/mmd_tools/operators/morph.py:374
 msgid "Temporary material \"\" is in use"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:797
+#: extensions/blender_org/mmd_tools/operators/morph.py:798
 msgid "No active bone morph"
 msgstr ""
 
@@ -3570,32 +3570,32 @@ msgstr ""
 msgid "The group morph does not contain any vertex morphs to convert"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:305
+#: extensions/blender_org/mmd_tools/operators/morph.py:306
 msgid "Material not found"
 msgstr "マテリアルが見つかりません"
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:583
+#: extensions/blender_org/mmd_tools/operators/morph.py:584
 msgid "Please select a mesh object"
 msgstr "メッシュオブジェクトを選択してください"
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:597
+#: extensions/blender_org/mmd_tools/operators/morph.py:598
 msgid "Invalid uv index: "
 msgstr "無効なUVインデックス: "
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:607
+#: extensions/blender_org/mmd_tools/operators/morph.py:608
 msgid "Failed to create a temporary uv layer"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:731
+#: extensions/blender_org/mmd_tools/operators/morph.py:732
 #, fuzzy
 msgid " * UV map \"\" not found"
 msgstr " * UVマップ \"%s\" が見つかりません"
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:823
+#: extensions/blender_org/mmd_tools/operators/morph.py:824
 msgid "Failed to create morph slider system"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:832
+#: extensions/blender_org/mmd_tools/operators/morph.py:833
 msgid "Bone morph '' not found in morph sliders"
 msgstr ""
 
@@ -3607,7 +3607,7 @@ msgstr ""
 msgid "Error during conversion: "
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:326
+#: extensions/blender_org/mmd_tools/operators/morph.py:327
 msgid "An unexpected error happened"
 msgstr "予期しないエラーが発生しました"
 
@@ -3615,7 +3615,7 @@ msgstr "予期しないエラーが発生しました"
 msgid "No armature modifier found on mesh ''"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/morph.py:432
+#: extensions/blender_org/mmd_tools/operators/morph.py:433
 #, fuzzy
 msgid "Base material for  was not found"
 msgstr "%s のベースマテリアルが見つかりませんでした"
@@ -3794,12 +3794,12 @@ msgid "Distance"
 msgstr "距離"
 
 #: extensions/blender_org/mmd_tools/panels/prop_camera.py:43
-#: extensions/blender_org/mmd_tools/panels/prop_lamp.py:35
+#: extensions/blender_org/mmd_tools/panels/prop_light.py:35
 msgctxt "Operator"
 msgid "Convert"
 msgstr "変換"
 
-#: extensions/blender_org/mmd_tools/panels/prop_lamp.py:33
+#: extensions/blender_org/mmd_tools/panels/prop_light.py:33
 msgid "Light Source"
 msgstr "光源"
 
@@ -3874,58 +3874,58 @@ msgctxt "Operator"
 msgid "Reset"
 msgstr "リセット"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:276
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:279
 msgid "Migrating from old vertex group ordering to bone_id system"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:301
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:304
 msgid "Successfully migrated  bones from vertex groups to bone_id system"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:315
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:318
 msgid "Cleaning invalid bone references..."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:600
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:647
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:615
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:662
 msgctxt "Operator"
 msgid "Fix Bone Order"
 msgstr "ボーン順序を修正"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:646
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:661
 msgid "Total Bones: %d"
 msgstr "ボーン合計: %d"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:33
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:75
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:35
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:77
 msgid "Bone ID is invalid (-1). Please click 'Fix Bone Order' button first to assign proper bone IDs."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:163
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:165
 msgid "Cleaned  invalid bone reference(s)."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:199
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:201
 msgid "Bone order did not converge after 10 iterations"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:251
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:254
 msgid "Converting layer collections to MMD collections"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:319
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:322
 msgid "Operation cancelled: No active MMD model found."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:325
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:328
 msgid "Successfully cleaned or removed  invalid bone reference(s)."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:327
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:330
 msgid "No invalid bone references were found."
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:614
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:629
 #: extensions/blender_org/mmd_tools/panels/sidebar/display_panel.py:22
 #: extensions/blender_org/mmd_tools/panels/sidebar/joints.py:20
 #: extensions/blender_org/mmd_tools/panels/sidebar/meshes_sorter.py:21
@@ -3935,7 +3935,7 @@ msgstr ""
 msgid "Select a MMD Model"
 msgstr "MMDモデルを選択してください"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:619
+#: extensions/blender_org/mmd_tools/panels/sidebar/bone_order.py:634
 msgid "The armature object of active MMD model can't be found"
 msgstr "選択中のMMDモデルのアーマチュアが見つかりません"
 

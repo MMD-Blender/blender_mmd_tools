@@ -298,7 +298,7 @@ class TestMorphSystem(unittest.TestCase):
         mesh_object.select_set(True)
 
         # Create actual shape keys for vertex morphs
-        mesh_object.shape_key_add(name="Basis")
+        mesh_object.shape_key_add(name="Basis", from_mix=False)
         mesh_object.shape_key_add(name="TestVertexMorph")
 
         # Add some morphs
@@ -365,7 +365,7 @@ class TestMorphSystem(unittest.TestCase):
         model, root_object, armature_object, mesh_object = self.__create_test_model("LoadMorphsTest")
 
         # Add shape keys to mesh
-        mesh_object.shape_key_add(name="Basis")
+        mesh_object.shape_key_add(name="Basis", from_mix=False)
         mesh_object.shape_key_add(name="TestMorph1")
         mesh_object.shape_key_add(name="TestMorph2")
         mesh_object.shape_key_add(name="mmd_ignore")  # Should be ignored

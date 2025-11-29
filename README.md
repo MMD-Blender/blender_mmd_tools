@@ -9,12 +9,15 @@ MMD ToolsはMMD(MikuMikuDance)のモデルデータ(.pmd, .pmx)、モーショ�
 
 ## Version Compatibility
 
-| Blender Version | MMD Tools Version | Branch      |
-|-----------------|-------------------|-------------|
-| Blender 4.5 LTS | MMD Tools v4.x    | [main](https://github.com/MMD-Blender/blender_mmd_tools) |
-| Blender 3.6 LTS | MMD Tools v2.x    | [blender-v3](https://github.com/MMD-Blender/blender_mmd_tools/tree/blender-v3) |
+Use the MMD Tools version that matches your Blender version.
 
-Use the MMD Tools version that matches your Blender LTS version.
+| Blender Version | MMD Tools Version       | Branch                                                                         |
+|-----------------|-------------------------|--------------------------------------------------------------------------------|
+| Blender 4.2-5.0 | MMD Tools v4.x (latest) | [main](https://github.com/MMD-Blender/blender_mmd_tools)                       |
+| Blender 3.6     | MMD Tools v2.x          | [blender-v3](https://github.com/MMD-Blender/blender_mmd_tools/tree/blender-v3) |
+
+We recommend using Blender 4.2+ with the latest MMD Tools.
+Support for Blender 3.6 is no longer maintained.
 
 ## Installation & Usage
 
@@ -62,6 +65,20 @@ For physics simulation, we recommend using [MMDBridge](https://github.com/rintri
 1. Significantly reduces Blender crashes
 2. Physics effects match MMD exactly without having to manually recreate breast physics
 3. Better overall performance
+4. Resolves IK solver differences between Blender and MMD
+
+### IK Solver Differences
+
+**Issue**: When importing VMD motion data created in MMD, the resulting poses differ from the original.
+
+**Details**:
+
+- Blender uses its own IK solver implementation which produces different results compared to MMD's IK solver
+- This causes noticeable differences in character poses, especially for legs, arms, and other IK-controlled bones
+- Manual adjustment is required to fix the difference when working in Blender
+
+**Recommended Workaround**:
+Using [MMDBridge](https://github.com/rintrint/mmdbridge) ensures IK calculations are performed using MMD's native solver, providing consistent results with MMD.
 
 ## Contributing
 

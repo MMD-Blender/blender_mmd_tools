@@ -596,7 +596,11 @@ class TestVertexColorExporter(unittest.TestCase):
         self.assertEqual(len(analysis1["mapping_errors"]), 0, "Simple quad should work correctly")
 
         # This assertion should FAIL to indicate the bug exists
-        self.assertEqual(len(analysis2["mapping_errors"]), 0, f"VERTEX COLOR BUG DETECTED: Complex quad has {len(analysis2['mapping_errors'])} mapping errors. This test intentionally FAILS to indicate the triangulation remapping bug in MMD Tools exporter.")
+        self.assertEqual(
+            len(analysis2["mapping_errors"]),
+            0,
+            f"VERTEX COLOR BUG DETECTED: Complex quad has {len(analysis2['mapping_errors'])} mapping errors. This test intentionally FAILS to indicate the triangulation remapping bug in MMD Tools exporter.",
+        )
 
     def test_detailed_face_analysis(self):
         """

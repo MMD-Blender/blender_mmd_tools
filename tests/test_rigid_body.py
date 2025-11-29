@@ -309,7 +309,17 @@ class TestRigidBody(unittest.TestCase):
             collision_mask[group_num] = True  # Can't collide with same group
 
             rigid_obj = self._create_rigid_body_object(model)
-            FnRigidBody.setup_rigid_body_object(obj=rigid_obj, shape_type=0, location=Vector((group_num, 0, 0)), rotation=Euler((0, 0, 0)), size=Vector((1, 1, 1)), dynamics_type=1, collision_group_number=group_num, collision_group_mask=collision_mask, name=f"RigidGroup{group_num}")
+            FnRigidBody.setup_rigid_body_object(
+                obj=rigid_obj,
+                shape_type=0,
+                location=Vector((group_num, 0, 0)),
+                rotation=Euler((0, 0, 0)),
+                size=Vector((1, 1, 1)),
+                dynamics_type=1,
+                collision_group_number=group_num,
+                collision_group_mask=collision_mask,
+                name=f"RigidGroup{group_num}",
+            )
 
             self.assertEqual(rigid_obj.mmd_rigid.collision_group_number, group_num, f"Collision group should be {group_num}")
             self.assertEqual(rigid_obj.mmd_rigid.collision_group_mask[group_num], True, f"Should not collide with group {group_num}")

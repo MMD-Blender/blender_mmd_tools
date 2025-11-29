@@ -8,6 +8,7 @@ import bpy
 from mathutils import Quaternion, Vector
 
 from .. import bpyutils, utils
+from ..bpyutils import FnObject
 from ..core.exceptions import MaterialNotFoundError
 from ..core.material import FnMaterial
 from ..core.model import FnModel
@@ -853,8 +854,7 @@ class ConvertBoneMorphToVertexMorph(bpy.types.Operator):
                 context.view_layer.objects.active = mesh_obj
 
                 # Ensure mesh object has shape keys
-                if mesh_obj.data.shape_keys is None:
-                    mesh_obj.shape_key_add(name="Basis", from_mix=False)
+                FnObject.mesh_ensure_basis_shape_key(mesh_object=mesh_obj)
 
                 # Delete existing shape key with same name
                 if target_name in mesh_obj.data.shape_keys.key_blocks:
@@ -1070,11 +1070,7 @@ class ConvertGroupMorphToVertexMorph(bpy.types.Operator):
                         bpy.ops.object.shape_key_remove()
 
                 # Add shape key from mix
-                bpy.ops.object.shape_key_add(from_mix=True)
-
-                # Rename the newly created shape key
-                new_key = obj.data.shape_keys.key_blocks[-1]
-                new_key.name = target_name
+                FnObject.mesh_add_shape_key(mesh_object=obj, name=target_name, from_mix=True)
 
         # Check if a vertex morph with the target name already exists
         vertex_morph_exists = False

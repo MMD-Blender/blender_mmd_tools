@@ -6,7 +6,23 @@ import unittest
 from unittest.mock import patch
 
 import bpy
-from bl_ext.blender_org.mmd_tools.utils import ItemOp, clearUnusedMeshes, convertLRToName, convertNameToLR, deprecated, enterEditMode, int2base, makePmxBoneMap, mergeVertexGroup, saferelpath, selectAObject, selectSingleBone, separateByMaterials, setParentToBone, unique_name
+from bl_ext.blender_org.mmd_tools.utils import (
+    ItemOp,
+    clearUnusedMeshes,
+    convertLRToName,
+    convertNameToLR,
+    deprecated,
+    enterEditMode,
+    int2base,
+    makePmxBoneMap,
+    mergeVertexGroup,
+    saferelpath,
+    selectAObject,
+    selectSingleBone,
+    separateByMaterials,
+    setParentToBone,
+    unique_name,
+)
 
 
 class TestUtilsUnit(unittest.TestCase):
