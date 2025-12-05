@@ -12,7 +12,7 @@ since MMD Tools works well in 4.2–4.5, use it only in Blender 5.0+.
 
 import bpy
 
-IS_BLENDER_50_UP = bpy.app.version >= (5, 0)
+from .versions import IS_BLENDER_50_UP
 
 if IS_BLENDER_50_UP:
     FCurvesCollection = bpy.types.ActionChannelbagFCurves

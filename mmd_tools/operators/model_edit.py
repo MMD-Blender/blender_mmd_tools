@@ -233,18 +233,16 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
         separate_mesh_objects: List[bpy.types.Object] = []
         model2separate_mesh_objects: Dict[bpy.types.Object, bpy.types.Object] = {}
         if len(mmd_model_mesh_objects) > 0:
-            # Find a single unique attribute name that doesn't conflict with any existing attributes.
-            all_attribute_names = {attr.name for obj in mmd_model_mesh_objects for attr in obj.data.attributes}
-            temp_normal_name = "mmd_temp_normal"
-            i = 0
-            while temp_normal_name in all_attribute_names:
-                temp_normal_name = f"mmd_temp_normal.{i:03d}"
-                i += 1
-
-            # Backup custom normals to the unique temporary attribute.
+            # Backup custom normals to the temporary attribute.
             for mesh_obj in mmd_model_mesh_objects:
                 mesh_data = mesh_obj.data
-                temp_normal_attr = mesh_data.attributes.new(temp_normal_name, "FLOAT_VECTOR", "CORNER")
+
+                # Remove existing attribute if it exists to avoid Blender auto-renaming
+                existing_attr = mesh_data.attributes.get("mmd_normal")
+                if existing_attr is not None:
+                    mesh_data.attributes.remove(existing_attr)
+
+                temp_normal_attr = mesh_data.attributes.new("mmd_normal", "FLOAT_VECTOR", "CORNER")
                 normals_data = np.empty(len(mesh_data.loops) * 3, dtype=np.float32)
                 mesh_data.loops.foreach_get("normal", normals_data)
                 temp_normal_attr.data.foreach_set("vector", normals_data)
@@ -267,7 +265,7 @@ class ModelSeparateByBonesOperator(bpy.types.Operator):
             all_mesh_objects = list(mmd_model_mesh_objects) + list(separate_mesh_objects)
             for mesh_obj in all_mesh_objects:
                 mesh_data = mesh_obj.data
-                temp_normal_attr = mesh_data.attributes.get(temp_normal_name)
+                temp_normal_attr = mesh_data.attributes.get("mmd_normal")
                 if not temp_normal_attr:
                     continue
                 normals_data = np.empty(len(mesh_data.loops) * 3, dtype=np.float32)

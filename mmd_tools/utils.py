@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import string
+from collections import defaultdict
 from typing import Callable, Optional, Set
 
 import bpy
@@ -108,6 +109,171 @@ def mergeVertexGroup(meshObj, src_vertex_group_name, dest_vertex_group_name):
             pass
 
 
+def separateByParts(meshObj: bpy.types.Object, keep_normals: bool = False):
+    meshData = meshObj.data
+    matrix_parent_inverse = meshObj.matrix_parent_inverse.copy()
+    prev_parent = meshObj.parent
+    dummy_parent = bpy.data.objects.new(name="tmp", object_data=None)
+    meshObj.parent = dummy_parent
+
+    # Backup Normals
+    if keep_normals:
+        # Remove existing "mmd_normal" attribute if it exists to avoid Blender auto-renaming
+        existing_attr = meshData.attributes.get("mmd_normal")
+        if existing_attr is not None:
+            meshData.attributes.remove(existing_attr)
+
+        mmd_normal_attr = meshData.attributes.new("mmd_normal", "FLOAT_VECTOR", "CORNER")
+        original_normals = np.empty(len(meshData.loops) * 3, dtype=np.float32)
+        meshData.loops.foreach_get("normal", original_normals)
+        mmd_normal_attr.data.foreach_set("vector", original_normals)
+
+    # Separate by LOOSE Parts
+    enterEditMode(meshObj)
+    try:
+        bpy.ops.mesh.separate(type="LOOSE")
+    except RuntimeError:
+        pass  # Single part
+    finally:
+        bpy.ops.object.mode_set(mode="OBJECT")
+
+    # Graph Clustering (Connectivity via Materials)
+    loose_parts = list(dummy_parent.children)
+    mat_to_objs = defaultdict(list)
+    obj_to_mats = {}
+
+    for obj in loose_parts:
+        # Get unique material indices used by this object
+        m_indices = np.empty(len(obj.data.polygons), dtype=np.int32)
+        obj.data.polygons.foreach_get("material_index", m_indices)
+        unique_indices = np.unique(m_indices)
+
+        mat_names = set()
+        for idx in unique_indices:
+            if idx < len(obj.data.materials) and obj.data.materials[idx]:
+                mat_names.add(obj.data.materials[idx].name)
+
+        if not mat_names:
+            mat_names = {"__NO_MAT__"}
+
+        obj_to_mats[obj] = mat_names
+        for m in mat_names:
+            mat_to_objs[m].append(obj)
+
+    visited_objs = set()
+    grouped_lists = []
+
+    for start_obj in loose_parts:
+        if start_obj in visited_objs:
+            continue
+
+        current_group = []
+        stack = [start_obj]
+        visited_objs.add(start_obj)
+
+        while stack:
+            curr = stack.pop()
+            current_group.append(curr)
+
+            # Check neighbors via shared materials
+            mats = obj_to_mats[curr]
+            for m in mats:
+                for neighbor in mat_to_objs[m]:
+                    if neighbor not in visited_objs:
+                        visited_objs.add(neighbor)
+                        stack.append(neighbor)
+
+        grouped_lists.append(current_group)
+
+    # Join, Cleanup & Rename
+    final_objects = []
+    ctx = FnContext.ensure_context()
+
+    for group in grouped_lists:
+        if not group:
+            continue
+
+        target_obj = group[0]
+
+        # Join if needed
+        if len(group) > 1:
+            selectAObject(target_obj)
+            for obj in group:
+                obj.select_set(True)
+            FnContext.set_active_object(ctx, target_obj)
+            bpy.ops.object.join()
+
+        # Restore Transforms
+        target_obj.parent = prev_parent
+        target_obj.matrix_parent_inverse = matrix_parent_inverse
+        final_objects.append(target_obj)
+
+        # Restore Normals from Attribute
+        if keep_normals:
+            mmd_normal_attr = target_obj.data.attributes.get("mmd_normal")
+            if mmd_normal_attr:
+                restored_normals = np.empty(len(target_obj.data.loops) * 3, dtype=np.float32)
+                mmd_normal_attr.data.foreach_get("vector", restored_normals)
+                target_obj.data.normals_split_custom_set(restored_normals.reshape(-1, 3))
+                target_obj.data.attributes.remove(mmd_normal_attr)
+
+        # --- Clean Materials & Rename ---
+        mesh = target_obj.data
+        if len(mesh.polygons) > 0:
+            poly_mat_indices = np.empty(len(mesh.polygons), dtype=np.int32)
+            mesh.polygons.foreach_get("material_index", poly_mat_indices)
+            used_indices = np.unique(poly_mat_indices)
+        else:
+            used_indices = np.array([], dtype=np.int32)
+
+        new_materials = []
+        remap_dict = {}
+        used_mat_names = []
+
+        for i, old_idx in enumerate(used_indices):
+            if old_idx < len(mesh.materials):
+                mat = mesh.materials[old_idx]
+                if mat:
+                    new_materials.append(mat)
+                    remap_dict[old_idx] = i
+                    used_mat_names.append(mat.name)
+
+        # Update Mesh Polygon material indices (Remapping)
+        if len(remap_dict) > 0:
+            new_poly_indices = poly_mat_indices.copy()
+            for old_idx, new_idx in remap_dict.items():
+                if old_idx != new_idx:
+                    mask = poly_mat_indices == old_idx
+                    new_poly_indices[mask] = new_idx
+            mesh.polygons.foreach_set("material_index", new_poly_indices)
+
+        # Rebuild Object material slots
+        mesh.materials.clear()
+        for mat in new_materials:
+            mesh.materials.append(mat)
+
+        # Rename Object
+        if used_mat_names:
+            sorted_names = sorted(used_mat_names)
+            new_name = "_".join(sorted_names)
+            if len(new_name) > 50:
+                new_name = new_name[:50] + "..."
+        else:
+            new_name = "NoMaterial"
+
+        target_obj.name = new_name
+        # ----------------------------------------
+
+    bpy.data.objects.remove(dummy_parent)
+
+    # Select final objects
+    bpy.ops.object.select_all(action="DESELECT")
+    for obj in final_objects:
+        obj.select_set(True)
+    if final_objects:
+        FnContext.set_active_object(ctx, final_objects[0])
+
+
 def separateByMaterials(meshObj: bpy.types.Object, keep_normals: bool = False):
     meshData = meshObj.data
     if len(meshData.materials) < 2:
@@ -120,6 +286,11 @@ def separateByMaterials(meshObj: bpy.types.Object, keep_normals: bool = False):
     meshObj.active_shape_key_index = 0
     try:
         if keep_normals:
+            # Remove existing "mmd_normal" attribute if it exists to avoid Blender auto-renaming
+            existing_attr = meshData.attributes.get("mmd_normal")
+            if existing_attr is not None:
+                meshData.attributes.remove(existing_attr)
+
             mmd_normal = meshData.attributes.new("mmd_normal", "FLOAT_VECTOR", "CORNER")
             normals_data = np.empty(len(meshData.loops) * 3, dtype=np.float32)
             meshData.loops.foreach_get("normal", normals_data)

@@ -9,6 +9,7 @@ from mathutils import Vector
 
 from .. import bpyutils
 from ..bpyutils import TransformConstraintOp
+from ..compat.versions import IS_BLENDER_50_UP
 from ..utils import ItemOp
 
 if TYPE_CHECKING:
@@ -47,6 +48,16 @@ class FnBone:
 
     def __init__(self):
         raise NotImplementedError("This class cannot be instantiated.")
+
+    @staticmethod
+    def is_visible_in_viewport(pose_bone: bpy.types.PoseBone) -> bool:
+        """Check if the pose bone is visible in the 3D Viewport."""
+        # Determine bone visibility: visible if not hidden and either has no collections or belongs to at least one visible collection
+        # This logic is the same as Blender's
+        bone = pose_bone.bone
+        if not IS_BLENDER_50_UP:
+            return not bone.hide and (not bone.collections or any(collection.is_visible for collection in bone.collections))
+        return not pose_bone.hide and (not bone.collections or any(collection.is_visible for collection in bone.collections))
 
     @staticmethod
     def find_pose_bone_by_bone_id(armature_object: bpy.types.Object, bone_id: int) -> Optional[bpy.types.PoseBone]:

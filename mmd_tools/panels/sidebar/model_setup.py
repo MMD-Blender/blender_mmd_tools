@@ -111,10 +111,9 @@ class MMDToolsModelSetupPanel(PT_PanelBase, bpy.types.Panel):
 
         groups = {}
         for ik, (b, cnt, err) in ik_map.items():
-            if any(c.is_visible for c in ik.bone.collections):
-                px, py, pz = -ik.bone.head_local / base
-                bx, by, bz = -b.head_local / base * 0.15
-                groups.setdefault((int(pz), int(bz), int(px**2), -cnt), set()).add(((px, -py, bx), ik))  # (px, pz, -py, bx, bz, -by)
+            px, py, pz = -ik.bone.head_local / base
+            bx, by, bz = -b.head_local / base * 0.15
+            groups.setdefault((int(pz), int(bz), int(px**2), -cnt), set()).add(((px, -py, bx), ik))  # (px, pz, -py, bx, bz, -by)
 
         for _, group in sorted(groups.items()):
             for _, ik in sorted(group, key=lambda x: x[0]):
@@ -136,6 +135,7 @@ class MMDToolsModelSetupPanel(PT_PanelBase, bpy.types.Panel):
         col = self.layout.column(align=True)
         col.label(text="Mesh:", icon="MESH_DATA")
         grid = col.grid_flow(row_major=True, align=True)
+        grid.row(align=True).operator("mmd_tools.separate_by_parts", text="Sep by Parts", icon="MOD_EXPLODE")
         grid.row(align=True).operator("mmd_tools.separate_by_materials", text="Sep by Mat(High Risk)", icon="MOD_EXPLODE")
         grid.row(align=True).operator("mmd_tools.join_meshes", text="Join", icon="MESH_CUBE")
 

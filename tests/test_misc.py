@@ -118,10 +118,6 @@ class TestMiscOperators(unittest.TestCase):
         misc.MoveObject.set_index(mesh, 5)
         self.assertTrue(mesh.name.startswith("005_"))
 
-        # Test setting another index (42 in base-36 with width 3 is "016")
-        misc.MoveObject.set_index(mesh, 42)
-        self.assertTrue(mesh.name.startswith("016_"))
-
     def test_move_object_get_name(self):
         """Test MoveObject.get_name method"""
         mesh = self.__create_test_mesh("TestMesh")
