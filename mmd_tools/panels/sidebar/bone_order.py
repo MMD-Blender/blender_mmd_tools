@@ -4,7 +4,7 @@
 import bpy
 
 from ... import utils
-from ...compat.action_compat import IS_BLENDER_50_UP
+from ...compat.versions import IS_BLENDER_50_UP
 from ...core.bone import BONE_COLLECTION_NAME_DUMMY, BONE_COLLECTION_NAME_SHADOW, FnBone, MigrationFnBone
 from ...core.model import FnModel
 from . import PT_ProductionPanelBase

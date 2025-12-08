@@ -4,7 +4,6 @@
 import logging
 import math
 import os
-import re
 from typing import Union
 
 import bpy
@@ -12,53 +11,10 @@ from mathutils import Quaternion, Vector
 
 from ... import utils
 from ...compat import action_compat
+from ...operators.view import FlipPose
 from .. import vmd
 from ..camera import MMDCamera
 from ..light import MMDLight
-
-
-class FlipPose:
-    # https://docs.blender.org/manual/en/dev/rigging/armatures/bones/editing/naming.html
-    __LR_REGEX = [
-        {"re": re.compile(r"^(.+)(RIGHT|LEFT)(\.\d+)?$", re.IGNORECASE), "lr": 1},
-        {"re": re.compile(r"^(.+)([\.\- _])(L|R)(\.\d+)?$", re.IGNORECASE), "lr": 2},
-        {"re": re.compile(r"^(LEFT|RIGHT)(.+)$", re.IGNORECASE), "lr": 0},
-        {"re": re.compile(r"^(L|R)([\.\- _])(.+)$", re.IGNORECASE), "lr": 0},
-        {"re": re.compile(r"^(.+)(左|右)(\.\d+)?$"), "lr": 1},
-        {"re": re.compile(r"^(左|右)(.+)$"), "lr": 0},
-    ]
-    __LR_MAP = {
-        "RIGHT": "LEFT",
-        "Right": "Left",
-        "right": "left",
-        "LEFT": "RIGHT",
-        "Left": "Right",
-        "left": "right",
-        "L": "R",
-        "l": "r",
-        "R": "L",
-        "r": "l",
-        "左": "右",
-        "右": "左",
-    }
-
-    @classmethod
-    def flip_name(cls, name):
-        for regex in cls.__LR_REGEX:
-            match = regex["re"].match(name)
-            if match:
-                groups = match.groups()
-                lr = groups[regex["lr"]]
-                if lr in cls.__LR_MAP:
-                    flip_lr = cls.__LR_MAP[lr]
-                    name = ""
-                    for i, s in enumerate(groups):
-                        if i == regex["lr"]:
-                            name += flip_lr
-                        elif s:
-                            name += s
-                    return name
-        return ""
 
 
 class _MirrorMapper:

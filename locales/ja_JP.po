@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the Blender package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
-msgstr "Project-Id-Version: MMD Tools 4.5.2 (0)"
+msgstr "Project-Id-Version: MMD Tools 4.5.3 (0)"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.base_texture_folder
 msgid "Base Texture Folder"
@@ -372,7 +372,7 @@ msgstr "物理を設定する際に追加で非衝突コンストレイントを
 
 #. :src: bpy.types.MMD_TOOLS_OT_change_mmd_ik_loop_factor
 #: extensions/blender_org/mmd_tools/panels/prop_object.py:34
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:166
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:167
 msgctxt "Operator"
 msgid "Change MMD IK Loop Factor"
 msgstr "MMD IK反復係数を変更"
@@ -2220,7 +2220,7 @@ msgid "Select the bone assigned to this offset in the armature"
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:139
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:140
 msgctxt "Operator"
 msgid "Sep by Mat(High Risk)"
 msgstr "マテリアルで分離 (高リスク)"
@@ -2238,11 +2238,25 @@ msgstr ""
 "既知の不具合: メッシュの破損、UVマップの問題やその他予期せぬ挙動. バックアップを取り、慎重に扱ってください."
 
 #. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials.clean_shape_keys
+#. :src: bpy.types.MMD_TOOLS_OT_separate_by_parts.clean_shape_keys
 msgid "Clean Shape Keys"
 msgstr "シェイプキーを除去"
 
 #. :src: bpy.types.MMD_TOOLS_OT_separate_by_materials.clean_shape_keys
+#. :src: bpy.types.MMD_TOOLS_OT_separate_by_parts.clean_shape_keys
 msgid "Remove unused shape keys of separated objects"
+msgstr ""
+
+#. :src: bpy.types.MMD_TOOLS_OT_separate_by_parts
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:139
+msgctxt "Operator"
+msgid "Sep by Parts"
+msgstr "部品で分離"
+
+#. :src: bpy.types.MMD_TOOLS_OT_separate_by_parts
+msgid ""
+"Separate by loose parts and join by materials.\n"
+"This preserves vertex count."
 msgstr ""
 
 #. :src: bpy.types.MMD_TOOLS_OT_set_frame_range
@@ -2944,7 +2958,7 @@ msgid "SubTexture"
 msgstr "サブテクスチャ"
 
 #. :src: bpy.types.MMDMaterial.toon_texture
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:148
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:149
 msgid "Toon Texture"
 msgstr "トゥーンテクスチャ"
 
@@ -3431,11 +3445,11 @@ msgstr "MMD剛体選択"
 msgid "Imported MMD model from \"\""
 msgstr "MMDモデルを \"%s\" からインポートしました"
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:948
+#: extensions/blender_org/mmd_tools/operators/fileio.py:958
 msgid "[Skipped] The armature object of MMD model \"\" can't be found"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/fileio.py:980
+#: extensions/blender_org/mmd_tools/operators/fileio.py:990
 #, fuzzy
 msgid "Exported MMD model \"\" to \"\""
 msgstr "MMDモデル \"%s\" を \"%s\" にエクスポートしました"
@@ -3465,8 +3479,8 @@ msgid "Removed  texture nodes."
 msgstr "テクスチャノードを  削除しました"
 
 #: extensions/blender_org/mmd_tools/operators/material.py:417
-#: extensions/blender_org/mmd_tools/operators/misc.py:205
-#: extensions/blender_org/mmd_tools/operators/misc.py:251
+#: extensions/blender_org/mmd_tools/operators/misc.py:271
+#: extensions/blender_org/mmd_tools/operators/misc.py:317
 msgid "Select a MMD model"
 msgstr "MMDモデルを選択する"
 
@@ -3483,11 +3497,11 @@ msgstr "Cycles に変更できませんでした"
 msgid "Materials not found"
 msgstr "マテリアルが見つかりません"
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:312
+#: extensions/blender_org/mmd_tools/operators/misc.py:378
 msgid "This operation will break existing f-curve/action."
 msgstr "この操作は既存のFカーブ/アクションを破壊します"
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:313
+#: extensions/blender_org/mmd_tools/operators/misc.py:379
 msgid "Click [OK] to run the operation."
 msgstr "[OK]をクリックして操作を実行してください"
 
@@ -3496,11 +3510,11 @@ msgstr "[OK]をクリックして操作を実行してください"
 msgid "Can not move object \"\""
 msgstr "オブジェクト \"%s\" を移動できません"
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:215
+#: extensions/blender_org/mmd_tools/operators/misc.py:281
 msgid "The model does not have any meshes"
 msgstr "このモデルにはメッシュがありません"
 
-#: extensions/blender_org/mmd_tools/operators/misc.py:256
+#: extensions/blender_org/mmd_tools/operators/misc.py:322
 msgid "Model Armature not found"
 msgstr "モデルのアーマチュアが見つかりません"
 
@@ -3632,76 +3646,76 @@ msgstr "2つ以上のMMD剛体を選択してください"
 msgid "Binded  of  selected mesh(es)"
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:271
+#: extensions/blender_org/mmd_tools/operators/translations.py:265
 msgid "Filter"
 msgstr "フィルタ"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:275
+#: extensions/blender_org/mmd_tools/operators/translations.py:269
 msgid "is Blank:"
 msgstr "空白のみ:"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:278
+#: extensions/blender_org/mmd_tools/operators/translations.py:275
 msgid "Japanese"
 msgstr "日本語"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:280
+#: extensions/blender_org/mmd_tools/operators/translations.py:277
 msgid "English"
 msgstr "英語"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:308
+#: extensions/blender_org/mmd_tools/operators/translations.py:305
 msgid "Select the target column for Batch Operations:"
 msgstr "一括操作の対象列を選択:"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:332
+#: extensions/blender_org/mmd_tools/operators/translations.py:326
 msgid "Batch Operation:"
 msgstr "一括操作:"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:340
+#: extensions/blender_org/mmd_tools/operators/translations.py:334
 msgid "Preset"
 msgstr "プリセット"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:343
+#: extensions/blender_org/mmd_tools/operators/translations.py:337
 msgctxt "Operator"
 msgid "Execute"
 msgstr "実行"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:347
+#: extensions/blender_org/mmd_tools/operators/translations.py:341
 msgid "Dictionaries:"
 msgstr "辞書:"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:349
+#: extensions/blender_org/mmd_tools/operators/translations.py:343
 msgid "to_english"
 msgstr "to_english"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:353
+#: extensions/blender_org/mmd_tools/operators/translations.py:347
 msgid "replace"
 msgstr "置換"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:358
+#: extensions/blender_org/mmd_tools/operators/translations.py:352
 msgid "CSV:"
 msgstr "CSV:"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:360
+#: extensions/blender_org/mmd_tools/operators/translations.py:354
 msgctxt "Operator"
 msgid "Import CSV"
 msgstr "CSVインポート"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:361
+#: extensions/blender_org/mmd_tools/operators/translations.py:355
 msgctxt "Operator"
 msgid "Export CSV"
 msgstr "CSVエクスポート"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:449
+#: extensions/blender_org/mmd_tools/operators/translations.py:443
 msgid "Exported to "
 msgstr ""
 
 #: extensions/blender_org/mmd_tools/operators/translations.py:110
-#: extensions/blender_org/mmd_tools/operators/translations.py:399
+#: extensions/blender_org/mmd_tools/operators/translations.py:393
 msgid "Failed to translate  names, see '' in text editor"
 msgstr "名称  の翻訳に失敗しました, テキストエディタで '' を確認してください"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:431
-#: extensions/blender_org/mmd_tools/operators/translations.py:479
+#: extensions/blender_org/mmd_tools/operators/translations.py:425
+#: extensions/blender_org/mmd_tools/operators/translations.py:473
 msgid "Root object not found"
 msgstr ""
 
@@ -3710,15 +3724,15 @@ msgstr ""
 msgid "Failed to load dictionary: "
 msgstr "辞書の読み込みに失敗しました: %s"
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:446
+#: extensions/blender_org/mmd_tools/operators/translations.py:440
 msgid "Failed to write CSV: "
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:547
+#: extensions/blender_org/mmd_tools/operators/translations.py:538
 msgid "Failed to read CSV: "
 msgstr ""
 
-#: extensions/blender_org/mmd_tools/operators/translations.py:494
+#: extensions/blender_org/mmd_tools/operators/translations.py:488
 msgid "Missing required headers in CSV: , "
 msgstr ""
 
@@ -4071,7 +4085,7 @@ msgid "Peel"
 msgstr "はがす"
 
 #: extensions/blender_org/mmd_tools/panels/sidebar/model_production.py:62
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:140
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:141
 msgctxt "Operator"
 msgid "Join"
 msgstr "統合"
@@ -4122,39 +4136,39 @@ msgstr "IK切替え:"
 msgid "Mesh:"
 msgstr "メッシュ:"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:144
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:145
 msgid "Material:"
 msgstr "マテリアル:"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:149
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:150
 msgid "Sphere Texture"
 msgstr "スフィアテクスチャ"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:154
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:155
 msgctxt "Operator"
 msgid "Convert to Blender"
 msgstr "Blender用に変換"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:156
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:157
 msgctxt "Operator"
 msgid "Convert to MMD"
 msgstr "MMD用に変換"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:158
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:159
 msgctxt "Operator"
 msgid "Setup Textures"
 msgstr "テクスチャ構成"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:159
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:160
 msgctxt "Operator"
 msgid "Texture Cleanup"
 msgstr "テクスチャ除去"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:163
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:164
 msgid "Misc:"
 msgstr "その他:"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:165
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:166
 msgctxt "Operator"
 msgid "(Experimental) Global Translation"
 msgstr "(実験的) 全体翻訳"
@@ -4165,7 +4179,7 @@ msgctxt "Operator"
 msgid "Physics"
 msgstr "物理演算"
 
-#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:151
+#: extensions/blender_org/mmd_tools/panels/sidebar/model_setup.py:152
 msgctxt "Operator"
 msgid "Edge Preview"
 msgstr "輪郭プレビュー"

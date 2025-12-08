@@ -14,7 +14,7 @@ from mathutils import Matrix, Vector
 
 from ... import bpyutils, utils
 from ...bpyutils import FnContext, FnObject
-from ...compat.action_compat import IS_BLENDER_50_UP
+from ...compat.versions import IS_BLENDER_50_UP
 from ...operators.misc import MoveObject
 from .. import pmx
 from ..bone import FnBone

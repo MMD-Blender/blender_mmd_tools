@@ -14,10 +14,10 @@ import bpy
 from mathutils import Euler, Matrix, Vector
 
 from ...bpyutils import FnContext
-from ...compat.action_compat import IS_BLENDER_50_UP
 from ...operators.misc import MoveObject
 from ...utils import saferelpath
 from .. import pmx
+from ..bone import FnBone
 from ..material import FnMaterial
 from ..model import FnModel
 from ..morph import FnMorph
@@ -411,12 +411,7 @@ class __PmxExporter:
 
                 pmx_bone.location = __to_pmx_location(p_bone.head)
                 pmx_bone.parent = bone.parent
-                # Determine bone visibility: visible if not hidden and either has no collections or belongs to at least one visible collection
-                # This logic is the same as Blender's
-                if IS_BLENDER_50_UP:
-                    pmx_bone.visible = not p_bone.hide and (not bone.collections or any(collection.is_visible for collection in bone.collections))
-                else:
-                    pmx_bone.visible = not bone.hide and (not bone.collections or any(collection.is_visible for collection in bone.collections))
+                pmx_bone.visible = FnBone.is_visible_in_viewport(p_bone)
                 pmx_bone.isControllable = mmd_bone.is_controllable
                 pmx_bone.isMovable = not all(p_bone.lock_location)
                 pmx_bone.isRotatable = not all(p_bone.lock_rotation)
@@ -997,48 +992,6 @@ class __PmxExporter:
         vertices.append(n)
         return n
 
-    def __convertFaceUVToVertexUVSmooth(self, vert_index, uv, normal, vertices_map, face_area, loop_angle):
-        """Convert face UV to vertex UV with weighted normal averaging."""
-        vertices = vertices_map[vert_index]
-        assert vertices, f"Empty vertices list for vertex index {vert_index}"
-
-        v = None
-        for i in vertices:
-            if i.uv is None:
-                i.uv = uv
-                v = i
-                break
-            if (i.uv - uv).length < 0.001:  # UV requires exact matching
-                v = i
-                break
-
-        if v is None:
-            # Create new vertex for different UV
-            v = copy.copy(vertices[0])
-            v.uv = uv
-            vertices.append(v)
-
-        # Initialize averaging lists if needed
-        for attr_name in ["_normal_list", "_area_list", "_angle_list"]:
-            if not hasattr(v, attr_name):
-                setattr(v, attr_name, [])
-
-        # Append current values to averaging lists
-        v._normal_list.append(normal)
-        v._area_list.append(face_area)
-        v._angle_list.append(loop_angle)
-
-        # Average normals
-        if v._normal_list.count(v._normal_list[0]) == len(v._normal_list):  # All normals identical
-            v.normal = normal
-        else:
-            weights = [angle * area for angle, area in zip(v._angle_list, v._area_list, strict=False)]
-            total_weight = sum(weights) or 1.0  # Avoid division by zero
-            weighted_normal_sum = sum((n * w for n, w in zip(v._normal_list, weights, strict=False)), Vector((0, 0, 0)))
-            v.normal = (weighted_normal_sum / total_weight).normalized()
-
-        return v
-
     @staticmethod
     def __convertAddUV(vert, adduv, addzw, uv_index, vertices, rip_vertices):
         assert vertices, "Empty vertices list for additional UV processing"
@@ -1124,6 +1077,36 @@ class __PmxExporter:
         for face in bm_temp.faces:
             loop_angles.extend(loop.calc_angle() for loop in face.loops)
         bm_temp.free()
+
+        # Pre-calculate smooth normals if needed
+        # Calculate smooth normals per mesh vertex index BEFORE splitting vertices by UVs.
+        # This ensures hard edges at UV seams are smoothed correctly.
+        smooth_normals_map = {}
+        if self.__normal_handling == "SMOOTH_ALL_NORMALS":
+            vert_accum_normals = {}
+
+            # Iterate through all polygons to accumulate weighted normals
+            for poly in base_mesh.polygons:
+                face_area = poly.area
+                for loop_idx in poly.loop_indices:
+                    v_idx = base_mesh.loops[loop_idx].vertex_index
+                    angle = loop_angles[loop_idx]
+                    normal = loop_normals[loop_idx]
+
+                    # Weight by angle and area
+                    weight = angle * face_area
+
+                    if v_idx not in vert_accum_normals:
+                        vert_accum_normals[v_idx] = Vector((0, 0, 0))
+                    vert_accum_normals[v_idx] += normal * weight
+
+            # Normalize the accumulated results
+            for v_idx, n_vec in vert_accum_normals.items():
+                if n_vec.length > 1e-6:
+                    smooth_normals_map[v_idx] = n_vec.normalized()
+                else:
+                    smooth_normals_map[v_idx] = Vector((0, 1, 0))  # Fallback
+
         # Apply transformation to triangulated mesh
         base_mesh.transform(pmx_matrix)
 
@@ -1238,18 +1221,19 @@ class __PmxExporter:
                 raise ValueError(f"Face should be triangulated. Face index: {face.index}, Mesh name: {base_mesh.name}")
 
             loop_indices = list(face.loop_indices)
-            n1, n2, n3 = [loop_normals[idx] for idx in loop_indices]
-            a1, a2, a3 = [loop_angles[idx] for idx in loop_indices]
-            face_area = face.area
 
             if self.__normal_handling == "SMOOTH_ALL_NORMALS":
-                v1 = self.__convertFaceUVToVertexUVSmooth(face.vertices[0], uv.uv1, n1, base_vertices, face_area, a1)
-                v2 = self.__convertFaceUVToVertexUVSmooth(face.vertices[1], uv.uv2, n2, base_vertices, face_area, a2)
-                v3 = self.__convertFaceUVToVertexUVSmooth(face.vertices[2], uv.uv3, n3, base_vertices, face_area, a3)
+                # Retrieve the pre-calculated smooth normal for each vertex
+                # Fallback to loop normal if something goes wrong (shouldn't happen)
+                n1 = smooth_normals_map.get(face.vertices[0], loop_normals[loop_indices[0]])
+                n2 = smooth_normals_map.get(face.vertices[1], loop_normals[loop_indices[1]])
+                n3 = smooth_normals_map.get(face.vertices[2], loop_normals[loop_indices[2]])
             else:  # PRESERVE_ALL_NORMALS
-                v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices)
-                v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices)
-                v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices)
+                n1, n2, n3 = [loop_normals[idx] for idx in loop_indices]
+
+            v1 = self.__convertFaceUVToVertexUV(face.vertices[0], uv.uv1, n1, base_vertices)
+            v2 = self.__convertFaceUVToVertexUV(face.vertices[1], uv.uv2, n2, base_vertices)
+            v3 = self.__convertFaceUVToVertexUV(face.vertices[2], uv.uv3, n3, base_vertices)
 
             t = _Face([v1, v2, v3], face.index)
             face_seq.append(t)

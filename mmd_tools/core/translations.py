@@ -9,9 +9,10 @@ from typing import TYPE_CHECKING, Callable, Dict, Optional, Set, Tuple
 
 import bpy
 
-from ..compat.action_compat import IS_BLENDER_50_UP
+from ..compat.versions import IS_BLENDER_50_UP
 from ..translations import DictionaryEnum
 from ..utils import convertLRToName, convertNameToLR
+from .bone import FnBone
 from .model import FnModel, Model
 
 if TYPE_CHECKING:
@@ -117,7 +118,7 @@ class MMDBoneHandler(MMDDataHandlerABC):
         armature_object: bpy.types.Object = FnModel.find_armature_object(mmd_translation.id_data)
         pose_bone: bpy.types.PoseBone
         for index, pose_bone in enumerate(armature_object.pose.bones):
-            if pose_bone.bone.hide or (pose_bone.bone.collections and not any(c.is_visible for c in pose_bone.bone.collections)):
+            if not FnBone.is_visible_in_viewport(pose_bone):
                 continue
 
             mmd_translation_element: MMDTranslationElement = mmd_translation.translation_elements.add()
