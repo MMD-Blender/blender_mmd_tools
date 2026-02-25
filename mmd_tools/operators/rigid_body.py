@@ -244,6 +244,29 @@ class AddRigidBody(bpy.types.Operator):
         elif armature_object.mode != "POSE":
             bpy.ops.object.mode_set(mode="POSE")
 
+        scene = context.scene
+
+        # --- Ensure Rigid Body environment is stable ---
+        # Explicitly create Rigid Body World if missing to control its initial state
+        if scene.rigidbody_world is None:
+            if bpy.ops.rigidbody.world_add.poll():
+                bpy.ops.rigidbody.world_add()
+                if scene.rigidbody_world.point_cache:
+                    scene.rigidbody_world.point_cache.frame_start = scene.frame_start
+                    scene.rigidbody_world.point_cache.frame_end = scene.frame_end
+
+        # Determine the target start frame for physics initialization
+        current_frame = scene.frame_current
+        start_frame = scene.frame_start
+        if scene.rigidbody_world and scene.rigidbody_world.point_cache:
+            start_frame = scene.rigidbody_world.point_cache.frame_start
+
+        # Jump to start frame to prevent rigid bodies from spawning at origin on non-start frames
+        if current_frame != start_frame:
+            scene.frame_set(start_frame)
+            self.report({"INFO"}, f"Frame jumped to {start_frame} for physics stability")
+        # -----------------------------------------------
+
         selected_pose_bones = []
         if context.selected_pose_bones:
             selected_pose_bones = context.selected_pose_bones
