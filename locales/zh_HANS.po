@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the Blender package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
-msgstr "Project-Id-Version: MMD Tools 4.5.7 (0)"
+msgstr "Project-Id-Version: MMD Tools 4.5.8 (0)"
 
 #. :src: bpy.types.MMDToolsAddonPreferences.base_texture_folder
 msgid "Base Texture Folder"
