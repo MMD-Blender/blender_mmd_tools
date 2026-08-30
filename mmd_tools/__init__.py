@@ -14,6 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+bl_info = {
+    "name": "MMD Tools",
+    "author": "MMD",
+    "version": (4, 5, 13),
+    "blender": (5, 2, 0),
+    "description": "Utility tools for MMD model editing",
+}
+
 import os
 
 from . import auto_load
