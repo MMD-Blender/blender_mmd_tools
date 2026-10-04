@@ -1189,75 +1189,79 @@ class Model:
 
     def build(self, non_collision_distance_scale=1.5, collision_margin=1e-06):
         rigidbody_world_enabled = rigid_body.setRigidBodyWorldEnabled(False)
-        if self.__root.mmd_root.is_built:
-            self.clean()
-        self.__root.mmd_root.is_built = True
-        logging.info("****************************************")
-        logging.info(" Build rig")
-        logging.info("****************************************")
-        start_time = time.time()
-        self.__preBuild()
-        self.disconnectPhysicsBones()
-        self.buildRigids(non_collision_distance_scale, collision_margin)
-        self.buildJoints()
-        self.__postBuild()
-        logging.info(" Finished building in %f seconds.", time.time() - start_time)
-        rigid_body.setRigidBodyWorldEnabled(rigidbody_world_enabled)
+        try:
+            if self.__root.mmd_root.is_built:
+                self.clean()
+            self.__root.mmd_root.is_built = True
+            logging.info("****************************************")
+            logging.info(" Build rig")
+            logging.info("****************************************")
+            start_time = time.time()
+            self.__preBuild()
+            self.disconnectPhysicsBones()
+            self.buildRigids(non_collision_distance_scale, collision_margin)
+            self.buildJoints()
+            self.__postBuild()
+            logging.info(" Finished building in %f seconds.", time.time() - start_time)
+        finally:
+            rigid_body.setRigidBodyWorldEnabled(rigidbody_world_enabled)
 
     def clean(self):
         rigidbody_world_enabled = rigid_body.setRigidBodyWorldEnabled(False)
-        logging.info("****************************************")
-        logging.info(" Clean rig")
-        logging.info("****************************************")
-        start_time = time.time()
+        try:
+            logging.info("****************************************")
+            logging.info(" Clean rig")
+            logging.info("****************************************")
+            start_time = time.time()
 
-        pose_bones = []
-        arm = self.armature()
-        if arm is not None:
-            pose_bones = arm.pose.bones
-        for i in pose_bones:
-            if "mmd_tools_rigid_track" in i.constraints:
-                const = i.constraints["mmd_tools_rigid_track"]
-                i.constraints.remove(const)
+            pose_bones = []
+            arm = self.armature()
+            if arm is not None:
+                pose_bones = arm.pose.bones
+            for i in pose_bones:
+                if "mmd_tools_rigid_track" in i.constraints:
+                    const = i.constraints["mmd_tools_rigid_track"]
+                    i.constraints.remove(const)
 
-        rigid_track_counts = 0
-        for i in self.rigidBodies():
-            rigid_type = int(i.mmd_rigid.type)
-            if "mmd_tools_rigid_parent" not in i.constraints:
-                rigid_track_counts += 1
-                logging.info('%3d# Create a "CHILD_OF" constraint for %s', rigid_track_counts, i.name)
-                i.mmd_rigid.bone = i.mmd_rigid.bone
-            relation = i.constraints["mmd_tools_rigid_parent"]
-            relation.mute = True
-            if rigid_type == rigid_body.MODE_STATIC:
-                i.parent_type = "OBJECT"
-                i.parent = self.rigidGroupObject()
-            elif rigid_type in {rigid_body.MODE_DYNAMIC, rigid_body.MODE_DYNAMIC_BONE}:
-                arm = relation.target
-                bone_name = relation.subtarget
-                if arm is not None and bone_name != "":
-                    for c in arm.pose.bones[bone_name].constraints:
-                        if c.type == "IK":
-                            c.mute = False
-            self.__restoreTransforms(i)
+            rigid_track_counts = 0
+            for i in self.rigidBodies():
+                rigid_type = int(i.mmd_rigid.type)
+                if "mmd_tools_rigid_parent" not in i.constraints:
+                    rigid_track_counts += 1
+                    logging.info('%3d# Create a "CHILD_OF" constraint for %s', rigid_track_counts, i.name)
+                    i.mmd_rigid.bone = i.mmd_rigid.bone
+                relation = i.constraints["mmd_tools_rigid_parent"]
+                relation.mute = True
+                if rigid_type == rigid_body.MODE_STATIC:
+                    i.parent_type = "OBJECT"
+                    i.parent = self.rigidGroupObject()
+                elif rigid_type in {rigid_body.MODE_DYNAMIC, rigid_body.MODE_DYNAMIC_BONE}:
+                    arm = relation.target
+                    bone_name = relation.subtarget
+                    if arm is not None and bone_name != "":
+                        for c in arm.pose.bones[bone_name].constraints:
+                            if c.type == "IK":
+                                c.mute = False
+                self.__restoreTransforms(i)
 
-        for i in self.joints():
-            self.__restoreTransforms(i)
+            for i in self.joints():
+                self.__restoreTransforms(i)
 
-        self.__removeTemporaryObjects()
-        self.connectPhysicsBones()
+            self.__removeTemporaryObjects()
+            self.connectPhysicsBones()
 
-        arm = self.armature()
-        if arm is not None:  # update armature
-            arm.update_tag()
-            bpy.context.scene.frame_set(bpy.context.scene.frame_current)
+            arm = self.armature()
+            if arm is not None:  # update armature
+                arm.update_tag()
+                bpy.context.scene.frame_set(bpy.context.scene.frame_current)
 
-        mmd_root = self.rootObject().mmd_root
-        if mmd_root.show_temporary_objects:
-            mmd_root.show_temporary_objects = False
-        logging.info(" Finished cleaning in %f seconds.", time.time() - start_time)
-        mmd_root.is_built = False
-        rigid_body.setRigidBodyWorldEnabled(rigidbody_world_enabled)
+            mmd_root = self.rootObject().mmd_root
+            if mmd_root.show_temporary_objects:
+                mmd_root.show_temporary_objects = False
+            logging.info(" Finished cleaning in %f seconds.", time.time() - start_time)
+            mmd_root.is_built = False
+        finally:
+            rigid_body.setRigidBodyWorldEnabled(rigidbody_world_enabled)
 
     def __removeTemporaryObjects(self):
         with bpy.context.temp_override(selected_objects=tuple(self.temporaryObjects()), active_object=self.rootObject()):

@@ -7,6 +7,7 @@ import math
 import os
 import shutil
 import unittest
+from unittest.mock import patch
 
 import bpy
 from bl_ext.blender_org.mmd_tools.core import rigid_body
@@ -213,6 +214,67 @@ class TestRigidBody(unittest.TestCase):
     # ********************************************
     # Test Cases
     # ********************************************
+
+    def test_model_physics_preserves_world_state(self):
+        """Build, rebuild and clean preserve the world's enabled state."""
+        self._enable_mmd_tools()
+
+        for enabled in (True, False):
+            model = self._create_test_model()
+            self._create_rigid_body_object(model, bone_name="test_bone")
+            world = self.scene.rigidbody_world
+            world.enabled = enabled
+
+            for step, (operation, is_built) in enumerate((("build", True), ("build", True), ("clean", False))):
+                with self.subTest(enabled=enabled, operation=operation, step=step):
+                    getattr(model, operation)()
+                    self.assertEqual(world.enabled, enabled)
+                    self.assertEqual(model.rootObject().mmd_root.is_built, is_built)
+
+    def test_model_physics_restores_world_state_on_error(self):
+        """Failures propagate after restoring the world, including nested clean."""
+        self._enable_mmd_tools()
+        cases = (
+            ("build", "_Model__preBuild", False),
+            ("build", "_Model__postBuild", False),
+            ("clean", "_Model__removeTemporaryObjects", True),
+            ("build", "_Model__removeTemporaryObjects", True),
+        )
+
+        for enabled in (True, False):
+            for operation, failing_method, already_built in cases:
+                with self.subTest(enabled=enabled, operation=operation, failing_method=failing_method):
+                    model = self._create_test_model()
+                    self._create_rigid_body_object(model, bone_name="test_bone")
+                    if already_built:
+                        model.build()
+                    world = self.scene.rigidbody_world
+                    world.enabled = enabled
+                    error = RuntimeError("Injected physics failure")
+
+                    def fail(world=world, error=error):
+                        self.assertFalse(world.enabled)
+                        raise error
+
+                    with patch.object(model, failing_method, side_effect=fail), self.assertRaises(RuntimeError) as raised:
+                        getattr(model, operation)()
+
+                    self.assertIs(raised.exception, error)
+                    self.assertEqual(world.enabled, enabled)
+
+    def test_model_physics_keeps_new_world_disabled(self):
+        """Creating a missing rigid body world keeps its default disabled state."""
+        self._enable_mmd_tools()
+
+        for operation in ("build", "clean"):
+            with self.subTest(operation=operation):
+                model = self._create_test_model()
+                bpy.ops.rigidbody.world_remove()
+
+                getattr(model, operation)()
+
+                self.assertIsNotNone(self.scene.rigidbody_world)
+                self.assertFalse(self.scene.rigidbody_world.enabled)
 
     def test_rigid_body_creation_basic(self):
         """Test basic rigid body creation functionality"""
