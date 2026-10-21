@@ -4,6 +4,7 @@
 import itertools
 import logging
 import time
+from collections import Counter
 from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, Iterator, Optional, Set, TypeGuard, Union, cast
 
 import bpy
@@ -967,6 +968,7 @@ class Model:
         root.mmd_type = "ROOT"
         root.mmd_root.name = name
         root.mmd_root.name_e = name_e
+        root.mmd_root.use_collision_collections = FnContext.get_addon_preferences_attribute(context, "use_collision_collections", False)
         root["mmd_tools_version"] = MMD_TOOLS_VERSION
         setattr(root, Props.empty_display_size, scale / 0.2)
         FnContext.link_object(context, root)
@@ -1185,7 +1187,10 @@ class Model:
             if old_bone_name in mesh.vertex_groups:
                 mesh.vertex_groups[old_bone_name].name = new_bone_name
 
-    def build(self, non_collision_distance_scale=1.5, collision_margin=1e-06):
+    def build(self, non_collision_distance_scale=1.5, collision_margin=1e-06, use_collision_collections: Optional[bool] = None):
+        """use_collision_collections: None uses the model's mmd_root.use_collision_collections setting"""
+        if use_collision_collections is None:
+            use_collision_collections = self.__root.mmd_root.use_collision_collections
         rigidbody_world_enabled = rigid_body.setRigidBodyWorldEnabled(False)
         try:
             if self.__root.mmd_root.is_built:
@@ -1197,7 +1202,7 @@ class Model:
             start_time = time.time()
             self.__preBuild()
             self.disconnectPhysicsBones()
-            self.buildRigids(non_collision_distance_scale, collision_margin)
+            self.buildRigids(non_collision_distance_scale, collision_margin, use_collision_collections)
             self.buildJoints()
             self.__postBuild()
             logging.info(" Finished building in %f seconds.", time.time() - start_time)
@@ -1245,6 +1250,7 @@ class Model:
                             if c.type == "IK":
                                 c.mute = False
                 self.__restoreTransforms(i)
+                self.__restoreCollisionCollections(i)
 
             for i in self.joints():
                 self.__restoreTransforms(i)
@@ -1292,6 +1298,18 @@ class Model:
             if attr_name in obj:  # should not happen in normal build/clean cycle
                 continue
             obj[attr_name] = getattr(obj, attr, None)
+
+    def __restoreCollisionCollections(self, obj):
+        val = obj.get("__backup_collision_collections__", None)
+        if val is not None:
+            if obj.rigid_body is not None:
+                obj.rigid_body.collision_collections = [bool(v) for v in val]
+            del obj["__backup_collision_collections__"]
+
+    def __backupCollisionCollections(self, obj):
+        if "__backup_collision_collections__" in obj or obj.rigid_body is None:  # should not happen in normal build/clean cycle
+            return
+        obj["__backup_collision_collections__"] = [int(v) for v in obj.rigid_body.collision_collections]
 
     def __preBuild(self):
         self.__fake_parent_map = {}
@@ -1497,7 +1515,64 @@ class Model:
         logging.debug(" finish in %f seconds.", time.time() - start_time)
         logging.debug("-" * 60)
 
-    def buildRigids(self, non_collision_distance_scale, collision_margin):
+    @staticmethod
+    def __assignCollisionCollections(rigid_objects) -> Dict[bpy.types.Object, Set[int]]:
+        """
+        Map MMD collision groups/masks onto Blender's 20 rigid body collision collections.
+
+        Two Blender rigid bodies collide only if they share a collision collection. Bodies with the same
+        collision group and mask ("type") behave the same, so give each type a set of collections such that
+        two different types share a collection exactly when MMD lets them collide (a greedy edge clique cover).
+
+        Bodies of the same type always share their collections, so pairs inside a type that ignores its own
+        group still need non-collision constraints. In general, any pair that shares a collection but must not
+        collide still gets a non-collision constraint, so the assignment only has to make sure that every pair
+        that may collide shares a collection. That allows merging collections when more than 20 are needed.
+
+        Returns:
+            The collection indices (0-19) for each rigid body.
+        """
+
+        def body_type(obj):
+            return obj.mmd_rigid.collision_group_number, tuple(obj.mmd_rigid.collision_group_mask)
+
+        def collide(t, u):  # mask values are True for groups that are ignored
+            return not t[1][u[0]] and not u[1][t[0]]
+
+        types = sorted({body_type(i) for i in rigid_objects})
+        uncovered = [(t, u) for n, t in enumerate(types) for u in types[n + 1 :] if collide(t, u)]
+        cliques = []
+        while uncovered:
+            clique = list(uncovered[0])
+            candidates = [v for v in types if v not in clique and all(collide(v, c) for c in clique)]
+            while candidates:
+                uncovered_set = set(uncovered)
+                v = max(candidates, key=lambda v: sum((min(v, c), max(v, c)) in uncovered_set for c in clique))
+                clique.append(v)
+                candidates = [w for w in candidates if w != v and collide(w, v)]
+            cliques.append(clique)
+            uncovered = [(t, u) for t, u in uncovered if t not in clique or u not in clique]
+        in_clique = {t for c in cliques for t in c}
+        cliques.extend([t] for t in types if t not in in_clique and collide(t, t))  # collides only with its own type
+
+        # Too many collections: merge the pair of collections that lets the fewest extra body pairs share a collection
+        type_counts = Counter(body_type(i) for i in rigid_objects)
+        cliques = [set(c) for c in cliques]
+
+        def extra_shared_pairs(a, b):
+            return sum(type_counts[t] * type_counts[u] for t in a - b for u in b - a if not collide(t, u))
+
+        while len(cliques) > 20:
+            _, i, j = min((extra_shared_pairs(a, b), i, j) for i, a in enumerate(cliques) for j, b in enumerate(cliques) if i < j)
+            cliques[i] |= cliques.pop(j)
+
+        type_collections = {t: set() for t in types}
+        for index, clique in enumerate(cliques):
+            for t in clique:
+                type_collections[t].add(index)
+        return {i: type_collections[body_type(i)] for i in rigid_objects}
+
+    def buildRigids(self, non_collision_distance_scale, collision_margin, use_collision_collections=True):
         logging.debug("--------------------------------")
         logging.debug(" Build riggings of rigid bodies")
         logging.debug("--------------------------------")
@@ -1505,6 +1580,8 @@ class Model:
         rigid_object_groups = [[] for i in range(16)]
         for i in rigid_objects:
             rigid_object_groups[i.mmd_rigid.collision_group_number].append(i)
+
+        collision_collections = self.__assignCollisionCollections(rigid_objects) if use_collision_collections else None
 
         jointMap = {}
         for joint in self.joints():
@@ -1532,6 +1609,8 @@ class Model:
                     if pair in jointMap:
                         joint = jointMap[pair]
                         joint.rigid_body_constraint.disable_collisions = True
+                    elif collision_collections is not None and not (collision_collections[obj_a] & collision_collections[obj_b]):
+                        pass  # no shared collision collection, so they never collide
                     else:
                         distance = (obj_a.location - obj_b.location).length
                         if distance < non_collision_distance_scale * (self.__getRigidRange(obj_a) + self.__getRigidRange(obj_b)) * 0.5:
@@ -1540,6 +1619,9 @@ class Model:
         for cnt, i in enumerate(rigid_objects):
             logging.info("%3d/%3d: Updating rigid body %s", cnt + 1, rigid_object_cnt, i.name)
             self.updateRigid(i, collision_margin)
+            if collision_collections is not None and i.rigid_body is not None:
+                self.__backupCollisionCollections(i)
+                i.rigid_body.collision_collections = [n in collision_collections[i] for n in range(20)]
         self.__createNonCollisionConstraint(nonCollisionJointTable)
         return rigid_objects
 

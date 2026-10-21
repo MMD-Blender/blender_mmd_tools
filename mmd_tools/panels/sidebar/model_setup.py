@@ -85,6 +85,7 @@ class MMDToolsModelSetupPanel(PT_PanelBase, bpy.types.Panel):
             row.operator("mmd_tools.build_rig", text="Physics", icon="PHYSICS", depress=False)
         else:
             row.operator("mmd_tools.clean_rig", text="Physics", icon="PHYSICS", depress=True)
+        row.prop(mmd_root, "use_collision_collections", text="", toggle=True, icon="OUTLINER_COLLECTION")
 
         row = grid.row(align=True)
         row.prop(mmd_root, "use_property_driver", text="Property", toggle=True, icon="DRIVER")
