@@ -102,8 +102,9 @@ def _toggleUseSDEF(self: "MMDRoot", _context):
 def _toggleVisibilityOfMeshes(self: "MMDRoot", context: bpy.types.Context):
     root = self.id_data
     hide = not self.show_meshes
-    for i in FnModel.iterate_mesh_objects(self.id_data):
-        i.hide_set(hide)
+    meshes = list(FnModel.iterate_mesh_objects(self.id_data))
+    FnContext.set_objects_hidden(context, meshes, hide)
+    for i in meshes:
         i.hide_render = hide
     if hide and context.active_object is None:
         FnContext.set_active_object(context, root)
@@ -112,8 +113,7 @@ def _toggleVisibilityOfMeshes(self: "MMDRoot", context: bpy.types.Context):
 def _toggleVisibilityOfRigidBodies(self: "MMDRoot", context: bpy.types.Context):
     root = self.id_data
     hide = not self.show_rigid_bodies
-    for i in FnModel.iterate_rigid_body_objects(root):
-        i.hide_set(hide)
+    FnContext.set_objects_hidden(context, FnModel.iterate_rigid_body_objects(root), hide)
     if hide and context.active_object is None:
         FnContext.set_active_object(context, root)
 
@@ -121,8 +121,7 @@ def _toggleVisibilityOfRigidBodies(self: "MMDRoot", context: bpy.types.Context):
 def _toggleVisibilityOfJoints(self: "MMDRoot", context):
     root_object = self.id_data
     hide = not self.show_joints
-    for i in FnModel.iterate_joint_objects(root_object):
-        i.hide_set(hide)
+    FnContext.set_objects_hidden(context, FnModel.iterate_joint_objects(root_object), hide)
     if hide and context.active_object is None:
         FnContext.set_active_object(context, root_object)
 
@@ -131,8 +130,7 @@ def _toggleVisibilityOfTemporaryObjects(self: "MMDRoot", context: bpy.types.Cont
     root_object: bpy.types.Object = self.id_data
     hide = not self.show_temporary_objects
     with FnContext.temp_override_active_layer_collection(context, root_object):
-        for i in FnModel.iterate_temporary_objects(root_object):
-            i.hide_set(hide)
+        FnContext.set_objects_hidden(context, FnModel.iterate_temporary_objects(root_object), hide)
     if hide and context.active_object is None:
         FnContext.set_active_object(context, root_object)
 

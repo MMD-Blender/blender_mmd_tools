@@ -3,7 +3,7 @@
 
 import contextlib
 import math
-from typing import Generator, List, Optional, TypeVar
+from typing import Any, Dict, Generator, Iterable, List, Optional, TypeVar
 
 import bmesh
 import bpy
@@ -453,6 +453,135 @@ class FnContext:
                 last_selected_objects = context.selected_objects
         assert len(result_objects) == target_count
         return result_objects
+
+    @staticmethod
+    def copy_object(object_to_copy: bpy.types.Object, target_count: int) -> List[bpy.types.Object]:
+        """
+        Copy object without operators.
+
+        Much faster than duplicate_object() for thousands of copies. Copies are linked to the same collections as the original.
+
+        Returns:
+            List[bpy.types.Object]: The original object followed by target_count - 1 copies.
+        """
+        # Blender adds copies to the rigid body world collections by itself when they are linked to a scene collection
+        rigid_body_collections = set()
+        for scene in bpy.data.scenes:
+            rigidbody_world = scene.rigidbody_world
+            if rigidbody_world is not None:
+                rigid_body_collections.update(c for c in (rigidbody_world.collection, rigidbody_world.constraints) if c is not None)
+        collections = [c for c in object_to_copy.users_collection if c not in rigid_body_collections]
+
+        result_objects = [object_to_copy]
+        for _ in range(target_count - 1):
+            obj = object_to_copy.copy()
+            for collection in collections:
+                collection.objects.link(obj)
+            result_objects.append(obj)
+        return result_objects
+
+    @staticmethod
+    def __find_view3d_override(context: bpy.types.Context) -> Optional[Dict[str, Any]]:
+        window = context.window or next(iter(context.window_manager.windows), None)
+        area = next((a for a in window.screen.areas if a.type == "VIEW_3D"), None) if window else None
+        if area is None:
+            return None
+        return {"window": window, "area": area, "region": next(r for r in area.regions if r.type == "WINDOW")}
+
+    @staticmethod
+    def set_objects_hidden(context: bpy.types.Context, objects: Iterable[bpy.types.Object], hide: bool):
+        """
+        Hide or unhide objects in the viewport, like calling Object.hide_set(hide) on each of them.
+
+        Object.hide_set() resyncs the whole view layer on every call, which is O(N^2) for thousands of objects.
+        When a 3D view is available, use one hide/unhide operator call instead:
+        - hide: select the objects and hide the selection.
+        - unhide: unhide everything, then hide the objects that were hidden before and are not targets.
+        Falls back to Object.hide_set() without a 3D view.
+        """
+        objects = [obj for obj in objects if obj.hide_get() != hide]
+        if not objects:
+            return
+
+        override = FnContext.__find_view3d_override(context)
+        # unhiding re-hides every other hidden object, which costs more than a few hide_set() calls
+        if not hide and len(objects) < 64:
+            override = None
+        if override is not None:
+            if hide:
+                FnContext.__hide_by_selection(context, override, objects)
+            else:
+                targets = set(objects)
+                others = [obj for obj in context.view_layer.objects if obj.hide_get() and obj not in targets]
+                with context.temp_override(**override):
+                    bpy.ops.object.hide_view_clear(select=False)
+                if others:
+                    FnContext.__hide_by_selection(context, override, others)
+                    # hide_view_set can skip objects that were unselectable before hide_view_clear, so hide those one by one
+                    for obj in others:
+                        if not obj.hide_get():
+                            obj.hide_set(True)
+
+        # Fallback for no 3D view, and for objects the operators skipped (e.g. in a hidden collection)
+        for obj in objects:
+            if obj.hide_get() != hide:
+                obj.hide_set(hide)
+
+    @staticmethod
+    def __hide_by_selection(context: bpy.types.Context, override: Dict[str, Any], objects: List[bpy.types.Object]):
+        # hide_view_set only hides selected objects, so make unselectable ones selectable for the moment
+        unselectable_objects = [obj for obj in objects if obj.hide_select]
+        if unselectable_objects:
+            FnContext.set_hide_select(unselectable_objects, False)
+        # restore selection and selectability even if select_set() fails (e.g. an object not in the view layer)
+        try:
+            with context.temp_override(**override):
+                selected_objects = context.selected_objects
+                try:
+                    for obj in selected_objects:
+                        obj.select_set(False)
+                    for obj in objects:
+                        obj.select_set(True)
+                    bpy.ops.object.hide_view_set(unselected=False)
+                finally:
+                    for obj in objects:
+                        if obj.visible_get():
+                            obj.select_set(False)
+                    for obj in selected_objects:
+                        if obj.visible_get():
+                            obj.select_set(True)
+        finally:
+            if unselectable_objects:
+                FnContext.set_hide_select(unselectable_objects, True)
+
+    @staticmethod
+    def hide_objects(context: bpy.types.Context, objects: List[bpy.types.Object]):
+        """Hide objects in the viewport. See set_objects_hidden()."""
+        FnContext.set_objects_hidden(context, objects, True)
+
+    @staticmethod
+    def set_hide_select(objects: List[bpy.types.Object], hide_select: bool = True):
+        """
+        Set Object.hide_select on many objects at once.
+
+        Setting it per object resyncs the view layer on every call (O(N^2) for thousands of objects).
+        foreach_set() skips the per-object update, so resync once at the end instead.
+        Objects linked from a library are left unchanged, because foreach_set() skips them.
+        """
+        if not objects:
+            return
+        targets = {obj.as_pointer() for obj in objects}
+        all_objects = bpy.data.objects
+        values = [False] * len(all_objects)
+        all_objects.foreach_get("hide_select", values)
+        for i, obj in enumerate(all_objects):
+            if obj.as_pointer() in targets:
+                values[i] = hide_select
+        all_objects.foreach_set("hide_select", values)
+        # foreach_set() skips the update callback, so tag the objects and evaluate once to refresh base selectability
+        for obj in objects:
+            obj.update_tag()
+        bpy.context.view_layer.update()
 
     @staticmethod
     def find_user_layer_collection_by_object(context: bpy.types.Context, target_object: bpy.types.Object) -> Optional[bpy.types.LayerCollection]:

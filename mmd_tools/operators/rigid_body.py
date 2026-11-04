@@ -537,13 +537,16 @@ class UpdateRigidBodyWorld(bpy.types.Operator):
         scene_objs = set(scene.objects)
         scene_objs.union(o for x in scene.objects if x.instance_type == "COLLECTION" and x.instance_collection for o in x.instance_collection.objects)
 
-        def _update_group(obj, group):
+        # group.values() builds a full list on every call, so track membership in a set instead (O(N) instead of O(N^2))
+        def _update_group(obj, group, members):
             if obj in scene_objs:
-                if obj not in group.values():
+                if obj not in members:
                     group.link(obj)
+                    members.add(obj)
                 return True
-            if obj in group.values():
+            if obj in members:
                 group.unlink(obj)
+                members.discard(obj)
             return False
 
         def _references(obj):
@@ -555,6 +558,7 @@ class UpdateRigidBodyWorld(bpy.types.Operator):
 
         need_rebuild_physics = scene.rigidbody_world is None or scene.rigidbody_world.collection is None or scene.rigidbody_world.constraints is None
         rb_objs, rbc_objs = self.__get_rigid_body_world_objects()
+        rb_members, rbc_members = set(rb_objs), set(rbc_objs)
         objects = bpy.data.objects
         table = {}
 
@@ -564,12 +568,13 @@ class UpdateRigidBodyWorld(bpy.types.Operator):
         # but Object.rigid_body_constraint are retained.
         # Therefore, it must be checked with Object.mmd_type.
         for i in (x for x in objects if x.mmd_type == "RIGID_BODY"):
-            if not _update_group(i, rb_objs):
+            if not _update_group(i, rb_objs, rb_members):
                 continue
 
             rb_map = table.setdefault(FnModel.find_root_object(i), {})
             if i in rb_map:  # means rb_map[i] will replace i
                 rb_objs.unlink(i)
+                rb_members.discard(i)
                 continue
             for r in _references(i):
                 rb_map[r] = i
@@ -578,7 +583,7 @@ class UpdateRigidBodyWorld(bpy.types.Operator):
             # mass, friction, restitution, linear_dumping, angular_dumping
 
         for i in (x for x in objects if x.rigid_body_constraint):
-            if not _update_group(i, rbc_objs):
+            if not _update_group(i, rbc_objs, rbc_members):
                 continue
 
             rbc, root_object = i.rigid_body_constraint, FnModel.find_root_object(i)
