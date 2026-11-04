@@ -95,7 +95,10 @@ class FnRigidBody:
         if count == 1:
             return [obj]
 
-        return FnContext.duplicate_object(context, obj, count)
+        # copy_object instead of duplicate_object: duplicate_object selects via the viewport, which
+        # fails when the object type is hidden in the 3D view (#344). Copy the mesh data too, since
+        # each rigid body gets its own name, shape and size.
+        return FnContext.copy_object(obj, count, copy_data=True)
 
     @staticmethod
     def new_rigid_body_object(context: bpy.types.Context, parent_object: bpy.types.Object) -> bpy.types.Object:
@@ -268,7 +271,9 @@ class FnRigidBody:
         if count == 1:
             return [obj]
 
-        return FnContext.duplicate_object(context, obj, count)
+        # copy_object instead of duplicate_object: duplicate_object selects via the viewport, which
+        # fails when empties are hidden in the 3D view (#344)
+        return FnContext.copy_object(obj, count)
 
     @staticmethod
     def setup_joint_object(

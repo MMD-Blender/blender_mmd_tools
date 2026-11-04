@@ -455,11 +455,13 @@ class FnContext:
         return result_objects
 
     @staticmethod
-    def copy_object(object_to_copy: bpy.types.Object, target_count: int) -> List[bpy.types.Object]:
+    def copy_object(object_to_copy: bpy.types.Object, target_count: int, copy_data: bool = False) -> List[bpy.types.Object]:
         """
         Copy object without operators.
 
-        Much faster than duplicate_object() for thousands of copies. Copies are linked to the same collections as the original.
+        Much faster than duplicate_object() for thousands of copies, and works regardless of the viewport's
+        selectability and visibility settings. Copies are linked to the same collections as the original.
+        copy_data: give each copy its own object data instead of sharing the original's.
 
         Returns:
             List[bpy.types.Object]: The original object followed by target_count - 1 copies.
@@ -475,6 +477,8 @@ class FnContext:
         result_objects = [object_to_copy]
         for _ in range(target_count - 1):
             obj = object_to_copy.copy()
+            if copy_data and obj.data is not None:
+                obj.data = obj.data.copy()
             for collection in collections:
                 collection.objects.link(obj)
             result_objects.append(obj)
