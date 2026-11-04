@@ -1187,7 +1187,15 @@ class Model:
 
     def build(self, non_collision_distance_scale=1.5, collision_margin=1e-06):
         rigidbody_world_enabled = rigid_body.setRigidBodyWorldEnabled(False)
+        # Scene needs to be set to frame the beginning of the point cache while building 
+        # or else dynamic bones will not be in the correct positions
+        scene = bpy.context.scene
+        frame_current = scene.frame_current
+        point_cache = scene.rigidbody_world.point_cache if scene.rigidbody_world else None
+        frame_start = point_cache.frame_start if point_cache else scene.frame_start
         try:
+            if frame_current != frame_start:
+                scene.frame_set(frame_start)
             if self.__root.mmd_root.is_built:
                 self.clean()
             self.__root.mmd_root.is_built = True
@@ -1202,6 +1210,8 @@ class Model:
             self.__postBuild()
             logging.info(" Finished building in %f seconds.", time.time() - start_time)
         finally:
+            if scene.frame_current != frame_current:
+                scene.frame_set(frame_current)
             rigid_body.setRigidBodyWorldEnabled(rigidbody_world_enabled)
 
     def clean(self):
