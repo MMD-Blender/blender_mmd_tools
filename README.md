@@ -50,7 +50,7 @@ For advanced animation workflows using **Rigify**, we recommend the following co
 
 Blenderの**Rigify**を使った高度なアニメーション制作には、以下のコミュニティ製アドオンを推奨します。
 
-- **[MikuMikuRig](https://github.com/XiaoFFGe/MikuMikuRig)**
+- **[MikuMikuRig](https://github.com/XiaoFFGel/MikuMikuRig)**
 - **[MMD Tools Append](https://github.com/MMD-Blender/blender_mmd_tools_append)**
 
 *Please note that these are third-party add-ons. For support and questions, please contact the respective authors.*
