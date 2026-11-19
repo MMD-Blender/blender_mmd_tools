@@ -75,6 +75,11 @@ class MMDToolsAddonPreferences(bpy.types.AddonPreferences):
         name="Enable MMD Model Production Features",
         default=True,
     )
+    use_collision_collections: bpy.props.BoolProperty(
+        name="Use Collision Collections for New Models",
+        description="Default Collision Collections setting for newly imported or created models. See the setting next to Assembly -> Physics",
+        default=False,
+    )
     shared_toon_folder: bpy.props.StringProperty(
         name="Shared Toon Texture Folder",
         description=('Directory path to toon textures. This is normally the "Data" directory within of your MikuMikuDance directory'),
@@ -181,6 +186,7 @@ class MMDToolsAddonPreferences(bpy.types.AddonPreferences):
         self.initialize_defaults()
 
         layout.prop(self, "enable_mmd_model_production_features")
+        layout.prop(self, "use_collision_collections")
         layout.prop(self, "shared_toon_folder")
         layout.prop(self, "base_texture_folder")
         layout.prop(self, "dictionary_folder")
